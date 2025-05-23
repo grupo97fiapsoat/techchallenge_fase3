@@ -1,0 +1,736 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>FastFood.Domain</name>
+    </assembly>
+    <members>
+        <member name="T:FastFood.Domain.Customers.Entities.Customer">
+            <summary>
+            Representa um cliente no sistema.
+            </summary>
+        </member>
+        <member name="P:FastFood.Domain.Customers.Entities.Customer.Name">
+            <summary>
+            Nome do cliente, representado como um Value Object para garantir validação e integridade.
+            </summary>
+        </member>
+        <member name="P:FastFood.Domain.Customers.Entities.Customer.Email">
+            <summary>
+            Email do cliente, representado como um Value Object para garantir validação e integridade.
+            </summary>
+        </member>
+        <member name="P:FastFood.Domain.Customers.Entities.Customer.Cpf">
+            <summary>
+            CPF do cliente, representado como um Value Object para garantir validação e integridade.
+            </summary>
+        </member>
+        <member name="M:FastFood.Domain.Customers.Entities.Customer.#ctor">
+            <summary>
+            Construtor privado para uso do EF Core.
+            </summary>
+        </member>
+        <member name="M:FastFood.Domain.Customers.Entities.Customer.#ctor(FastFood.Domain.Customers.ValueObjects.Name,FastFood.Domain.Customers.ValueObjects.Email,FastFood.Domain.Customers.ValueObjects.Cpf)">
+            <summary>
+            Construtor interno que recebe os Value Objects já validados.
+            </summary>
+            <param name="name">Nome do cliente (já validado).</param>
+            <param name="email">Email do cliente (já validado).</param>
+            <param name="cpf">CPF do cliente (já validado).</param>
+        </member>
+        <member name="M:FastFood.Domain.Customers.Entities.Customer.Create(System.String,System.String,System.String)">
+            <summary>
+            Factory method para criar um novo cliente com validação de todos os campos.
+            </summary>
+            <param name="name">Nome do cliente (3-100 caracteres).</param>
+            <param name="email">Email do cliente (formato válido).</param>
+            <param name="cpf">CPF do cliente (11 dígitos).</param>
+            <returns>Uma nova instância de Customer com os dados validados.</returns>
+            <exception cref="T:FastFood.Domain.Customers.Exceptions.CustomerDomainException">Lançada quando algum dos campos é inválido.</exception>
+        </member>
+        <member name="M:FastFood.Domain.Customers.Entities.Customer.Update(System.String,System.String)">
+            <summary>
+            Atualiza os dados do cliente que podem ser modificados (nome e email).
+            O CPF não pode ser alterado após a criação.
+            </summary>
+            <param name="name">Novo nome do cliente (3-100 caracteres).</param>
+            <param name="email">Novo email do cliente (formato válido).</param>
+            <exception cref="T:FastFood.Domain.Customers.Exceptions.CustomerDomainException">Lançada quando algum dos campos é inválido.</exception>
+        </member>
+        <member name="T:FastFood.Domain.Customers.Exceptions.CustomerDomainException">
+            <summary>
+            Exceção de domínio para regras de negócio relacionadas a clientes.
+            </summary>
+        </member>
+        <member name="M:FastFood.Domain.Customers.Exceptions.CustomerDomainException.#ctor(System.String)">
+            <summary>
+            Inicializa uma nova instância da classe <see cref="T:FastFood.Domain.Customers.Exceptions.CustomerDomainException"/>.
+            </summary>
+            <param name="message">A mensagem que descreve o erro.</param>
+        </member>
+        <member name="M:FastFood.Domain.Customers.Exceptions.CustomerDomainException.#ctor(System.String,System.Exception)">
+            <summary>
+            Inicializa uma nova instância da classe <see cref="T:FastFood.Domain.Customers.Exceptions.CustomerDomainException"/>.
+            </summary>
+            <param name="message">A mensagem que descreve o erro.</param>
+            <param name="innerException">A exceção que causou esta exceção.</param>
+        </member>
+        <member name="T:FastFood.Domain.Customers.Repositories.ICustomerRepository">
+            <summary>
+            Interface para o repositório de clientes.
+            </summary>
+        </member>
+        <member name="M:FastFood.Domain.Customers.Repositories.ICustomerRepository.GetByCpfAsync(System.String)">
+            <summary>
+            Obtém um cliente pelo seu CPF.
+            </summary>
+            <param name="cpf">O CPF do cliente</param>
+            <returns>O cliente encontrado ou null se não existir</returns>
+        </member>
+        <member name="T:FastFood.Domain.Customers.ValueObjects.Cpf">
+            <summary>
+            Value Object que representa um CPF válido.
+            </summary>
+        </member>
+        <member name="P:FastFood.Domain.Customers.ValueObjects.Cpf.Value">
+            <summary>
+            Obtém o valor do CPF.
+            </summary>
+        </member>
+        <member name="M:FastFood.Domain.Customers.ValueObjects.Cpf.#ctor(System.String)">
+            <summary>
+            Inicializa uma nova instância da classe <see cref="T:FastFood.Domain.Customers.ValueObjects.Cpf"/>.
+            </summary>
+            <param name="value">O valor do CPF.</param>
+            <exception cref="T:System.ArgumentNullException">Lançada quando o valor é nulo.</exception>
+            <exception cref="T:FastFood.Domain.Customers.Exceptions.CustomerDomainException">Lançada quando o CPF é inválido.</exception>
+        </member>
+        <member name="M:FastFood.Domain.Customers.ValueObjects.Cpf.Create(System.String)">
+            <summary>
+            Cria uma nova instância de CPF após validar o valor fornecido.
+            </summary>
+            <param name="cpf">O valor do CPF.</param>
+            <returns>Uma nova instância de <see cref="T:FastFood.Domain.Customers.ValueObjects.Cpf"/> válido.</returns>
+            <exception cref="T:FastFood.Domain.Customers.Exceptions.CustomerDomainException">Lançada quando o CPF é inválido.</exception>
+        </member>
+        <member name="M:FastFood.Domain.Customers.ValueObjects.Cpf.NormalizeCpf(System.String)">
+            <summary>
+            Normaliza o CPF removendo pontuação e espaços.
+            </summary>
+            <param name="cpf">O CPF a ser normalizado.</param>
+            <returns>O CPF apenas com dígitos.</returns>
+        </member>
+        <member name="M:FastFood.Domain.Customers.ValueObjects.Cpf.IsCpfValid(System.String)">
+            <summary>
+            Valida se o CPF é válido através do cálculo dos dígitos verificadores.
+            </summary>
+            <param name="cpf">O CPF a ser validado.</param>
+            <returns>True se o CPF é válido, False caso contrário.</returns>
+        </member>
+        <member name="M:FastFood.Domain.Customers.ValueObjects.Cpf.ToString">
+            <summary>
+            Retorna o CPF formatado no padrão XXX.XXX.XXX-XX.
+            </summary>
+        </member>
+        <member name="M:FastFood.Domain.Customers.ValueObjects.Cpf.op_Implicit(FastFood.Domain.Customers.ValueObjects.Cpf)~System.String">
+            <summary>
+            Permite a conversão implícita de Cpf para string.
+            </summary>
+        </member>
+        <member name="T:FastFood.Domain.Customers.ValueObjects.Email">
+            <summary>
+            Value Object que representa um endereço de e-mail válido.
+            </summary>
+        </member>
+        <member name="P:FastFood.Domain.Customers.ValueObjects.Email.Value">
+            <summary>
+            Obtém o valor do e-mail.
+            </summary>
+        </member>
+        <member name="M:FastFood.Domain.Customers.ValueObjects.Email.#ctor(System.String)">
+            <summary>
+            Inicializa uma nova instância da classe <see cref="T:FastFood.Domain.Customers.ValueObjects.Email"/>.
+            </summary>
+            <param name="value">O valor do e-mail.</param>
+        </member>
+        <member name="M:FastFood.Domain.Customers.ValueObjects.Email.Create(System.String)">
+            <summary>
+            Cria uma nova instância de Email após validar o valor fornecido.
+            </summary>
+            <param name="email">O valor do e-mail.</param>
+            <returns>Uma nova instância de <see cref="T:FastFood.Domain.Customers.ValueObjects.Email"/> válido.</returns>
+            <exception cref="T:FastFood.Domain.Customers.Exceptions.CustomerDomainException">Lançada quando o e-mail é inválido.</exception>
+        </member>
+        <member name="M:FastFood.Domain.Customers.ValueObjects.Email.ToString">
+            <summary>
+            Retorna o e-mail como string.
+            </summary>
+        </member>
+        <member name="M:FastFood.Domain.Customers.ValueObjects.Email.op_Implicit(FastFood.Domain.Customers.ValueObjects.Email)~System.String">
+            <summary>
+            Permite a conversão implícita de Email para string.
+            </summary>
+        </member>
+        <member name="T:FastFood.Domain.Customers.ValueObjects.Name">
+            <summary>
+            Value Object que representa um nome válido.
+            </summary>
+        </member>
+        <member name="P:FastFood.Domain.Customers.ValueObjects.Name.Value">
+            <summary>
+            Obtém o valor do nome.
+            </summary>
+        </member>
+        <member name="M:FastFood.Domain.Customers.ValueObjects.Name.#ctor(System.String)">
+            <summary>
+            Inicializa uma nova instância da classe <see cref="T:FastFood.Domain.Customers.ValueObjects.Name"/>.
+            </summary>
+            <param name="value">O valor do nome.</param>
+        </member>
+        <member name="M:FastFood.Domain.Customers.ValueObjects.Name.Create(System.String)">
+            <summary>
+            Cria uma nova instância de Name após validar o valor fornecido.
+            </summary>
+            <param name="name">O valor do nome.</param>
+            <returns>Uma nova instância de <see cref="T:FastFood.Domain.Customers.ValueObjects.Name"/> válido.</returns>
+            <exception cref="T:FastFood.Domain.Customers.Exceptions.CustomerDomainException">Lançada quando o nome é inválido.</exception>
+        </member>
+        <member name="M:FastFood.Domain.Customers.ValueObjects.Name.ToString">
+            <summary>
+            Retorna o nome como string.
+            </summary>
+        </member>
+        <member name="M:FastFood.Domain.Customers.ValueObjects.Name.op_Implicit(FastFood.Domain.Customers.ValueObjects.Name)~System.String">
+            <summary>
+            Permite a conversão implícita de Name para string.
+            </summary>
+        </member>
+        <member name="T:FastFood.Domain.Orders.Entities.Order">
+            <summary>
+            Representa um pedido no sistema.
+            </summary>
+        </member>
+        <member name="P:FastFood.Domain.Orders.Entities.Order.Customer">
+            <summary>
+            Cliente que realizou o pedido.
+            </summary>
+        </member>
+        <member name="P:FastFood.Domain.Orders.Entities.Order.CustomerId">
+            <summary>
+            ID do cliente que realizou o pedido.
+            </summary>
+        </member>
+        <member name="P:FastFood.Domain.Orders.Entities.Order.Items">
+            <summary>
+            Itens do pedido.
+            </summary>
+        </member>
+        <member name="P:FastFood.Domain.Orders.Entities.Order.Status">
+            <summary>
+            Status do pedido.
+            </summary>
+        </member>
+        <member name="P:FastFood.Domain.Orders.Entities.Order.TotalPrice">
+            <summary>
+            Valor total do pedido.
+            </summary>
+        </member>
+        <member name="M:FastFood.Domain.Orders.Entities.Order.#ctor">
+            <summary>
+            Construtor privado para uso do EF Core.
+            </summary>
+        </member>
+        <member name="M:FastFood.Domain.Orders.Entities.Order.#ctor(System.Guid,System.Collections.Generic.List{FastFood.Domain.Orders.ValueObjects.OrderItem})">
+            <summary>
+            Construtor interno para criação de pedido.
+            </summary>
+            <param name="customerId">ID do cliente que está realizando o pedido.</param>
+            <param name="items">Itens do pedido.</param>
+        </member>
+        <member name="M:FastFood.Domain.Orders.Entities.Order.Create(System.Guid,System.Collections.Generic.List{FastFood.Domain.Orders.ValueObjects.OrderItem})">
+            <summary>
+            Factory method para criar um novo pedido com validação de todos os campos.
+            </summary>
+            <param name="customerId">ID do cliente que está realizando o pedido.</param>
+            <param name="items">Itens do pedido.</param>
+            <returns>Uma nova instância de Order com os dados validados.</returns>
+            <exception cref="T:FastFood.Domain.Orders.Exceptions.OrderDomainException">Lançada quando algum dos campos é inválido.</exception>
+        </member>
+        <member name="M:FastFood.Domain.Orders.Entities.Order.AddItem(FastFood.Domain.Orders.ValueObjects.OrderItem)">
+            <summary>
+            Adiciona um item ao pedido.
+            </summary>
+            <param name="item">Item a ser adicionado.</param>
+            <exception cref="T:FastFood.Domain.Orders.Exceptions.OrderDomainException">Lançada quando o pedido não está mais em estado pendente.</exception>
+        </member>
+        <member name="M:FastFood.Domain.Orders.Entities.Order.RemoveItem(System.Guid)">
+            <summary>
+            Remove um item do pedido pelo ID do produto.
+            </summary>
+            <param name="productId">ID do produto a ser removido.</param>
+            <returns>true se o item foi removido; false caso contrário.</returns>
+            <exception cref="T:FastFood.Domain.Orders.Exceptions.OrderDomainException">Lançada quando o pedido não está mais em estado pendente.</exception>
+        </member>
+        <member name="M:FastFood.Domain.Orders.Entities.Order.UpdateStatus(FastFood.Domain.Orders.ValueObjects.OrderStatus)">
+            <summary>
+            Atualiza o status do pedido.
+            </summary>
+            <param name="status">Novo status do pedido.</param>
+            <exception cref="T:FastFood.Domain.Orders.Exceptions.OrderDomainException">Lançada quando a transição de status não é permitida.</exception>
+        </member>
+        <member name="M:FastFood.Domain.Orders.Entities.Order.IsValidStatusTransition(FastFood.Domain.Orders.ValueObjects.OrderStatus,FastFood.Domain.Orders.ValueObjects.OrderStatus)">
+            <summary>
+            Verifica se a transição de status é válida.
+            </summary>
+            <param name="currentStatus">Status atual.</param>
+            <param name="newStatus">Novo status.</param>
+            <returns>true se a transição é válida; false caso contrário.</returns>
+        </member>
+        <member name="M:FastFood.Domain.Orders.Entities.Order.CalculateTotalPrice">
+            <summary>
+            Calcula o valor total do pedido com base nos itens.
+            </summary>
+        </member>
+        <member name="T:FastFood.Domain.Orders.Exceptions.OrderDomainException">
+            <summary>
+            Exceção de domínio específica para entidades de pedido.
+            </summary>
+        </member>
+        <member name="T:FastFood.Domain.Orders.Repositories.IOrderRepository">
+            <summary>
+            Interface para o repositório de pedidos.
+            </summary>
+        </member>
+        <member name="M:FastFood.Domain.Orders.Repositories.IOrderRepository.GetByIdWithItemsAsync(System.Guid)">
+            <summary>
+            Obtém um pedido pelo seu identificador, incluindo seus itens.
+            </summary>
+            <param name="id">O identificador do pedido</param>
+            <returns>O pedido encontrado ou null se não existir</returns>
+        </member>
+        <member name="M:FastFood.Domain.Orders.Repositories.IOrderRepository.GetByCustomerIdAsync(System.Guid,System.Int32,System.Int32)">
+            <summary>
+            Obtém pedidos por cliente, com suporte a paginação.
+            </summary>
+            <param name="customerId">O identificador do cliente</param>
+            <param name="pageNumber">O número da página, começando em 1</param>
+            <param name="pageSize">O tamanho da página</param>
+            <returns>Uma coleção com os pedidos encontrados</returns>
+        </member>
+        <member name="M:FastFood.Domain.Orders.Repositories.IOrderRepository.GetByStatusAsync(FastFood.Domain.Orders.ValueObjects.OrderStatus,System.Int32,System.Int32)">
+            <summary>
+            Obtém pedidos por status, com suporte a paginação.
+            </summary>
+            <param name="status">O status dos pedidos</param>
+            <param name="pageNumber">O número da página, começando em 1</param>
+            <param name="pageSize">O tamanho da página</param>
+            <returns>Uma coleção com os pedidos encontrados</returns>
+        </member>
+        <member name="M:FastFood.Domain.Orders.Repositories.IOrderRepository.GetOrdersAsync(System.Int32,System.Int32,System.Nullable{System.Guid},System.Nullable{FastFood.Domain.Orders.ValueObjects.OrderStatus})">
+            <summary>
+            Obtém pedidos com filtros e paginação, retornando também o total de registros.
+            </summary>
+            <param name="pageNumber">O número da página, começando em 1</param>
+            <param name="pageSize">O tamanho da página</param>
+            <param name="customerId">Filtro opcional por cliente</param>
+            <param name="status">Filtro opcional por status</param>
+            <returns>Uma tupla com os pedidos encontrados e o total de registros</returns>
+        </member>
+        <member name="T:FastFood.Domain.Orders.Services.INotificationService">
+            <summary>
+            Interface para serviço de notificação de mudanças de status de pedidos.
+            </summary>
+        </member>
+        <member name="M:FastFood.Domain.Orders.Services.INotificationService.NotifyOrderStatusChangeAsync(FastFood.Domain.Orders.Entities.Order,FastFood.Domain.Orders.ValueObjects.OrderStatus)">
+            <summary>
+            Notifica o cliente sobre uma mudança de status no pedido.
+            </summary>
+            <param name="order">Pedido atualizado</param>
+            <param name="previousStatus">Status anterior do pedido</param>
+            <returns>Task representando a operação assíncrona</returns>
+        </member>
+        <member name="M:FastFood.Domain.Orders.Services.INotificationService.NotifyOrderReadyAsync(FastFood.Domain.Orders.Entities.Order)">
+            <summary>
+            Notifica o cliente que o pedido está pronto para retirada.
+            </summary>
+            <param name="order">Pedido pronto</param>
+            <returns>Task representando a operação assíncrona</returns>
+        </member>
+        <member name="T:FastFood.Domain.Orders.Services.IPaymentService">
+            <summary>
+            Interface para serviço de pagamento.
+            </summary>
+        </member>
+        <member name="M:FastFood.Domain.Orders.Services.IPaymentService.GenerateQrCodeAsync(System.Guid,System.Decimal)">
+            <summary>
+            Gera um QR Code para pagamento de um pedido.
+            </summary>
+            <param name="orderId">ID do pedido.</param>
+            <param name="amount">Valor a ser pago.</param>
+            <returns>String contendo o QR Code gerado.</returns>
+        </member>
+        <member name="M:FastFood.Domain.Orders.Services.IPaymentService.ProcessPaymentAsync(System.Guid,System.String)">
+            <summary>
+            Processa o pagamento de um pedido.
+            </summary>
+            <param name="orderId">ID do pedido.</param>
+            <param name="qrCode">QR Code usado para pagamento.</param>
+            <returns>True se o pagamento foi processado com sucesso; False caso contrário.</returns>
+        </member>
+        <member name="T:FastFood.Domain.Orders.ValueObjects.OrderItem">
+            <summary>
+            Value Object que representa um item de um pedido.
+            </summary>
+        </member>
+        <member name="P:FastFood.Domain.Orders.ValueObjects.OrderItem.Id">
+            <summary>
+            ID do item no pedido.
+            </summary>
+        </member>
+        <member name="P:FastFood.Domain.Orders.ValueObjects.OrderItem.ProductId">
+            <summary>
+            ID do produto.
+            </summary>
+        </member>
+        <member name="P:FastFood.Domain.Orders.ValueObjects.OrderItem.ProductName">
+            <summary>
+            Nome do produto no momento do pedido.
+            </summary>
+        </member>
+        <member name="P:FastFood.Domain.Orders.ValueObjects.OrderItem.UnitPrice">
+            <summary>
+            Preço unitário do produto no momento do pedido.
+            </summary>
+        </member>
+        <member name="P:FastFood.Domain.Orders.ValueObjects.OrderItem.Quantity">
+            <summary>
+            Quantidade do produto.
+            </summary>
+        </member>
+        <member name="P:FastFood.Domain.Orders.ValueObjects.OrderItem.SubTotal">
+            <summary>
+            Valor total do item (quantidade * preço unitário).
+            </summary>
+        </member>
+        <member name="M:FastFood.Domain.Orders.ValueObjects.OrderItem.#ctor">
+            <summary>
+            Construtor privado para uso do EF Core.
+            </summary>
+        </member>
+        <member name="M:FastFood.Domain.Orders.ValueObjects.OrderItem.#ctor(System.Guid,System.Guid,System.String,System.Decimal,System.Int32)">
+            <summary>
+            Construtor interno para criação de um item de pedido.
+            </summary>
+        </member>
+        <member name="M:FastFood.Domain.Orders.ValueObjects.OrderItem.Create(System.Guid,System.String,System.Decimal,System.Int32)">
+            <summary>
+            Factory method para criar um novo item de pedido com validação de todos os campos.
+            </summary>
+            <param name="productId">ID do produto.</param>
+            <param name="productName">Nome do produto.</param>
+            <param name="unitPrice">Preço unitário do produto.</param>
+            <param name="quantity">Quantidade do produto.</param>
+            <returns>Uma nova instância de OrderItem com os dados validados.</returns>
+            <exception cref="T:FastFood.Domain.Orders.Exceptions.OrderDomainException">Lançada quando algum dos campos é inválido.</exception>
+        </member>
+        <member name="M:FastFood.Domain.Orders.ValueObjects.OrderItem.WithQuantity(System.Int32)">
+            <summary>
+            Retorna um novo OrderItem com a quantidade atualizada.
+            </summary>
+            <param name="quantity">Nova quantidade.</param>
+            <returns>Um novo OrderItem com a quantidade atualizada.</returns>
+            <exception cref="T:FastFood.Domain.Orders.Exceptions.OrderDomainException">Lançada quando a quantidade é inválida.</exception>
+        </member>
+        <member name="M:FastFood.Domain.Orders.ValueObjects.OrderItem.GetAtomicValues">
+            <summary>
+            Retorna os valores que compõem este value object.
+            </summary>
+        </member>
+        <member name="T:FastFood.Domain.Orders.ValueObjects.OrderStatus">
+            <summary>
+            Representa os possíveis status de um pedido.
+            </summary>
+        </member>
+        <member name="F:FastFood.Domain.Orders.ValueObjects.OrderStatus.Pending">
+            <summary>
+            Pedido pendente (recém-criado).
+            </summary>
+        </member>
+        <member name="F:FastFood.Domain.Orders.ValueObjects.OrderStatus.Processing">
+            <summary>
+            Pedido em processamento (em preparação).
+            </summary>
+        </member>
+        <member name="F:FastFood.Domain.Orders.ValueObjects.OrderStatus.Ready">
+            <summary>
+            Pedido pronto para retirada.
+            </summary>
+        </member>
+        <member name="F:FastFood.Domain.Orders.ValueObjects.OrderStatus.Completed">
+            <summary>
+            Pedido concluído (entregue ao cliente).
+            </summary>
+        </member>
+        <member name="F:FastFood.Domain.Orders.ValueObjects.OrderStatus.Cancelled">
+            <summary>
+            Pedido cancelado.
+            </summary>
+        </member>
+        <member name="F:FastFood.Domain.Orders.ValueObjects.OrderStatus.Paid">
+            <summary>
+            Pedido pago.
+            </summary>
+        </member>
+        <member name="T:FastFood.Domain.Products.Entities.Product">
+            <summary>
+            Representa um produto no sistema.
+            </summary>
+        </member>
+        <member name="P:FastFood.Domain.Products.Entities.Product.Name">
+            <summary>
+            Nome do produto.
+            </summary>
+        </member>
+        <member name="P:FastFood.Domain.Products.Entities.Product.Description">
+            <summary>
+            Descrição do produto.
+            </summary>
+        </member>
+        <member name="P:FastFood.Domain.Products.Entities.Product.Category">
+            <summary>
+            Categoria do produto.
+            </summary>
+        </member>
+        <member name="P:FastFood.Domain.Products.Entities.Product.Price">
+            <summary>
+            Preço do produto.
+            </summary>
+        </member>
+        <member name="P:FastFood.Domain.Products.Entities.Product.Images">
+            <summary>
+            URLs das imagens do produto.
+            </summary>
+        </member>
+        <member name="M:FastFood.Domain.Products.Entities.Product.#ctor">
+            <summary>
+            Construtor privado para uso do EF Core.
+            </summary>
+        </member>
+        <member name="M:FastFood.Domain.Products.Entities.Product.#ctor(System.String,System.String,System.String,System.Decimal,System.Collections.Generic.List{System.String})">
+            <summary>
+            Construtor para criação de um novo produto.
+            </summary>
+            <param name="name">Nome do produto.</param>
+            <param name="description">Descrição do produto.</param>
+            <param name="category">Categoria do produto.</param>
+            <param name="price">Preço do produto.</param>
+            <param name="images">URLs das imagens do produto (opcional).</param>
+        </member>
+        <member name="M:FastFood.Domain.Products.Entities.Product.Update(System.String,System.String,System.String,System.Decimal,System.Collections.Generic.List{System.String})">
+            <summary>
+            Atualiza os dados do produto.
+            </summary>
+            <param name="name">Novo nome do produto.</param>
+            <param name="description">Nova descrição do produto.</param>
+            <param name="category">Nova categoria do produto.</param>
+            <param name="price">Novo preço do produto.</param>
+            <param name="images">Novas URLs das imagens do produto.</param>
+        </member>
+        <member name="M:FastFood.Domain.Products.Entities.Product.AddImage(System.String)">
+            <summary>
+            Adiciona uma URL de imagem ao produto.
+            </summary>
+            <param name="imageUrl">URL da imagem a ser adicionada.</param>
+        </member>
+        <member name="M:FastFood.Domain.Products.Entities.Product.RemoveImage(System.String)">
+            <summary>
+            Remove uma URL de imagem do produto.
+            </summary>
+            <param name="imageUrl">URL da imagem a ser removida.</param>
+            <returns>True se a imagem foi removida com sucesso; False caso contrário.</returns>
+        </member>
+        <member name="T:FastFood.Domain.Products.Exceptions.ProductDomainException">
+            <summary>
+            Exceção de domínio específica para entidades de produto.
+            </summary>
+        </member>
+        <member name="T:FastFood.Domain.Products.Repositories.IProductRepository">
+            <summary>
+            Interface para o repositório de produtos.
+            </summary>
+        </member>
+        <member name="M:FastFood.Domain.Products.Repositories.IProductRepository.GetByCategoryAsync(System.String,System.Int32,System.Int32)">
+            <summary>
+            Obtém produtos por categoria, com suporte a paginação.
+            </summary>
+            <param name="category">A categoria dos produtos</param>
+            <param name="pageNumber">O número da página, começando em 1</param>
+            <param name="pageSize">O tamanho da página</param>
+            <returns>Uma coleção com os produtos encontrados</returns>
+        </member>
+        <member name="T:FastFood.Domain.Shared.Entities.Entity">
+            <summary>
+            Classe base abstrata para todas as entidades do domínio.
+            </summary>
+        </member>
+        <member name="P:FastFood.Domain.Shared.Entities.Entity.Id">
+            <summary>
+            Identificador único da entidade.
+            </summary>
+        </member>
+        <member name="P:FastFood.Domain.Shared.Entities.Entity.CreatedAt">
+            <summary>
+            Data de criação da entidade.
+            </summary>
+        </member>
+        <member name="P:FastFood.Domain.Shared.Entities.Entity.UpdatedAt">
+            <summary>
+            Data da última atualização da entidade.
+            Pode ser nula se a entidade nunca foi atualizada.
+            </summary>
+        </member>
+        <member name="M:FastFood.Domain.Shared.Entities.Entity.#ctor">
+            <summary>
+            Construtor protegido para inicializar uma nova entidade.
+            </summary>
+        </member>
+        <member name="M:FastFood.Domain.Shared.Entities.Entity.SetUpdatedAt">
+            <summary>
+            Atualiza a data de última modificação da entidade para a data/hora atual UTC.
+            </summary>
+        </member>
+        <member name="M:FastFood.Domain.Shared.Entities.Entity.Equals(System.Object)">
+            <summary>
+            Determina se esta entidade é igual a outra entidade.
+            A comparação é feita pelo Id da entidade.
+            </summary>
+            <param name="obj">Objeto a ser comparado</param>
+            <returns>true se as entidades são iguais, false caso contrário</returns>
+        </member>
+        <member name="M:FastFood.Domain.Shared.Entities.Entity.GetHashCode">
+            <summary>
+            Obtém o código hash desta entidade.
+            O código hash é gerado a partir do Id da entidade.
+            </summary>
+            <returns>O código hash da entidade</returns>
+        </member>
+        <member name="T:FastFood.Domain.Shared.Entities.IEntity">
+            <summary>
+            Interface base para todas as entidades do domínio.
+            </summary>
+        </member>
+        <member name="P:FastFood.Domain.Shared.Entities.IEntity.Id">
+            <summary>
+            Identificador único da entidade.
+            </summary>
+        </member>
+        <member name="P:FastFood.Domain.Shared.Entities.IEntity.CreatedAt">
+            <summary>
+            Data de criação da entidade.
+            </summary>
+        </member>
+        <member name="P:FastFood.Domain.Shared.Entities.IEntity.UpdatedAt">
+            <summary>
+            Data da última atualização da entidade.
+            </summary>
+        </member>
+        <member name="M:FastFood.Domain.Shared.Entities.IEntity.SetUpdatedAt">
+            <summary>
+            Atualiza a data de última modificação da entidade.
+            </summary>
+        </member>
+        <member name="T:FastFood.Domain.Shared.Repositories.IRepository`1">
+            <summary>
+            Interface genérica para os repositórios do domínio.
+            </summary>
+            <typeparam name="T">O tipo da entidade gerenciada pelo repositório</typeparam>
+        </member>
+        <member name="M:FastFood.Domain.Shared.Repositories.IRepository`1.GetByIdAsync(System.Guid)">
+            <summary>
+            Obtém uma entidade pelo seu identificador.
+            </summary>
+            <param name="id">O identificador da entidade</param>
+            <returns>A entidade encontrada ou null se não existir</returns>
+        </member>
+        <member name="M:FastFood.Domain.Shared.Repositories.IRepository`1.GetAllAsync(System.Int32,System.Int32)">
+            <summary>
+            Obtém todas as entidades do tipo, com suporte a paginação.
+            </summary>
+            <param name="pageNumber">O número da página, começando em 1</param>
+            <param name="pageSize">O tamanho da página</param>
+            <returns>Uma coleção com as entidades encontradas</returns>
+        </member>
+        <member name="M:FastFood.Domain.Shared.Repositories.IRepository`1.CreateAsync(`0)">
+            <summary>
+            Cria uma nova entidade no repositório.
+            </summary>
+            <param name="entity">A entidade a ser criada</param>
+            <returns>A entidade criada com seu identificador atualizado</returns>
+        </member>
+        <member name="M:FastFood.Domain.Shared.Repositories.IRepository`1.UpdateAsync(`0)">
+            <summary>
+            Atualiza uma entidade existente no repositório.
+            </summary>
+            <param name="entity">A entidade a ser atualizada</param>
+        </member>
+        <member name="M:FastFood.Domain.Shared.Repositories.IRepository`1.DeleteAsync(`0)">
+            <summary>
+            Remove uma entidade do repositório.
+            </summary>
+            <param name="entity">A entidade a ser removida</param>
+        </member>
+        <member name="T:FastFood.Domain.Shared.ValueObjects.IValueObject">
+            <summary>
+            Interface base para todos os value objects do domínio.
+            </summary>
+        </member>
+        <member name="M:FastFood.Domain.Shared.ValueObjects.IValueObject.Equals(System.Object)">
+            <summary>
+            Compara se este value object é igual a outro.
+            A comparação é feita pelos valores, não pela referência.
+            </summary>
+            <param name="other">O value object a ser comparado.</param>
+            <returns>True se os value objects são iguais, false caso contrário.</returns>
+        </member>
+        <member name="M:FastFood.Domain.Shared.ValueObjects.IValueObject.GetHashCode">
+            <summary>
+            Obtém um código hash para o value object baseado em seus valores.
+            </summary>
+            <returns>O código hash do value object.</returns>
+        </member>
+        <member name="T:FastFood.Domain.Shared.ValueObjects.ValueObject">
+            <summary>
+            Classe base abstrata para todos os value objects do domínio.
+            </summary>
+        </member>
+        <member name="M:FastFood.Domain.Shared.ValueObjects.ValueObject.Equals(System.Object)">
+            <summary>
+            Comparação de value objects baseada em seus valores.
+            </summary>
+        </member>
+        <member name="M:FastFood.Domain.Shared.ValueObjects.ValueObject.GetHashCode">
+            <summary>
+            Obtém um código hash baseado nos valores do value object.
+            </summary>
+        </member>
+        <member name="M:FastFood.Domain.Shared.ValueObjects.ValueObject.op_Equality(FastFood.Domain.Shared.ValueObjects.ValueObject,FastFood.Domain.Shared.ValueObjects.ValueObject)">
+            <summary>
+            Operador de igualdade.
+            </summary>
+        </member>
+        <member name="M:FastFood.Domain.Shared.ValueObjects.ValueObject.op_Inequality(FastFood.Domain.Shared.ValueObjects.ValueObject,FastFood.Domain.Shared.ValueObjects.ValueObject)">
+            <summary>
+            Operador de desigualdade.
+            </summary>
+        </member>
+        <member name="M:FastFood.Domain.Shared.ValueObjects.ValueObject.GetAtomicValues">
+            <summary>
+            Obtém os valores atômicos que compõem o value object.
+            </summary>
+        </member>
+        <member name="M:FastFood.Domain.Shared.ValueObjects.ValueObject.GetProperties(System.Type)">
+            <summary>
+            Obtém as propriedades do tipo usando cache.
+            </summary>
+        </member>
+    </members>
+</doc>

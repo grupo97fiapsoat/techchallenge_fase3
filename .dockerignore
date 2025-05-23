@@ -1,0 +1,37 @@
+# .NET build artifacts
+**/bin/
+**/obj/
+
+# Development files
+**/.vs/
+**/.vscode/
+**/*.user
+**/*.userosscache
+**/*.dbmdl
+**/*.jfm
+
+# Git files
+.git/
+.gitignore
+.gitattributes
+
+# Docker files
+Dockerfile
+docker-compose*.yml
+
+# Environment files
+.env
+*.env
+
+# Documentation
+README.md
+docs/
+
+# Logs
+logs/
+*.log
+
+# Test files
+**/[Tt]est[Rr]esults/
+**/*.trx
+**/*.coverage

@@ -1,0 +1,425 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>FastFood.Application</name>
+    </assembly>
+    <members>
+        <member name="T:FastFood.Application.Commands.ProcessCheckoutCommand">
+            <summary>
+            Comando para processar o checkout de um pedido
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.Commands.ProcessCheckoutCommand.OrderId">
+            <summary>
+            ID do pedido a ser processado
+            </summary>
+        </member>
+        <member name="T:FastFood.Application.Commands.ProcessCheckoutCommandResult">
+            <summary>
+            Resultado do processamento do checkout
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.Commands.ProcessCheckoutCommandResult.OrderId">
+            <summary>
+            ID do pedido processado
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.Commands.ProcessCheckoutCommandResult.QrCode">
+            <summary>
+            QR Code gerado para pagamento
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.Commands.ProcessCheckoutCommandResult.Status">
+            <summary>
+            Status atual do pedido
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.Commands.ProcessCheckoutCommandResult.TotalAmount">
+            <summary>
+            Valor total do pedido
+            </summary> 
+        </member>
+        <member name="P:FastFood.Application.Commands.ProcessCheckoutCommandResult.ProcessedAt">
+            <summary>
+            Data/hora do processamento
+            </summary>
+        </member>
+        <member name="T:FastFood.Application.Commands.ProcessCheckoutCommandHandler">
+            <summary>
+            Handler do comando de processamento de checkout
+            </summary>
+        </member>
+        <member name="T:FastFood.Application.DTOs.CreateOrderDto">
+            <summary>
+            DTO para criação de um novo pedido
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.DTOs.CreateOrderDto.CustomerId">
+            <summary>
+            ID do cliente que está fazendo o pedido
+            </summary>
+            <example>f47ac10b-58cc-4372-a567-0e02b2c3d479</example>
+        </member>
+        <member name="P:FastFood.Application.DTOs.CreateOrderDto.Items">
+            <summary>
+            Lista de itens do pedido (mínimo 1 item)
+            </summary>
+        </member>
+        <member name="T:FastFood.Application.DTOs.CreateOrderItemDto">
+            <summary>
+            DTO para criação de um item do pedido
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.DTOs.CreateOrderItemDto.ProductId">
+            <summary>
+            ID do produto a ser adicionado ao pedido
+            </summary>
+            <example>e47ac10b-58cc-4372-a567-0e02b2c3d123</example>
+        </member>
+        <member name="P:FastFood.Application.DTOs.CreateOrderItemDto.Quantity">
+            <summary>
+            Quantidade desejada do produto (maior que zero)
+            </summary>
+            <example>2</example>
+        </member>
+        <member name="P:FastFood.Application.DTOs.CreateOrderItemDto.Observation">
+            <summary>
+            Observações do item (exemplo: sem cebola, sem tomate, etc.)
+            </summary>
+            <example>Sem cebola</example>
+        </member>
+        <member name="T:FastFood.Application.DTOs.CreateProductDto">
+            <summary>
+            DTO para criação de um novo produto
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.DTOs.CreateProductDto.Name">
+            <summary>
+            Nome do produto
+            </summary>
+            <example>X-Bacon</example>
+        </member>
+        <member name="P:FastFood.Application.DTOs.CreateProductDto.Description">
+            <summary>
+            Descrição detalhada do produto
+            </summary>
+            <example>Hambúrguer com bacon, queijo, alface, tomate e maionese</example>
+        </member>
+        <member name="P:FastFood.Application.DTOs.CreateProductDto.Category">
+            <summary>
+            Categoria do produto (ex: Lanche, Bebida, Sobremesa)
+            </summary>
+            <example>Lanche</example>
+        </member>
+        <member name="P:FastFood.Application.DTOs.CreateProductDto.Price">
+            <summary>
+            Preço do produto (maior que zero)
+            </summary>
+            <example>15.90</example>
+        </member>
+        <member name="P:FastFood.Application.DTOs.CreateProductDto.ImageUrl">
+            <summary>
+            URL principal da imagem do produto
+            </summary>
+            <example>https://example.com/images/x-bacon.jpg</example>
+        </member>
+        <member name="P:FastFood.Application.DTOs.CreateProductDto.Images">
+            <summary>
+            URLs das imagens do produto
+            </summary>
+            <example>["https://example.com/images/x-bacon.jpg"]</example>
+        </member>
+        <member name="T:FastFood.Application.DTOs.CustomerDto">
+            <summary>
+            DTO com os dados de um cliente
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.DTOs.CustomerDto.Id">
+            <summary>
+            Identificador único do cliente
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.DTOs.CustomerDto.Name">
+            <summary>
+            Nome completo do cliente
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.DTOs.CustomerDto.Email">
+            <summary>
+            Endereço de e-mail do cliente
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.DTOs.CustomerDto.Cpf">
+            <summary>
+            CPF do cliente (apenas números)
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.DTOs.CustomerDto.CreatedAt">
+            <summary>
+            Data e hora de criação do registro
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.DTOs.CustomerDto.UpdatedAt">
+            <summary>
+            Data e hora da última atualização
+            </summary>
+        </member>
+        <member name="T:FastFood.Application.DTOs.OrderDto">
+            <summary>
+            DTO com os dados de um pedido
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.DTOs.OrderDto.Id">
+            <summary>
+            Identificador único do pedido
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.DTOs.OrderDto.CustomerId">
+            <summary>
+            Identificador do cliente que fez o pedido
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.DTOs.OrderDto.CustomerName">
+            <summary>
+            Nome do cliente que fez o pedido
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.DTOs.OrderDto.Items">
+            <summary>
+            Lista de itens do pedido
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.DTOs.OrderDto.Status">
+            <summary>
+            Status atual do pedido (Pending, Processing, Ready, Completed, Cancelled)
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.DTOs.OrderDto.TotalPrice">
+            <summary>
+            Valor total do pedido
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.DTOs.OrderDto.CreatedAt">
+            <summary>
+            Data e hora de criação do pedido
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.DTOs.OrderDto.UpdatedAt">
+            <summary>
+            Data e hora da última atualização do pedido
+            </summary>
+        </member>
+        <member name="T:FastFood.Application.DTOs.OrderItemDto">
+            <summary>
+            DTO com os dados de um item do pedido
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.DTOs.OrderItemDto.Id">
+            <summary>
+            Identificador único do item do pedido
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.DTOs.OrderItemDto.ProductId">
+            <summary>
+            Identificador do produto
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.DTOs.OrderItemDto.ProductName">
+            <summary>
+            Nome do produto
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.DTOs.OrderItemDto.UnitPrice">
+            <summary>
+            Preço unitário do produto
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.DTOs.OrderItemDto.Quantity">
+            <summary>
+            Quantidade solicitada do produto
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.DTOs.OrderItemDto.SubTotal">
+            <summary>
+            Subtotal do item (quantidade * preço unitário)
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.DTOs.OrderItemDto.Observation">
+            <summary>
+            Observações do item (exemplo: sem cebola, sem tomate, etc.)
+            </summary>
+        </member>
+        <member name="T:FastFood.Application.DTOs.ProcessCheckoutDto">
+            <summary>
+            DTO para processar o checkout de um pedido
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.DTOs.ProcessCheckoutDto.OrderId">
+            <summary>
+            ID do pedido a processar
+            </summary>
+        </member>
+        <member name="T:FastFood.Application.DTOs.CheckoutResponseDto">
+            <summary>
+            DTO com o resultado do processamento do checkout
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.DTOs.CheckoutResponseDto.OrderId">
+            <summary>
+            ID do pedido processado
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.DTOs.CheckoutResponseDto.QrCode">
+            <summary>
+            QR Code para pagamento
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.DTOs.CheckoutResponseDto.Status">
+            <summary>
+            Status atual do pedido
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.DTOs.CheckoutResponseDto.TotalAmount">
+            <summary>
+            Valor total do pedido
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.DTOs.CheckoutResponseDto.ProcessedAt">
+            <summary>
+            Data/hora do processamento
+            </summary>
+        </member>
+        <member name="T:FastFood.Application.DTOs.ProductDto">
+            <summary>
+            DTO com os dados de um produto
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.DTOs.ProductDto.Id">
+            <summary>
+            Identificador único do produto
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.DTOs.ProductDto.Name">
+            <summary>
+            Nome do produto
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.DTOs.ProductDto.Description">
+            <summary>
+            Descrição detalhada do produto
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.DTOs.ProductDto.Category">
+            <summary>
+            Categoria do produto (ex: Lanche, Bebida, Sobremesa)
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.DTOs.ProductDto.Price">
+            <summary>
+            Preço do produto
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.DTOs.ProductDto.ImageUrl">
+            <summary>
+            URL principal da imagem do produto
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.DTOs.ProductDto.Images">
+            <summary>
+            URLs das imagens do produto
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.DTOs.ProductDto.CreatedAt">
+            <summary>
+            Data e hora de criação do produto
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.DTOs.ProductDto.UpdatedAt">
+            <summary>
+            Data e hora da última atualização do produto
+            </summary>
+        </member>
+        <member name="T:FastFood.Application.DTOs.UpdateOrderStatusDto">
+            <summary>
+            DTO para atualização do status de um pedido
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.DTOs.UpdateOrderStatusDto.Status">
+            <summary>
+            Novo status do pedido
+            </summary>
+            <example>Processing</example>
+        </member>
+        <member name="T:FastFood.Application.DTOs.OrderStatusEnum">
+            <summary>
+            Status possíveis para um pedido
+            </summary>
+        </member>
+        <member name="F:FastFood.Application.DTOs.OrderStatusEnum.Pending">
+            <summary>
+            Pedido pendente de processamento
+            </summary>
+        </member>
+        <member name="F:FastFood.Application.DTOs.OrderStatusEnum.Processing">
+            <summary>
+            Pedido em processamento na cozinha
+            </summary>
+        </member>
+        <member name="F:FastFood.Application.DTOs.OrderStatusEnum.Ready">
+            <summary>
+            Pedido pronto para retirada
+            </summary>
+        </member>
+        <member name="F:FastFood.Application.DTOs.OrderStatusEnum.Completed">
+            <summary>
+            Pedido concluído e entregue ao cliente
+            </summary>
+        </member>
+        <member name="F:FastFood.Application.DTOs.OrderStatusEnum.Cancelled">
+            <summary>
+            Pedido cancelado
+            </summary>
+        </member>
+        <member name="T:FastFood.Application.DTOs.UpdateProductDto">
+            <summary>
+            DTO para atualização de um produto existente
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.DTOs.UpdateProductDto.Name">
+            <summary>
+            Novo nome do produto
+            </summary>
+            <example>X-Bacon Duplo</example>
+        </member>
+        <member name="P:FastFood.Application.DTOs.UpdateProductDto.Description">
+            <summary>
+            Nova descrição do produto
+            </summary>
+            <example>Hambúrguer duplo com bacon, queijo, alface, tomate e maionese</example>
+        </member>
+        <member name="P:FastFood.Application.DTOs.UpdateProductDto.Category">
+            <summary>
+            Nova categoria do produto
+            </summary>
+            <example>Lanche</example>
+        </member>
+        <member name="P:FastFood.Application.DTOs.UpdateProductDto.Price">
+            <summary>
+            Novo preço do produto (maior que zero)
+            </summary>
+            <example>19.90</example>
+        </member>
+        <member name="P:FastFood.Application.DTOs.UpdateProductDto.ImageUrl">
+            <summary>
+            Nova URL principal da imagem do produto
+            </summary>
+            <example>https://example.com/images/x-bacon-duplo.jpg</example>
+        </member>
+        <member name="P:FastFood.Application.DTOs.UpdateProductDto.Images">
+            <summary>
+            Novas URLs das imagens do produto
+            </summary>
+            <example>["https://example.com/images/x-bacon-duplo.jpg"]</example>
+        </member>
+    </members>
+</doc>
