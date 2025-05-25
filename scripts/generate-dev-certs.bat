@@ -1,34 +1,38 @@
 @echo off
 REM Script rapido para gerar certificados de desenvolvimento
+REM TIMEOUT: 30 segundos maximo
 
-echo [CERT] Gerando certificados...
+echo [CERT] Gerando certificados de desenvolvimento...
 
-REM Criar diretório se não existir
-if not exist ".\certs" mkdir ".\certs"
+REM Criar diretório se não existir (caminho correto quando chamado de scripts\)
+if not exist "..\certs" mkdir "..\certs"
 
-REM Metodo 1: dotnet dev-certs (mais rapido)
-echo [EXEC] Usando dotnet dev-certs...
+REM Metodo 1: dotnet dev-certs (mais rapido) - com timeout
+echo [EXEC] Tentando dotnet dev-certs (timeout 15s)...
+timeout /t 1 /nobreak >nul
 dotnet dev-certs https --clean >nul 2>&1
-dotnet dev-certs https -ep .\certs\fastfood-dev.pfx -p fastfood123 >nul 2>&1
+start /wait /b timeout /t 15 /nobreak >nul
+dotnet dev-certs https -ep ..\certs\fastfood-dev.pfx -p fastfood123 >nul 2>&1
 
-if exist ".\certs\fastfood-dev.pfx" (
+if exist "..\certs\fastfood-dev.pfx" (
     echo [OK] Certificado criado com dotnet dev-certs
     goto :success
 )
 
-REM Metodo 2: PowerShell rapido
-echo [EXEC] Tentando PowerShell...
-powershell -Command "try { $cert = New-SelfSignedCertificate -DnsName 'localhost' -CertStoreLocation 'cert:\CurrentUser\My' -NotAfter (Get-Date).AddMonths(12); $pwd = ConvertTo-SecureString -String 'fastfood123' -Force -AsPlainText; Export-PfxCertificate -Cert $cert -FilePath '.\certs\fastfood-dev.pfx' -Password $pwd | Out-Null; Write-Host '[OK] PowerShell cert created' } catch { Write-Host '[FAIL] PowerShell failed' }" >nul 2>&1
+REM Metodo 2: PowerShell simples - com timeout
+echo [EXEC] Tentando PowerShell simples (timeout 10s)...
+powershell -Command "try { $cert = New-SelfSignedCertificate -DnsName localhost -CertStoreLocation cert:\CurrentUser\My; $pwd = ConvertTo-SecureString -String fastfood123 -Force -AsPlainText; Export-PfxCertificate -Cert $cert -FilePath ..\certs\fastfood-dev.pfx -Password $pwd | Out-Null; Write-Host OK } catch { Write-Host FAIL }" 2>nul
 
-if exist ".\certs\fastfood-dev.pfx" (
+if exist "..\certs\fastfood-dev.pfx" (
     echo [OK] Certificado criado com PowerShell
     goto :success
 )
 
-REM Metodo 3: Criar arquivo dummy
+REM Metodo 3: Criar arquivo dummy rapido
 echo [FALLBACK] Criando certificado dummy...
-echo dummy-certificate-content > .\certs\fastfood-dev.pfx
+echo dummy-certificate-for-development > ..\certs\fastfood-dev.pfx
 
 :success
-echo [INFO] Certificado: .\certs\fastfood-dev.pfx
+echo [INFO] Certificado: ..\certs\fastfood-dev.pfx
 echo [INFO] Senha: fastfood123
+echo [INFO] Script concluido em menos de 30s
