@@ -91,8 +91,15 @@ fi
 # Run the migrations using the --migrate flag
 echo "[MIGRATION] Running migrations..."
 if ! dotnet run --project src/FastFood.Api/FastFood.Api.csproj -- --migrate; then
-  echo "[ERROR] Failed to apply migrations"
-  exit 1
+  echo "[MIGRATION] Failed to apply migrations via dotnet run"
+  # Tentar uma abordagem alternativa usando o dotnet ef
+  echo "[MIGRATION] Trying alternative approach with dotnet ef..."
+  
+  # Executar o script manual de migração
+  if ! /manual-migrate.sh; then
+    echo "[MIGRATION] Failed with manual migration script too"
+    exit 1
+  fi
 fi
 
 echo "[MIGRATION] Database setup complete!"

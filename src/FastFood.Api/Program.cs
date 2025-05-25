@@ -95,6 +95,25 @@ app.MapHealthChecks("/health");
 
 app.MapControllers();
 
+// Aplicar migrations no startup da aplicação em ambiente de desenvolvimento
+if (app.Environment.IsDevelopment())
+{
+    try
+    {
+        using var scope = app.Services.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<FastFoodDbContext>();
+        
+        // Aplicar migrations pendentes
+        await context.Database.MigrateAsync();
+        Console.WriteLine("✅ Migrations aplicadas automaticamente no startup!");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"❌ Erro ao aplicar migrations no startup: {ex.Message}");
+        // Não falhar o startup por causa de erros de migração
+    }
+}
+
 app.Run();
 
 // Return 0 for successful execution when using top-level statements

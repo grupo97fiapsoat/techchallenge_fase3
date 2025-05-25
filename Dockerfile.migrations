@@ -28,9 +28,25 @@ RUN dotnet restore "FastFood.sln"
 # Copy remaining source code
 COPY src/ ./src/
 
+# Ensure appsettings.Development.json exists and is valid
+RUN echo '{ \
+  "ConnectionStrings": { \
+    "DefaultConnection": "Server=db;Database=FastFood;User Id=sa;Password=FastFood2025;TrustServerCertificate=true;MultipleActiveResultSets=true" \
+  }, \
+  "Logging": { \
+    "LogLevel": { \
+      "Default": "Information", \
+      "Microsoft.AspNetCore": "Information", \
+      "Microsoft.EntityFrameworkCore": "Information" \
+    } \
+  } \
+}' > /app/src/FastFood.Api/appsettings.Development.json
+
 # Copy migration script and make it executable
 COPY migrate.sh /migrate.sh
+COPY manual-migrate.sh /manual-migrate.sh
 RUN chmod +x /migrate.sh
+RUN chmod +x /manual-migrate.sh
 
 # Install EF Core global tool
 RUN dotnet tool install --global dotnet-ef

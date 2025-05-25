@@ -19,6 +19,12 @@ Sistema de autoatendimento para restaurantes fast-food, desenvolvido como parte 
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/)
 - [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0) (opcional, apenas para desenvolvimento)
 
+## 📚 Documentação
+
+- [API de Clientes](docs/api/customers.md)
+- [API de Produtos](docs/api/products.md)
+- [Migrações do Banco de Dados](docs/migrations.md) - **Novo!** Guia completo sobre como executar e gerenciar migrações
+
 ## 🛠️ Configuração
 
 ### Variáveis de Ambiente

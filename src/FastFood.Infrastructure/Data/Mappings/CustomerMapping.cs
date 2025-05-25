@@ -18,15 +18,18 @@ public class CustomerMapping : IEntityTypeConfiguration<Customer>
                 .HasColumnName("Name")
                 .IsRequired()
                 .HasMaxLength(100);
-        });
-
-        builder.OwnsOne(x => x.Email, email =>
+        });        builder.OwnsOne(x => x.Email, email =>
         {
             email.Property(e => e.Value)
                 .HasColumnName("Email")
                 .IsRequired()
                 .HasMaxLength(100);
-        });        builder.OwnsOne(x => x.Cpf, cpf =>
+                
+            email.HasIndex(e => e.Value)
+                .IsUnique();
+        });        
+        
+        builder.OwnsOne(x => x.Cpf, cpf =>
         {
             cpf.Property(c => c.Value)
                 .HasColumnName("Cpf")
@@ -41,16 +44,5 @@ public class CustomerMapping : IEntityTypeConfiguration<Customer>
             .IsRequired();
 
         builder.Property(x => x.UpdatedAt);
-
-        builder.OwnsOne(x => x.Email, email =>
-        {
-            email.Property(e => e.Value)
-                .HasColumnName("Email")
-                .IsRequired()
-                .HasMaxLength(100);
-
-            email.HasIndex(e => e.Value)
-                .IsUnique();
-        });
     }
 }

@@ -22,7 +22,7 @@ services:
       timeout: 5s
       start_period: 30s
 
-  # Database Migrations
+  # Database Migrations  
   migrations:
     build:
       context: .
