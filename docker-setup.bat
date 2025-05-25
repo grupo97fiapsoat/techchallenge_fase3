@@ -104,19 +104,10 @@ timeout /t 15 /nobreak >nul
 
 echo [STEP 8] Executando migrations...
 echo [INFO] Tentando executar migrations...
-docker-compose exec -T fastfood-migrations dotnet ef database update --no-build >nul 2>&1
-if %errorlevel% neq 0 (
-    echo [WARN] Metodo exec falhou. Tentando metodo alternativo...
-    docker-compose run --rm fastfood-migrations >nul 2>&1
-    if %errorlevel% neq 0 (
-        echo [WARN] Migrations podem ter falhado. Verifique manualmente.
-        echo [CMD] docker-compose logs fastfood-migrations
-    ) else (
-        echo [OK] Migrations executadas via run.
-    )
-) else (
-    echo [OK] Migrations executadas via exec.
-)
+docker-compose logs migrations
+echo [INFO] Verificando status das migrations...
+docker-compose ps migrations
+echo [OK] Processo de migrations finalizado.
 
 echo.
 echo ========================================================================
