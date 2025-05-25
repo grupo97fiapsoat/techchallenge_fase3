@@ -65,7 +65,15 @@ chmod +x ./scripts/generate-dev-certs.sh
 
 ## 🐳 Executando com Docker
 
-### Opção 1: Script automatizado (Recomendado)
+### Opção 1: Script de inicialização rápida (Recomendado para Windows)
+
+```cmd
+git clone https://github.com/seu-usuario/fastfood.git
+cd fastfood
+run-fastfood.bat
+```
+
+### Opção 2: Script completo com opções avançadas
 
 **WSL Ubuntu/Linux:**
 
@@ -91,7 +99,11 @@ O script irá:
 - Aguardar que os serviços estejam prontos
 - Exibir URLs e informações úteis
 
-Outros comandos do script:
+### Opção 3: Docker Compose manual
+
+**Comandos do script completo:**
+
+**Linux/WSL:**
 
 ```bash
 ./docker-setup.sh stop      # Para a aplicação
@@ -102,7 +114,18 @@ Outros comandos do script:
 ./docker-setup.sh help      # Ajuda
 ```
 
-### Opção 2: Docker Compose manual
+**Windows:**
+
+```cmd
+docker-setup.bat stop      # Para a aplicação
+docker-setup.bat restart   # Reinicia a aplicação
+docker-setup.bat logs      # Exibe logs
+docker-setup.bat status    # Mostra status dos serviços
+docker-setup.bat clean     # Limpa containers e volumes
+docker-setup.bat help      # Ajuda
+```
+
+### Opção 4: Docker Compose manual
 
 1. Clone o repositório:
 
