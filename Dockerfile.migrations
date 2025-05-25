@@ -25,28 +25,28 @@ WORKDIR /src/src/FastFood.Api
 # Create script to run migrations
 RUN echo '#!/bin/bash\n\
 set -e\n\
-echo "🔧 Waiting for SQL Server..."\n\
+echo "[MIGRATION] Waiting for SQL Server..."\n\
 for i in {1..60}; do\n\
   if dotnet ef database can-connect --project ../FastFood.Infrastructure --startup-project . > /dev/null 2>&1; then\n\
-    echo "✅ SQL Server is ready!"\n\
+    echo "[OK] SQL Server is ready!"\n\
     break\n\
   fi\n\
   if [ $i -eq 60 ]; then\n\
-    echo "❌ Timeout waiting for SQL Server"\n\
+    echo "[ERROR] Timeout waiting for SQL Server"\n\
     exit 1\n\
   fi\n\
   echo -n "."\n\
   sleep 1\n\
 done\n\
 \n\
-echo "🚀 Checking for existing migrations..."\n\
+echo "[MIGRATION] Checking for existing migrations..."\n\
 if [ ! -d "../FastFood.Infrastructure/Migrations" ] || [ -z "$(ls -A ../FastFood.Infrastructure/Migrations/ 2>/dev/null)" ]; then\n\
-  echo "📝 Creating initial migration..."\n\
+  echo "[MIGRATION] Creating initial migration..."\n\
   dotnet ef migrations add InitialCreate --project ../FastFood.Infrastructure --startup-project . --output-dir Migrations\n\
 fi\n\
 \n\
-echo "📊 Applying migrations..."\n\
+echo "[MIGRATION] Applying migrations..."\n\
 dotnet ef database update --project ../FastFood.Infrastructure --startup-project .\n\
-echo "✅ Database migration completed!"' > /migrate.sh && chmod +x /migrate.sh
+echo "[SUCCESS] Database migration completed!"' > /migrate.sh && chmod +x /migrate.sh
 
 ENTRYPOINT ["/migrate.sh"]
