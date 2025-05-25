@@ -65,39 +65,32 @@ chmod +x ./scripts/generate-dev-certs.sh
 
 ## 🐳 Executando com Docker
 
-### Opção 1: Script de inicialização rápida (Recomendado para Windows)
+### Inicialização Simples e Automática
+
+**1. Clone o repositório:**
 
 ```cmd
 git clone https://github.com/seu-usuario/fastfood.git
 cd fastfood
-run-fastfood.bat
 ```
 
-### Opção 2: Script completo com opções avançadas
-
-**WSL Ubuntu/Linux:**
-
-```bash
-git clone https://github.com/seu-usuario/fastfood.git
-cd fastfood
-chmod +x docker-setup.sh
-./docker-setup.sh start
-```
-
-**Windows:**
+**2. Execute o script de inicialização:**
 
 ```cmd
-git clone https://github.com/seu-usuario/fastfood.git
-cd fastfood
-docker-setup.bat start
+docker-setup.bat
 ```
 
-O script irá:
+O script irá automaticamente:
 
-- Verificar se Docker e Docker Compose estão instalados
-- Fazer build e iniciar os containers
-- Aguardar que os serviços estejam prontos
-- Exibir URLs e informações úteis
+- ✅ Verificar se Docker está rodando
+- ✅ Criar arquivo `.env` com configurações padrão (se não existir)
+- ✅ Gerar certificados HTTPS automaticamente (se necessário)
+- ✅ Fazer build e iniciar todos os containers
+- ✅ Executar migrations do banco de dados
+- ✅ Verificar se todos os serviços estão funcionando
+- ✅ Exibir URLs de acesso e comandos úteis
+
+**Pronto!** A aplicação estará rodando completamente configurada.
 
 ### Opção 3: Docker Compose manual
 
@@ -110,52 +103,26 @@ O script irá:
 ./docker-setup.sh restart   # Reinicia a aplicação
 ./docker-setup.sh logs      # Exibe logs
 ./docker-setup.sh status    # Mostra status dos serviços
-./docker-setup.sh clean     # Limpa containers e volumes
-./docker-setup.sh help      # Ajuda
-```
-
-**Windows:**
-
-```cmd
-docker-setup.bat stop      # Para a aplicação
-docker-setup.bat restart   # Reinicia a aplicação
-docker-setup.bat logs      # Exibe logs
-docker-setup.bat status    # Mostra status dos serviços
-docker-setup.bat clean     # Limpa containers e volumes
-docker-setup.bat help      # Ajuda
-```
-
-### Opção 4: Docker Compose manual
-
-1. Clone o repositório:
-
-```bash
-git clone https://github.com/seu-usuario/fastfood.git
-cd fastfood
-```
-
-1. Execute os containers:
-
-```bash
-docker-compose up --build -d
-```
-
-1. Verifique se os serviços estão rodando:
-
-```bash
-docker-compose ps
-```
-
 ### 🌐 URLs da Aplicação
 
 A API estará disponível em:
 
-- **HTTPS (Recomendado)**: <https://localhost:5001>
-- **HTTP (Fallback)**: <http://localhost:5000>
-- **Swagger UI**: <https://localhost:5001/swagger> ou <http://localhost:5000/swagger>
-- **Health Check**: <https://localhost:5001/health> ou <http://localhost:5000/health>
+- **HTTP**: <http://localhost:5000>
+- **HTTPS**: <https://localhost:5001>
+- **Swagger UI**: <http://localhost:5000/swagger>
 
-> 🔒 **Recomendação**: Use sempre HTTPS (porta 5001) para seguir as melhores práticas de segurança.
+### ⚙️ Comandos Úteis
+
+```cmd
+# Para parar a aplicação
+docker-compose down
+
+# Para ver logs
+docker-compose logs -f
+
+# Para ver status dos containers
+docker-compose ps
+```
 
 ## 🗄️ Banco de Dados
 

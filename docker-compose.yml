@@ -1,8 +1,25 @@
-version: '3.8'
-
-# Configuração padrão - Prioriza HTTPS mas mantém HTTP como fallback
 services:
-  # Init container para migrations
+  # SQL Server Database
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=${DB_PASSWORD}
+      - MSSQL_PID=Express
+    ports:
+      - "1433:1433"
+    volumes:
+      - fastfood-data:/var/opt/mssql
+    networks:
+      - fastfood-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P ${DB_PASSWORD} -Q 'SELECT 1' || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Database Migrations
   migrations:
     build:
       context: .
@@ -16,20 +33,20 @@ services:
         condition: service_healthy
     restart: "no"
 
+  # FastFood API
   api:
     build:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "5001:8443"   # HTTPS (recomendado)
-      - "5000:8080"   # HTTP (fallback para desenvolvimento)
+      - "5000:8080"
+      - "5001:8443"
     environment:
-      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT:-Development}
+      - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=https://+:8443;http://+:8080
       - ASPNETCORE_Kestrel__Certificates__Default__Path=/app/certs/fastfood-dev.pfx
       - ASPNETCORE_Kestrel__Certificates__Default__Password=${CERT_PASSWORD:-fastfood123}
       - ConnectionStrings__DefaultConnection=Server=db;Database=FastFoodDb;User Id=sa;Password=${DB_PASSWORD};TrustServerCertificate=true;MultipleActiveResultSets=true
-      - TZ=${TZ:-America/Sao_Paulo}
     volumes:
       - ./certs:/app/certs:ro
     networks:
@@ -40,39 +57,10 @@ services:
       migrations:
         condition: service_completed_successfully
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "-f", "-k", "https://localhost:8443/health", "||", "curl", "-f", "http://localhost:8080/health", "||", "exit", "1"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 30s
-
-  db:
-    image: mcr.microsoft.com/mssql/server:2022-latest
-    environment:
-      - ACCEPT_EULA=Y
-      - MSSQL_SA_PASSWORD=${DB_PASSWORD}
-      - MSSQL_PID=${MSSQL_PID:-Express}
-      - TZ=${TZ:-America/Sao_Paulo}
-    ports:
-      - "1433:1433"
-    volumes:
-      - fastfood-data:/var/opt/mssql
-    networks:
-      - fastfood-network
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P ${DB_PASSWORD} -Q 'SELECT 1' || exit 1"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 30s
 
 volumes:
   fastfood-data:
-    name: fastfood-data
 
 networks:
   fastfood-network:
-    name: fastfood-network
     driver: bridge

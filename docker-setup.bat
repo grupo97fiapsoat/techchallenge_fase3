@@ -1,142 +1,153 @@
 @echo off
 setlocal enabledelayedexpansion
-:: FastFood API - Docker Setup Script for Windows
+:: FastFood API - Inicializacao Completa End-to-End
 
-echo [FASTFOOD API] Setup Script for Windows
-echo ============================================
+echo [FASTFOOD API] Inicializando ambiente completo...
+echo ================================================
 
-:: Check if Docker is installed
-docker --version >nul 2>&1
+:: Check if Docker is running
+echo [VERIFICACAO] Verificando se Docker esta rodando...
+docker info >nul 2>&1
 if %errorlevel% neq 0 (
-    echo [ERRO] Docker nao esta instalado. Por favor, instale o Docker Desktop primeiro.
-    echo Acesse: https://www.docker.com/products/docker-desktop/
+    echo [ERRO] Docker nao esta rodando. Inicie o Docker Desktop primeiro.
+    echo [DICA] Aguarde o Docker Desktop inicializar completamente antes de executar este script.
     pause
     exit /b 1
 )
+echo [OK] Docker esta rodando.
 
-:: Check if Docker Compose is installed
-docker-compose --version >nul 2>&1
-if %errorlevel% neq 0 (
-    echo [ERRO] Docker Compose nao esta instalado. Por favor, instale o Docker Desktop com Docker Compose.
-    pause
-    exit /b 1
-)
-
-:: Check if .env file exists
+:: Check and create .env file if it doesn't exist
 if not exist ".env" (
-    echo [AVISO] Arquivo .env nao encontrado. Usando configuracoes padrao...
+    echo [AVISO] Arquivo .env nao encontrado. Criando automaticamente...
+    (
+        echo # Environment Variables for FastFood API
+        echo # Database Configuration
+        echo DB_PASSWORD=FastFood@2024!#
+        echo.
+        echo # Application Configuration
+        echo ASPNETCORE_ENVIRONMENT=Development
+        echo.
+        echo # SSL/TLS Certificate Configuration
+        echo CERT_PASSWORD=fastfood123
+        echo.
+        echo # SQL Server Configuration
+        echo MSSQL_PID=Express
+        echo.
+        echo # Timezone
+        echo TZ=America/Sao_Paulo
+    ) > .env
+    echo [OK] Arquivo .env criado com configuracoes padrao.
+) else (
+    echo [OK] Arquivo .env encontrado.
 )
 
-:: Check if certificates exist, if not suggest generation
+:: Stop any running containers and clean up
+echo [LIMPEZA] Parando containers existentes...
+docker-compose down --remove-orphans >nul 2>&1
+
+:: Generate certificates if needed
+if not exist ".\certs" mkdir ".\certs"
 if not exist ".\certs\fastfood-dev.pfx" (
-    echo [INFO] Certificados de desenvolvimento nao encontrados.
-    echo [DICA] Execute: .\scripts\generate-dev-certs.bat para gerar certificados
-    echo [DICA] Ou use WSL: bash ./scripts/generate-dev-certs.sh
-    echo.
-    set /p choice=Deseja continuar sem HTTPS [s] ou gerar certificados agora [n]? (s/n): 
-    if /i "!choice!"=="n" (
-        echo Executando geracao de certificados...
-        call .\scripts\generate-dev-certs.bat
-        if %errorlevel% neq 0 (
-            echo [ERRO] Falha na geracao de certificados. Continuando com HTTP apenas.
+    echo [CERTIFICADOS] Gerando certificados de desenvolvimento...
+    if exist ".\scripts\generate-dev-certs.bat" (
+        call .\scripts\generate-dev-certs.bat >nul 2>&1
+        if %errorlevel% equ 0 (
+            echo [OK] Certificados gerados com sucesso.
+        ) else (
+            echo [AVISO] Falha na geracao de certificados. API rodara apenas em HTTP.
+        )
+    ) else (
+        echo [AVISO] Script de certificados nao encontrado. API rodara apenas em HTTP.
+    )
+) else (
+    echo [OK] Certificados ja existem.
+)
+
+:: Build and start the application
+echo [BUILD] Fazendo build e iniciando containers...
+echo [INFO] Isso pode levar alguns minutos na primeira execucao...
+docker-compose up --build -d
+
+if %errorlevel% equ 0 (
+    echo [OK] Containers iniciados com sucesso!
+    
+    :: Wait for services to be ready
+    echo [AGUARDANDO] Verificando se os servicos estao prontos...
+    timeout /t 5 /nobreak >nul
+    
+    :: Check database
+    echo [DB] Verificando banco de dados...
+    docker-compose exec -T db /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "FastFood@2024!#" -Q "SELECT 1" >nul 2>&1
+    if %errorlevel% equ 0 (
+        echo [OK] Banco de dados esta respondendo.
+    ) else (
+        echo [AVISO] Banco de dados ainda nao esta pronto. Aguarde mais alguns segundos.
+    )
+    
+    :: Check migrations
+    echo [MIGRATIONS] Verificando status das migrations...
+    docker-compose logs migrations | find "successfully" >nul 2>&1
+    if %errorlevel% equ 0 (
+        echo [OK] Migrations executadas com sucesso.
+    ) else (
+        echo [INFO] Migrations ainda em execucao ou com problemas.
+        echo [DICA] Execute 'docker-compose logs migrations' para detalhes.
+    )
+      :: Check API
+    echo [API] Verificando API...
+    timeout /t 10 /nobreak >nul
+    
+    :: Try to check API health (PowerShell fallback if curl not available)
+    curl -s -o nul -w "%%{http_code}" http://localhost:5000/health 2>nul | find "200" >nul
+    if %errorlevel% equ 0 (
+        echo [OK] API esta respondendo.
+    ) else (
+        :: Fallback using PowerShell
+        powershell -Command "try { $response = Invoke-WebRequest -Uri 'http://localhost:5000/health' -TimeoutSec 5; if ($response.StatusCode -eq 200) { exit 0 } else { exit 1 } } catch { exit 1 }" >nul 2>&1
+        if %errorlevel% equ 0 (
+            echo [OK] API esta respondendo.
+        ) else (
+            echo [AVISO] API ainda nao esta pronta. Aguarde mais alguns segundos.
         )
     )
+      echo.
+    echo ========================================
+    echo [SUCESSO] FastFood API iniciado!
+    echo ========================================
+    echo.
+    echo URLs disponiveis:
+    echo - HTTP:    http://localhost:5000
+    echo - HTTPS:   https://localhost:5001
+    echo - Swagger: http://localhost:5000/swagger
+    echo - Health:  http://localhost:5000/health
+    echo.
+    echo Banco de dados:
+    echo - Servidor: localhost:1433
+    echo - Database: FastFoodDb
+    echo - Usuario:  sa
+    echo - Senha:    FastFood@2024!#
+    echo.
+    echo Status dos containers:
+    docker-compose ps
+    echo.
+    echo Comandos uteis:
+    echo - Ver logs:        docker-compose logs -f
+    echo - Logs da API:     docker-compose logs -f api
+    echo - Logs do banco:   docker-compose logs -f db
+    echo - Parar tudo:      docker-compose down
+    echo - Reiniciar:       docker-compose restart
+    echo.
+    echo [DICA] Se a API nao estiver respondendo imediatamente,
+    echo        aguarde alguns segundos para os servicos terminarem de inicializar.
+    echo.
+) else (
+    echo [ERRO] Falha ao iniciar a aplicacao!
+    echo.
+    echo Para diagnosticar o problema:
+    echo 1. Execute: docker-compose logs
+    echo 2. Verifique se todas as portas estao livres
+    echo 3. Verifique se o Docker Desktop tem recursos suficientes
+    echo.
 )
 
-set ACTION=%1
-if "%ACTION%"=="" set ACTION=start
-
-if "%ACTION%"=="start" goto :start
-if "%ACTION%"=="stop" goto :stop
-if "%ACTION%"=="restart" goto :restart
-if "%ACTION%"=="logs" goto :logs
-if "%ACTION%"=="status" goto :status
-if "%ACTION%"=="clean" goto :clean
-if "%ACTION%"=="help" goto :help
-
-echo [ERRO] Comando invalido: %ACTION%
-echo Use 'docker-setup.bat help' para ver os comandos disponiveis.
-exit /b 1
-
-:start
-echo [INFO] Iniciando a aplicacao FastFood API...
-docker-compose down --remove-orphans
-docker-compose up --build -d
-
-echo [INFO] Aguardando os servicos ficarem prontos...
-timeout /t 10 /nobreak >nul
-
-echo.
-echo [SUCESSO] FastFood API foi iniciada!
-echo.
-echo [INFO] Informacoes sobre Database Migrations:
-echo    * As migrations sao executadas automaticamente
-echo    * Container 'migrations' executa antes da API
-echo    * Aguarde a conclusao para usar a API
-echo.
-echo [DICA] Para monitorar as migrations:
-echo    docker-compose logs migrations
-echo.
-echo [URLS] URLs disponiveis:
-echo    * API: http://localhost:5000
-echo    * Swagger: http://localhost:5000/swagger
-echo    * Health Check: http://localhost:5000/health
-echo.
-echo [DB] Banco de dados:
-echo    * Servidor: localhost:1433
-echo    * Database: FastFoodDb
-echo    * Usuario: sa
-echo.
-echo [COMANDOS] Comandos uteis:
-echo    * Ver logs: docker-setup.bat logs
-echo    * Logs migrations: docker-compose logs migrations
-echo    * Parar: docker-setup.bat stop
-echo    * Restart: docker-setup.bat restart
-echo.
-goto :end
-
-:stop
-echo [INFO] Parando a aplicacao FastFood API...
-docker-compose down
-echo [SUCESSO] Aplicacao parada com sucesso!
-goto :end
-
-:restart
-echo [INFO] Reiniciando a aplicacao FastFood API...
-docker-compose down
-docker-compose up --build -d
-echo [SUCESSO] Aplicacao reiniciada com sucesso!
-goto :end
-
-:logs
-echo [INFO] Exibindo logs da aplicacao...
-docker-compose logs -f
-goto :end
-
-:status
-echo [INFO] Status dos servicos:
-docker-compose ps
-goto :end
-
-:clean
-echo [INFO] Limpando containers e volumes...
-docker-compose down --volumes --remove-orphans
-docker system prune -f
-echo [SUCESSO] Limpeza concluida!
-goto :end
-
-:help
-echo Uso: docker-setup.bat [comando]
-echo.
-echo Comandos disponiveis:
-echo   start    - Inicia a aplicacao (padrao)
-echo   stop     - Para a aplicacao
-echo   restart  - Reinicia a aplicacao
-echo   logs     - Exibe os logs
-echo   status   - Mostra o status dos servicos
-echo   clean    - Limpa containers e volumes
-echo   help     - Exibe esta ajuda
-goto :end
-
-:end
 pause
