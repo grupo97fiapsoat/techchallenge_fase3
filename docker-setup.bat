@@ -13,21 +13,54 @@ echo.
 
 :: Check if Docker is running
 echo [STEP 1/8] Verificando pre-requisitos...
-echo [VERIFICACAO] Testando conectividade com Docker Engine...
-docker info >nul 2>&1
+echo [VERIFICACAO] Testando Docker Engine (timeout: 10s)...
+
+:: Use a faster check with timeout
+echo [INFO] Verificando se Docker responde...
+timeout /t 1 /nobreak >nul 2>&1
+docker --version >nul 2>&1
 if %errorlevel% neq 0 (
-    echo [ERRO] Docker Engine nao esta respondendo!
-    echo [DICA] Verifique se:
-    echo        1. Docker Desktop esta instalado
-    echo        2. Docker Desktop esta rodando (icone na bandeja do sistema)
-    echo        3. Docker Engine inicializou completamente (pode levar alguns minutos)
-    echo [ACAO] Inicie o Docker Desktop e aguarde a inicializacao completa.
+    echo [ERRO] Docker CLI nao esta disponivel!
+    echo [DICA] Instale o Docker Desktop primeiro.
     pause
     exit /b 1
 )
-echo [OK] Docker Engine esta rodando e respondendo.
-echo [INFO] Verificando versao do Docker...
-for /f "tokens=3" %%i in ('docker --version') do echo [INFO] Docker version: %%i
+
+echo [INFO] Docker CLI OK. Testando conectividade com daemon...
+:: Quick daemon test without full info
+docker ps >nul 2>&1
+if %errorlevel% neq 0 (
+    echo [AVISO] Docker daemon nao esta respondendo.
+    echo [TENTATIVA] Verificando se esta iniciando...
+    
+    :: Give it a few seconds
+    set /a DOCKER_RETRIES=0
+    :docker_check_loop
+    docker ps >nul 2>&1
+    if %errorlevel% equ 0 (
+        echo [OK] Docker daemon esta rodando!
+        goto docker_check_done
+    )
+    
+    set /a DOCKER_RETRIES+=1
+    if %DOCKER_RETRIES% geq 15 (
+        echo [ERRO] Docker daemon nao respondeu apos 15 segundos!
+        echo [ACAO] Inicie o Docker Desktop e aguarde a inicializacao completa.
+        echo [DICA] O Docker pode levar 1-2 minutos para inicializar completamente.
+        pause
+        exit /b 1
+    )
+    
+    echo [AGUARDANDO] Docker daemon... [%DOCKER_RETRIES%/15s]
+    timeout /t 1 /nobreak >nul
+    goto docker_check_loop
+    :docker_check_done
+) else (
+    echo [OK] Docker daemon esta respondendo.
+)
+
+echo [INFO] Obtendo versao do Docker...
+for /f "tokens=3" %%i in ('docker --version 2^>nul') do echo [INFO] Docker version: %%i
 
 echo.
 echo [STEP 2/8] Configurando arquivo de ambiente (.env)...
@@ -82,7 +115,7 @@ docker image prune -f >nul 2>&1
 echo [OK] Limpeza de imagens completada.
 
 echo.
-echo [STEP 4/8] Gerando certificados SSL/TLS para HTTPS...
+echo [STEP 4/8] Configurando certificados SSL/TLS...
 :: Generate certificates if needed
 if not exist ".\certs" (
     echo [INFO] Criando diretorio de certificados...
@@ -90,52 +123,48 @@ if not exist ".\certs" (
 )
 
 if not exist ".\certs\fastfood-dev.pfx" (
-    echo [CERTIFICADOS] Iniciando geracao de certificados de desenvolvimento...
-    echo [INFO] Isso e necessario para suporte HTTPS local...
+    echo [CERTIFICADOS] Gerando certificados rapidamente...
     
     if exist ".\scripts\generate-dev-certs.bat" (
-        echo [EXEC] Executando script de certificados com timeout...
+        echo [EXEC] Executando geracao com timeout de 15s...
         
-        :: Create a simple timeout mechanism
-        start /B .\scripts\generate-dev-certs.bat
+        :: Start the certificate generation in background
+        start /B "" ".\scripts\generate-dev-certs.bat"
         
-        :: Wait and check for completion
-        set /a COUNTER=0
+        :: Wait for certificate with timeout
+        set /a CERT_COUNTER=0
         :cert_wait_loop
         if exist ".\certs\fastfood-dev.pfx" (
             echo [OK] Certificados gerados com sucesso!
             goto cert_done
         )
         
-        set /a COUNTER+=1
-        if %COUNTER% geq 30 (
-            echo [TIMEOUT] Geracao de certificados excedeu 30 segundos.
-            echo [AVISO] Continuando sem HTTPS. API rodara apenas em HTTP.
-            echo [FALLBACK] Criando certificado vazio para evitar erros...
-            echo. > .\certs\fastfood-dev.pfx
-            goto cert_done
+        set /a CERT_COUNTER+=1
+        if %CERT_COUNTER% geq 15 (
+            echo [TIMEOUT] Geracao excedeu 15 segundos. Usando certificado simples...
+            goto cert_fallback
         )
         
-        if %COUNTER% lss 10 (
-            echo [AGUARDANDO] Certificados... [%COUNTER%/30s] [Executando...]
-        ) else (
-            echo [AGUARDANDO] Certificados... [%COUNTER%/30s] [Pode demorar no primeiro uso...]
-        )
+        echo [AGUARDANDO] Certificados... [%CERT_COUNTER%/15s]
         timeout /t 1 /nobreak >nul
         goto cert_wait_loop
         
+        :cert_fallback
+        echo [FALLBACK] Criando arquivo PFX simples para evitar erros Docker...
+        echo dummy > ".\certs\fastfood-dev.pfx"
+        echo [AVISO] Aplicacao rodara apenas em HTTP (porta 5000).
+        
         :cert_done
         if exist ".\certs\fastfood-dev.pfx" (
-            echo [INFO] Certificado PFX: .\certs\fastfood-dev.pfx
-            echo [INFO] Senha do certificado: fastfood123
+            echo [INFO] Certificado: .\certs\fastfood-dev.pfx
         )
     ) else (
-        echo [AVISO] Script .\scripts\generate-dev-certs.bat nao encontrado.
-        echo [INFO] Criando certificado vazio para evitar erros...
-        echo. > .\certs\fastfood-dev.pfx
+        echo [AVISO] Script de certificados nao encontrado.
+        echo [FALLBACK] Criando arquivo simples...
+        echo dummy > ".\certs\fastfood-dev.pfx"
     )
 ) else (
-    echo [OK] Certificados ja existem em .\certs\fastfood-dev.pfx
+    echo [OK] Certificados ja existem.
 )
 
 echo.
