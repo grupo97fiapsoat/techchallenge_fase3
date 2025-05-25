@@ -1,6 +1,8 @@
 version: '3.8'
 
-# Configuração padrão - Prioriza HTTPS mas mantém HTTP como fallback
+# Configuração para desenvolvimento
+# Suporta tanto HTTP quanto HTTPS para flexibilidade no desenvolvimento
+
 services:
   # Init container para migrations
   migrations:
@@ -21,10 +23,10 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
+      - "5000:8080"   # HTTP para desenvolvimento e testes
       - "5001:8443"   # HTTPS (recomendado)
-      - "5000:8080"   # HTTP (fallback para desenvolvimento)
     environment:
-      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT:-Development}
+      - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=https://+:8443;http://+:8080
       - ASPNETCORE_Kestrel__Certificates__Default__Path=/app/certs/fastfood-dev.pfx
       - ASPNETCORE_Kestrel__Certificates__Default__Password=${CERT_PASSWORD:-fastfood123}

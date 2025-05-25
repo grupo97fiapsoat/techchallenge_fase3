@@ -1,6 +1,8 @@
 # .NET build artifacts
 **/bin/
 **/obj/
+**/out/
+**/TestResults/
 
 # Development files
 **/.vs/
@@ -9,6 +11,9 @@
 **/*.userosscache
 **/*.dbmdl
 **/*.jfm
+**/*.suo
+**/*.cache
+**/*.docstates
 
 # Git files
 .git/
@@ -18,6 +23,37 @@
 # Docker files
 Dockerfile
 docker-compose*.yml
+.dockerignore
+
+# Documentation
+README.md
+PLANNING.md
+TASK.md
+docs/
+*.md
+
+# NuGet
+packages/
+*.nupkg
+
+# Test coverage
+coverage/
+*.coverage
+*.coveragexml
+
+# Logs
+logs/
+*.log
+
+# Environment files
+.env*
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Scripts
+scripts/
 
 # Environment files
 .env

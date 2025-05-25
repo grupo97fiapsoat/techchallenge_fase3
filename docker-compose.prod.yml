@@ -1,6 +1,8 @@
 version: '3.8'
 
-# Configuração padrão - Prioriza HTTPS mas mantém HTTP como fallback
+# Configuração para ambiente de produção
+# Esta configuração força o uso de HTTPS e remove HTTP
+
 services:
   # Init container para migrations
   migrations:
@@ -8,7 +10,7 @@ services:
       context: .
       dockerfile: Dockerfile.migrations
     environment:
-      - ConnectionStrings__DefaultConnection=Server=db;Database=FastFoodDb;User Id=sa;Password=${DB_PASSWORD};TrustServerCertificate=true;MultipleActiveResultSets=true
+      - ConnectionStrings__DefaultConnection=Server=db;Database=FastFoodDb;User Id=sa;Password=${DB_PASSWORD};TrustServerCertificate=true;MultipleActiveResultSets=true;Encrypt=true
     networks:
       - fastfood-network
     depends_on:
@@ -21,14 +23,13 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "5001:8443"   # HTTPS (recomendado)
-      - "5000:8080"   # HTTP (fallback para desenvolvimento)
+      - "443:8443"    # HTTPS apenas (porta padrão 443)
     environment:
-      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT:-Development}
-      - ASPNETCORE_URLS=https://+:8443;http://+:8080
-      - ASPNETCORE_Kestrel__Certificates__Default__Path=/app/certs/fastfood-dev.pfx
-      - ASPNETCORE_Kestrel__Certificates__Default__Password=${CERT_PASSWORD:-fastfood123}
-      - ConnectionStrings__DefaultConnection=Server=db;Database=FastFoodDb;User Id=sa;Password=${DB_PASSWORD};TrustServerCertificate=true;MultipleActiveResultSets=true
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=https://+:8443
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/app/certs/fastfood-prod.pfx
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=${CERT_PASSWORD}
+      - ConnectionStrings__DefaultConnection=Server=db;Database=FastFoodDb;User Id=sa;Password=${DB_PASSWORD};TrustServerCertificate=true;MultipleActiveResultSets=true;Encrypt=true
       - TZ=${TZ:-America/Sao_Paulo}
     volumes:
       - ./certs:/app/certs:ro
@@ -41,7 +42,7 @@ services:
         condition: service_completed_successfully
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "-k", "https://localhost:8443/health", "||", "curl", "-f", "http://localhost:8080/health", "||", "exit", "1"]
+      test: ["CMD", "curl", "-f", "-k", "https://localhost:8443/health"]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -52,7 +53,7 @@ services:
     environment:
       - ACCEPT_EULA=Y
       - MSSQL_SA_PASSWORD=${DB_PASSWORD}
-      - MSSQL_PID=${MSSQL_PID:-Express}
+      - MSSQL_PID=Standard
       - TZ=${TZ:-America/Sao_Paulo}
     ports:
       - "1433:1433"
