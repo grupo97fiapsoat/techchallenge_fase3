@@ -29,7 +29,7 @@ echo.
 echo [STEP 2] Configurando ambiente...
 if not exist ".env" (
     echo # FastFood API Environment > .env
-    echo DB_PASSWORD=FastFood2024 >> .env
+    echo DB_PASSWORD=FastFood2025 >> .env
     echo ASPNETCORE_ENVIRONMENT=Development >> .env
     echo CERT_PASSWORD=fastfood123 >> .env
     echo MSSQL_PID=Express >> .env
@@ -128,9 +128,9 @@ echo  - HTTPS: https://localhost:5001
 echo  - Swagger: http://localhost:5000/swagger
 echo.
 echo Banco de dados:
-echo  - Server: localhost,1433
+echo  - Server: localhost,1434
 echo  - Usuario: sa
-echo  - Senha: FastFood2024
+echo  - Senha: FastFood2025
 echo.
 echo Comandos uteis:
 echo  - Ver logs: docker-compose logs -f
