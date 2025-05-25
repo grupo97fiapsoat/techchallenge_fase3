@@ -20,7 +20,7 @@ RUN dotnet tool install --global dotnet-ef
 ENV PATH="${PATH}:/root/.dotnet/tools"
 
 # Set working directory for migrations
-WORKDIR /src/src/FastFood.Api
+WORKDIR /src/FastFood.Api
 
 # Create script to run migrations
 RUN echo '#!/bin/bash\n\
