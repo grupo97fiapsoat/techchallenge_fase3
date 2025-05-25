@@ -9,6 +9,18 @@
             Configuração do mapeamento de Order para o EF Core.
             </summary>
         </member>
+        <member name="T:FastFood.Infrastructure.Data.Migrations.InitialCreate">
+            <inheritdoc />
+        </member>
+        <member name="M:FastFood.Infrastructure.Data.Migrations.InitialCreate.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:FastFood.Infrastructure.Data.Migrations.InitialCreate.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:FastFood.Infrastructure.Data.Migrations.InitialCreate.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
         <member name="T:FastFood.Infrastructure.Data.RepositoryBase`1">
             <summary>
             Classe base para implementação de repositórios usando Entity Framework Core.
