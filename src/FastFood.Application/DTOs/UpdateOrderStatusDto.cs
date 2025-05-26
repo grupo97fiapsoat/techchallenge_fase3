@@ -9,11 +9,10 @@ public class UpdateOrderStatusDto
 {
     /// <summary>
     /// Novo status do pedido
-    /// </summary>
-    /// <example>Processing</example>
+    /// </summary>    /// <example>Processing</example>
     [Required(ErrorMessage = "O status é obrigatório")]
     [EnumDataType(typeof(OrderStatusEnum), ErrorMessage = "Status inválido")]
-    public string Status { get; set; }
+    public required string Status { get; set; }
 }
 
 /// <summary>
@@ -39,10 +38,18 @@ public enum OrderStatusEnum
     /// <summary>
     /// Pedido concluído e entregue ao cliente
     /// </summary>
-    Completed,
-
-    /// <summary>
+    Completed,    /// <summary>
     /// Pedido cancelado
     /// </summary>
-    Cancelled
+    Cancelled,
+    
+    /// <summary>
+    /// Pedido pago
+    /// </summary>
+    Paid,
+    
+    /// <summary>
+    /// Aguardando confirmação de pagamento
+    /// </summary>
+    AwaitingPayment
 }

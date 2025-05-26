@@ -24,8 +24,7 @@ public enum OrderStatus
     /// Pedido concluído (entregue ao cliente).
     /// </summary>
     Completed = 3,
-    
-    /// <summary>
+      /// <summary>
     /// Pedido cancelado.
     /// </summary>
     Cancelled = 4,
@@ -33,5 +32,10 @@ public enum OrderStatus
     /// <summary>
     /// Pedido pago.
     /// </summary>
-    Paid = 5
+    Paid = 5,
+    
+    /// <summary>
+    /// Aguardando confirmação de pagamento.
+    /// </summary>
+    AwaitingPayment = 6
 }

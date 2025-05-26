@@ -200,9 +200,56 @@ public class OrdersController : ControllerBase
             Status = result.Status,
             TotalAmount = result.TotalAmount,
             ProcessedAt = result.ProcessedAt
+        };        _logger.LogInformation("Checkout do pedido {OrderId} processado com sucesso. QR Code gerado.", id);
+        return Ok(response);
+    }
+    
+    /// <summary>
+    /// Confirma o pagamento de um pedido usando QR Code
+    /// </summary>
+    /// <param name="id">ID do pedido</param>
+    /// <param name="request">Dados para confirmação do pagamento</param>
+    /// <returns>Resultado da confirmação do pagamento</returns>
+    /// <response code="200">Pagamento confirmado com sucesso</response>
+    /// <response code="400">Dados inválidos ou erro na confirmação</response>
+    /// <response code="404">Pedido não encontrado</response>
+    [HttpPost("{id:guid}/confirm-payment")]
+    [ProducesResponseType(typeof(ConfirmPaymentResponseDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> ConfirmPayment([FromRoute] Guid id, [FromBody] ConfirmPaymentDto request)
+    {
+        _logger.LogInformation("Iniciando confirmação de pagamento do pedido {OrderId}", id);
+
+        var command = new ConfirmPaymentCommand 
+        { 
+            OrderId = id,
+            QrCode = request.QrCode
+        };
+        
+        var result = await _mediator.Send(command);
+
+        var response = new ConfirmPaymentResponseDto
+        {
+            OrderId = result.OrderId,
+            Status = result.Status,
+            TotalAmount = result.TotalAmount,
+            ConfirmedAt = result.ConfirmedAt,
+            PaymentConfirmed = result.PaymentConfirmed,
+            Message = result.PaymentConfirmed 
+                ? "Pagamento confirmado com sucesso" 
+                : "Falha na confirmação do pagamento"
         };
 
-        _logger.LogInformation("Checkout do pedido {OrderId} processado com sucesso. QR Code gerado.", id);
-        return Ok(response);
+        if (result.PaymentConfirmed)
+        {
+            _logger.LogInformation("Pagamento do pedido {OrderId} confirmado com sucesso", id);
+            return Ok(response);
+        }
+        else
+        {
+            _logger.LogWarning("Falha na confirmação do pagamento do pedido {OrderId}", id);
+            return BadRequest(response);
+        }
     }
 }

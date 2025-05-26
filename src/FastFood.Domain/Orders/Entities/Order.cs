@@ -141,19 +141,26 @@ public class Order : Entity
     /// <param name="newStatus">Novo status.</param>
     /// <returns>true se a transição é válida; false caso contrário.</returns>
     private bool IsValidStatusTransition(OrderStatus currentStatus, OrderStatus newStatus)
-    {
-        return (currentStatus, newStatus) switch
+    {        return (currentStatus, newStatus) switch
         {
-            // Transições válidas
+            // Transições básicas do fluxo principal
             (OrderStatus.Pending, OrderStatus.Processing) => true,
             (OrderStatus.Processing, OrderStatus.Ready) => true,
             (OrderStatus.Ready, OrderStatus.Completed) => true,
             (OrderStatus.Pending, OrderStatus.Cancelled) => true,
             (OrderStatus.Processing, OrderStatus.Cancelled) => true,
             
-            // Transições de pagamento
+            // Transições de pagamento - NOVO FLUXO
+            (OrderStatus.Pending, OrderStatus.AwaitingPayment) => true,  // Checkout gera QR Code
+            (OrderStatus.AwaitingPayment, OrderStatus.Paid) => true,     // Confirmação de pagamento
+            (OrderStatus.AwaitingPayment, OrderStatus.Cancelled) => true, // Cancelamento durante espera
+            (OrderStatus.Paid, OrderStatus.Processing) => true,          // Envio para cozinha
+            
+            // Transições do fluxo antigo (manter compatibilidade)
             (OrderStatus.Pending, OrderStatus.Paid) => true,
-            (OrderStatus.Paid, OrderStatus.Processing) => true,
+            
+            // Transição reversa permitida (ex: problemas na cozinha, falta de ingredientes)
+            (OrderStatus.Processing, OrderStatus.Pending) => true,
             
             // Status igual, permitido (idempotência)
             var (current, next) when current == next => true,

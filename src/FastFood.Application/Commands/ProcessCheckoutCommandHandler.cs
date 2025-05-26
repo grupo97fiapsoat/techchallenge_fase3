@@ -41,27 +41,16 @@ public class ProcessCheckoutCommandHandler : IRequestHandler<ProcessCheckoutComm
             if (order.Status != OrderStatus.Pending)
             {
                 throw new ValidationException($"O pedido {request.OrderId} não está no status correto para checkout. Status atual: {order.Status}");
-            }
-
-            // Gerar QR Code para pagamento
+            }            // Gerar QR Code para pagamento
             var qrCode = await _paymentService.GenerateQrCodeAsync(order.Id, order.TotalPrice);
 
-            // Processar o pagamento
-            var paymentSuccess = await _paymentService.ProcessPaymentAsync(order.Id, qrCode);
-            
-            if (paymentSuccess)
-            {
-                // Atualizar o status do pedido para Paid
-                order.UpdateStatus(OrderStatus.Paid);
-                await _orderRepository.UpdateAsync(order);
+            _logger.LogInformation("QR Code gerado para o pedido {OrderId}. Aguardando confirmação de pagamento", request.OrderId);
 
-                _logger.LogInformation("Checkout do pedido {OrderId} processado com sucesso", request.OrderId);
-            }
-            else
-            {
-                _logger.LogWarning("Falha no pagamento do pedido {OrderId}", request.OrderId);
-                throw new ValidationException("O pagamento não pôde ser processado. Por favor, tente novamente.");
-            }
+            // Atualizar o status do pedido para AwaitingPayment
+            order.UpdateStatus(OrderStatus.AwaitingPayment);
+            await _orderRepository.UpdateAsync(order);
+
+            _logger.LogInformation("Checkout do pedido {OrderId} processado com sucesso. Status alterado para AwaitingPayment", request.OrderId);
 
             // Retornar o resultado
             return new ProcessCheckoutCommandResult
