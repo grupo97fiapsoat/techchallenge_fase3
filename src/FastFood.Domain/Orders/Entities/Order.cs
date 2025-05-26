@@ -29,12 +29,15 @@ public class Order : Entity
     /// <summary>
     /// Status do pedido.
     /// </summary>
-    public OrderStatus Status { get; private set; }
-
-    /// <summary>
+    public OrderStatus Status { get; private set; }    /// <summary>
     /// Valor total do pedido.
     /// </summary>
     public decimal TotalPrice { get; private set; }
+
+    /// <summary>
+    /// QR Code gerado para pagamento do pedido.
+    /// </summary>
+    public string? QrCode { get; private set; }
 
     /// <summary>
     /// Construtor privado para uso do EF Core.
@@ -131,6 +134,23 @@ public class Order : Entity
             throw new OrderDomainException($"A transição do status {Status} para {status} não é permitida");
 
         Status = status;
+        SetUpdatedAt();
+    }
+
+    /// <summary>
+    /// Define o QR Code para pagamento do pedido.
+    /// </summary>
+    /// <param name="qrCode">QR Code gerado para pagamento.</param>
+    /// <exception cref="OrderDomainException">Lançada quando o pedido não está no status adequado para gerar QR Code.</exception>
+    public void SetQrCode(string qrCode)
+    {
+        if (Status != OrderStatus.Pending)
+            throw new OrderDomainException("QR Code só pode ser definido para pedidos pendentes");
+
+        if (string.IsNullOrWhiteSpace(qrCode))
+            throw new OrderDomainException("QR Code não pode ser vazio");
+
+        QrCode = qrCode;
         SetUpdatedAt();
     }
 

@@ -23,6 +23,17 @@
 
 ## Descobertos Durante o Trabalho
 
+### 🚀 NOVA TAREFA - Adicionar Coluna QrCode na Tabela de Pedidos (26/05/2025)
+**Descrição**: Persistir o QR Code gerado no banco de dados para resolver problema de perda de dados quando a aplicação reinicia.
+**Problema Atual**: FakePaymentService armazena QR Codes em memória (Dictionary), perdendo dados ao reiniciar.
+**Melhorias Propostas**:
+- Adicionar coluna `QrCode` na entidade Order
+- Migration para criar a nova coluna
+- Atualizar ProcessCheckoutCommandHandler para salvar QR Code no pedido
+- Atualizar ConfirmPaymentCommandHandler para buscar QR Code do banco
+- Remover dependência do Dictionary em memória no FakePaymentService
+- Adicionar validação de QR Code expirado (opcional)
+
 ### 🔄 EM PROGRESSO - Implementar Status "AwaitingPayment" (26/05/2025)
 **Descrição**: Separar o fluxo de checkout para ter um status intermediário entre geração do QR Code e confirmação do pagamento.
 **Problema Atual**: O checkout gera QR Code e imediatamente marca como "Paid", não refletindo a realidade de pagamentos via QR Code.
