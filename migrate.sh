@@ -54,33 +54,6 @@ echo "[MIGRATION] Connection string: Server=${DB_SERVER};Database=${DB_NAME};Use
 # Change to the source directory where the projects are located
 cd /app
 
-# Debug: List files in current directory
-echo "[DEBUG] Current directory: $(pwd)"
-echo "[DEBUG] Files in current directory:"
-ls -la
-
-# Debug: Check if src directory exists
-echo "[DEBUG] Checking src directory:"
-ls -la src
-
-# Debug: Check if FastFood.Api directory exists
-echo "[DEBUG] Checking FastFood.Api directory:"
-ls -la src/FastFood.Api
-
-# Debug: Check if FastFood.Infrastructure directory exists
-echo "[DEBUG] Checking FastFood.Infrastructure directory:"
-ls -la src/FastFood.Infrastructure
-
-# Debug: Check if project files exist
-echo "[DEBUG] Checking FastFood.Api.csproj:"
-ls -la src/FastFood.Api/FastFood.Api.csproj
-
-echo "[DEBUG] Checking FastFood.Infrastructure.csproj:"
-ls -la src/FastFood.Infrastructure/FastFood.Infrastructure.csproj
-
-# Change to the solution directory
-cd /app
-
 # Build the solution
 echo "[MIGRATION] Building the solution..."
 if ! dotnet build -c Release --no-restore; then
@@ -95,10 +68,16 @@ if ! dotnet run --project src/FastFood.Api/FastFood.Api.csproj -- --migrate; the
   # Tentar uma abordagem alternativa usando o dotnet ef
   echo "[MIGRATION] Trying alternative approach with dotnet ef..."
   
-  # Executar o script manual de migração
-  if ! /manual-migrate.sh; then
-    echo "[MIGRATION] Failed with manual migration script too"
+  cd src/FastFood.Api
+  if ! dotnet ef database update --verbose; then
+    echo "[MIGRATION] Failed with direct EF Core approach too"
     exit 1
+  fi
+  cd /app
+fi
+
+echo "[MIGRATION] Database setup complete!"
+echo "[SUCCESS] Database migration completed successfully!"
   fi
 fi
 

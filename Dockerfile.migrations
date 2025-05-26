@@ -43,10 +43,18 @@ RUN echo '{ \
 }' > /app/src/FastFood.Api/appsettings.Development.json
 
 # Copy migration script and make it executable
-COPY migrate.sh /migrate.sh
-COPY manual-migrate.sh /manual-migrate.sh
-RUN chmod +x /migrate.sh
-RUN chmod +x /manual-migrate.sh
+# Não vamos mais depender de scripts externos - criamos diretamente no container
+RUN echo '#!/bin/bash' > /app/migrate.sh && \
+    echo 'set -e' >> /app/migrate.sh && \
+    echo 'echo "[MIGRATION] Iniciando processo de migração..."' >> /app/migrate.sh && \
+    echo 'echo "[MIGRATION] Verificando SQL Server..."' >> /app/migrate.sh && \
+    echo 'export ConnectionStrings__DefaultConnection="Server=db;Database=FastFood;User Id=sa;Password=\${DB_PASSWORD:-FastFood2025};TrustServerCertificate=true;"' >> /app/migrate.sh && \
+    echo 'cd /app' >> /app/migrate.sh && \
+    echo 'dotnet build -c Release src/FastFood.Api/FastFood.Api.csproj --no-restore' >> /app/migrate.sh && \
+    echo 'cd src/FastFood.Api' >> /app/migrate.sh && \
+    echo 'dotnet ef database update --verbose' >> /app/migrate.sh && \
+    echo 'echo "[MIGRATION] Migrações aplicadas com sucesso!"' >> /app/migrate.sh && \
+    chmod +x /app/migrate.sh
 
 # Install EF Core global tool
 RUN dotnet tool install --global dotnet-ef
@@ -63,7 +71,8 @@ RUN echo "Current directory: $(pwd)" && \
     ls -la && \
     echo "Files in /app/src:" && \
     ls -la /app/src && \
-    echo "Files in /app/src/FastFood.Api:" && \
-    ls -la /app/src/FastFood.Api
+    echo "Migration script:" && \
+    cat /app/migrate.sh
 
-ENTRYPOINT ["/migrate.sh"]
+# Use the migrate.sh script as entrypoint
+ENTRYPOINT ["/app/migrate.sh"]
