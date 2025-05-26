@@ -72,6 +72,17 @@
             <response code="400">Dados inválidos ou erro no processamento</response>
             <response code="404">Pedido não encontrado</response>
         </member>
+        <member name="M:FastFood.Api.Controllers.OrdersController.ConfirmPayment(System.Guid,FastFood.Application.DTOs.ConfirmPaymentDto)">
+            <summary>
+            Confirma o pagamento de um pedido usando QR Code
+            </summary>
+            <param name="id">ID do pedido</param>
+            <param name="request">Dados para confirmação do pagamento</param>
+            <returns>Resultado da confirmação do pagamento</returns>
+            <response code="200">Pagamento confirmado com sucesso</response>
+            <response code="400">Dados inválidos ou erro na confirmação</response>
+            <response code="404">Pedido não encontrado</response>
+        </member>
         <member name="M:FastFood.Api.Controllers.ProductsController.Create(FastFood.Application.DTOs.CreateProductDto)">
             <summary>
             Cria um novo produto no catálogo

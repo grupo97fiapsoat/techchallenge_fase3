@@ -5,11 +5,24 @@ using FastFood.Application;
 using FastFood.Infrastructure;
 using FastFood.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
 
 // Handle command line arguments
 var commandLineArgs = Environment.GetCommandLineArgs();
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Configurar o fuso horário padrão para o Brasil (UTC-3)
+TimeZoneInfo brazilTimeZone = TimeZoneInfo.FindSystemTimeZoneById("E. South America Standard Time");
+
+// Configurar a cultura padrão para pt-BR
+var cultureInfo = new CultureInfo("pt-BR");
+CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
+CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
+
+// Configurar o fuso horário padrão para a aplicação
+AppDomain.CurrentDomain.SetData("TimeZone", brazilTimeZone);
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 // Add services to the container.
 builder.Services.AddInfrastructure(builder.Configuration);

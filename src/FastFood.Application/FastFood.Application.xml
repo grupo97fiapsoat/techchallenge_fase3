@@ -4,6 +4,56 @@
         <name>FastFood.Application</name>
     </assembly>
     <members>
+        <member name="T:FastFood.Application.Commands.ConfirmPaymentCommand">
+            <summary>
+            Comando para confirmar o pagamento de um pedido
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.Commands.ConfirmPaymentCommand.OrderId">
+            <summary>
+            ID do pedido a ser confirmado
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.Commands.ConfirmPaymentCommand.QrCode">
+            <summary>
+            QR Code usado para pagamento (para validação)
+            </summary>
+        </member>
+        <member name="T:FastFood.Application.Commands.ConfirmPaymentCommandResult">
+            <summary>
+            Resultado da confirmação do pagamento
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.Commands.ConfirmPaymentCommandResult.OrderId">
+            <summary>
+            ID do pedido processado
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.Commands.ConfirmPaymentCommandResult.Status">
+            <summary>
+            Status atual do pedido
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.Commands.ConfirmPaymentCommandResult.TotalAmount">
+            <summary>
+            Valor total do pedido
+            </summary> 
+        </member>
+        <member name="P:FastFood.Application.Commands.ConfirmPaymentCommandResult.ConfirmedAt">
+            <summary>
+            Data/hora da confirmação
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.Commands.ConfirmPaymentCommandResult.PaymentConfirmed">
+            <summary>
+            Indica se o pagamento foi confirmado com sucesso
+            </summary>
+        </member>
+        <member name="T:FastFood.Application.Commands.ConfirmPaymentCommandHandler">
+            <summary>
+            Handler do comando de confirmação de pagamento
+            </summary>
+        </member>
         <member name="T:FastFood.Application.Commands.ProcessCheckoutCommand">
             <summary>
             Comando para processar o checkout de um pedido
@@ -47,6 +97,52 @@
         <member name="T:FastFood.Application.Commands.ProcessCheckoutCommandHandler">
             <summary>
             Handler do comando de processamento de checkout
+            </summary>
+        </member>
+        <member name="T:FastFood.Application.DTOs.ConfirmPaymentDto">
+            <summary>
+            DTO para confirmação de pagamento de um pedido
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.DTOs.ConfirmPaymentDto.QrCode">
+            <summary>
+            QR Code usado para pagamento
+            </summary>
+            <example>QR_CODE_12345_ABCDEF</example>
+        </member>
+        <member name="T:FastFood.Application.DTOs.ConfirmPaymentResponseDto">
+            <summary>
+            DTO com o resultado da confirmação do pagamento
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.DTOs.ConfirmPaymentResponseDto.OrderId">
+            <summary>
+            ID do pedido processado
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.DTOs.ConfirmPaymentResponseDto.Status">
+            <summary>
+            Status atual do pedido
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.DTOs.ConfirmPaymentResponseDto.TotalAmount">
+            <summary>
+            Valor total do pedido
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.DTOs.ConfirmPaymentResponseDto.ConfirmedAt">
+            <summary>
+            Data/hora da confirmação
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.DTOs.ConfirmPaymentResponseDto.PaymentConfirmed">
+            <summary>
+            Indica se o pagamento foi confirmado com sucesso
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.DTOs.ConfirmPaymentResponseDto.Message">
+            <summary>
+            Mensagem sobre o resultado do pagamento
             </summary>
         </member>
         <member name="T:FastFood.Application.DTOs.CreateOrderDto">
@@ -347,8 +443,7 @@
         <member name="P:FastFood.Application.DTOs.UpdateOrderStatusDto.Status">
             <summary>
             Novo status do pedido
-            </summary>
-            <example>Processing</example>
+            </summary>    /// <example>Processing</example>
         </member>
         <member name="T:FastFood.Application.DTOs.OrderStatusEnum">
             <summary>
@@ -378,6 +473,16 @@
         <member name="F:FastFood.Application.DTOs.OrderStatusEnum.Cancelled">
             <summary>
             Pedido cancelado
+            </summary>
+        </member>
+        <member name="F:FastFood.Application.DTOs.OrderStatusEnum.Paid">
+            <summary>
+            Pedido pago
+            </summary>
+        </member>
+        <member name="F:FastFood.Application.DTOs.OrderStatusEnum.AwaitingPayment">
+            <summary>
+            Aguardando confirmação de pagamento
             </summary>
         </member>
         <member name="T:FastFood.Application.DTOs.UpdateProductDto">

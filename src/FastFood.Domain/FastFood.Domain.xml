@@ -101,8 +101,7 @@
             Inicializa uma nova instância da classe <see cref="T:FastFood.Domain.Customers.ValueObjects.Cpf"/>.
             </summary>
             <param name="value">O valor do CPF.</param>
-            <exception cref="T:System.ArgumentNullException">Lançada quando o valor é nulo.</exception>
-            <exception cref="T:FastFood.Domain.Customers.Exceptions.CustomerDomainException">Lançada quando o CPF é inválido.</exception>
+            <exception cref="T:System.ArgumentNullException">Lançada quando o valor é nulo.</exception>    /// <exception cref="T:FastFood.Domain.Customers.Exceptions.CustomerDomainException">Lançada quando o CPF é inválido.</exception>
         </member>
         <member name="M:FastFood.Domain.Customers.ValueObjects.Cpf.Create(System.String)">
             <summary>
@@ -234,6 +233,11 @@
             Valor total do pedido.
             </summary>
         </member>
+        <member name="P:FastFood.Domain.Orders.Entities.Order.QrCode">
+            <summary>
+            QR Code gerado para pagamento do pedido.
+            </summary>
+        </member>
         <member name="M:FastFood.Domain.Orders.Entities.Order.#ctor">
             <summary>
             Construtor privado para uso do EF Core.
@@ -276,6 +280,13 @@
             </summary>
             <param name="status">Novo status do pedido.</param>
             <exception cref="T:FastFood.Domain.Orders.Exceptions.OrderDomainException">Lançada quando a transição de status não é permitida.</exception>
+        </member>
+        <member name="M:FastFood.Domain.Orders.Entities.Order.SetQrCode(System.String)">
+            <summary>
+            Define o QR Code para pagamento do pedido.
+            </summary>
+            <param name="qrCode">QR Code gerado para pagamento.</param>
+            <exception cref="T:FastFood.Domain.Orders.Exceptions.OrderDomainException">Lançada quando o pedido não está no status adequado para gerar QR Code.</exception>
         </member>
         <member name="M:FastFood.Domain.Orders.Entities.Order.IsValidStatusTransition(FastFood.Domain.Orders.ValueObjects.OrderStatus,FastFood.Domain.Orders.ValueObjects.OrderStatus)">
             <summary>
@@ -480,6 +491,11 @@
             Pedido pago.
             </summary>
         </member>
+        <member name="F:FastFood.Domain.Orders.ValueObjects.OrderStatus.AwaitingPayment">
+            <summary>
+            Aguardando confirmação de pagamento.
+            </summary>
+        </member>
         <member name="T:FastFood.Domain.Products.Entities.Product">
             <summary>
             Representa um produto no sistema.
@@ -595,8 +611,14 @@
         </member>
         <member name="M:FastFood.Domain.Shared.Entities.Entity.SetUpdatedAt">
             <summary>
-            Atualiza a data de última modificação da entidade para a data/hora atual UTC.
+            Atualiza a data de última modificação da entidade para a data/hora atual no fuso do Brasil.
             </summary>
+        </member>
+        <member name="M:FastFood.Domain.Shared.Entities.Entity.GetBrasilDateTime">
+            <summary>
+            Obtém a data e hora atuais no fuso horário do Brasil (UTC-3).
+            </summary>
+            <returns>Data e hora atuais no fuso do Brasil</returns>
         </member>
         <member name="M:FastFood.Domain.Shared.Entities.Entity.Equals(System.Object)">
             <summary>

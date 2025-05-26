@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using FastFood.Domain.Orders.Repositories;
 using FastFood.Domain.Orders.Services;
 using Microsoft.Extensions.Logging;
 
@@ -11,12 +12,14 @@ namespace FastFood.Infrastructure.Services;
 public class FakePaymentService : IPaymentService
 {
     private readonly ILogger<FakePaymentService> _logger;
-    private readonly Dictionary<Guid, string> _qrCodes;
+    private readonly IOrderRepository _orderRepository;
 
-    public FakePaymentService(ILogger<FakePaymentService> logger)
+    public FakePaymentService(
+        ILogger<FakePaymentService> logger,
+        IOrderRepository orderRepository)
     {
         _logger = logger;
-        _qrCodes = new Dictionary<Guid, string>();
+        _orderRepository = orderRepository;
     }
 
     /// <summary>
@@ -32,8 +35,7 @@ public class FakePaymentService : IPaymentService
 
         // Gera um QR Code fake no formato: ORDEM_{orderId}_VALOR_{amount}
         var qrCode = $"ORDEM_{orderId}_VALOR_{amount:F2}";
-        _qrCodes[orderId] = qrCode;
-
+        
         _logger.LogInformation("QR Code gerado para o pedido {OrderId}: {QrCode}", orderId, qrCode);
 
         return qrCode;
@@ -50,10 +52,12 @@ public class FakePaymentService : IPaymentService
         // Simula uma latência de rede
         await Task.Delay(500);
 
-        // Verifica se o QR Code é válido
-        if (!_qrCodes.TryGetValue(orderId, out var storedQrCode) || storedQrCode != qrCode)
+        // Busca o pedido no banco de dados para validar o QR Code
+        var order = await _orderRepository.GetByIdAsync(orderId);
+        
+        if (order == null || string.IsNullOrEmpty(order.QrCode) || order.QrCode != qrCode)
         {
-            _logger.LogWarning("QR Code inválido para o pedido {OrderId}", orderId);
+            _logger.LogWarning("QR Code inválido ou não encontrado para o pedido {OrderId}", orderId);
             return false;
         }
 

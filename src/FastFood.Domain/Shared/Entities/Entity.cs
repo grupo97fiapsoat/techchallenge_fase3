@@ -1,3 +1,4 @@
+using System;
 using System.Runtime.CompilerServices;
 
 namespace FastFood.Domain.Shared.Entities;
@@ -7,6 +8,8 @@ namespace FastFood.Domain.Shared.Entities;
 /// </summary>
 public abstract class Entity : IEntity
 {
+    private static readonly TimeZoneInfo BrazilTimeZone = TimeZoneInfo.FindSystemTimeZoneById("E. South America Standard Time");
+
     /// <summary>
     /// Identificador único da entidade.
     /// </summary>
@@ -29,15 +32,24 @@ public abstract class Entity : IEntity
     protected Entity()
     {
         Id = Guid.NewGuid();
-        CreatedAt = DateTime.UtcNow;
+        CreatedAt = GetBrasilDateTime();
     }
 
     /// <summary>
-    /// Atualiza a data de última modificação da entidade para a data/hora atual UTC.
+    /// Atualiza a data de última modificação da entidade para a data/hora atual no fuso do Brasil.
     /// </summary>
     public void SetUpdatedAt()
     {
-        UpdatedAt = DateTime.UtcNow;
+        UpdatedAt = GetBrasilDateTime();
+    }
+
+    /// <summary>
+    /// Obtém a data e hora atuais no fuso horário do Brasil (UTC-3).
+    /// </summary>
+    /// <returns>Data e hora atuais no fuso do Brasil</returns>
+    public static DateTime GetBrasilDateTime()
+    {
+        return TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, BrazilTimeZone);
     }
 
     #region Equals e GetHashCode

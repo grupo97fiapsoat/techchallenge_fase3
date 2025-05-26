@@ -2,6 +2,7 @@ using FastFood.Application.Common.Exceptions;
 using FastFood.Domain.Orders.Repositories;
 using FastFood.Domain.Orders.Services;
 using FastFood.Domain.Orders.ValueObjects;
+using FastFood.Domain.Shared.Entities;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
@@ -46,8 +47,13 @@ public class ProcessCheckoutCommandHandler : IRequestHandler<ProcessCheckoutComm
 
             _logger.LogInformation("QR Code gerado para o pedido {OrderId}. Aguardando confirmação de pagamento", request.OrderId);
 
-            // Atualizar o status do pedido para AwaitingPayment
+            // Primeiro, associar o QR Code ao pedido (ainda em status Pending)
+            order.SetQrCode(qrCode);
+            
+            // Depois, atualizar o status para AwaitingPayment
             order.UpdateStatus(OrderStatus.AwaitingPayment);
+            
+            // Salvar as alterações no banco de dados
             await _orderRepository.UpdateAsync(order);
 
             _logger.LogInformation("Checkout do pedido {OrderId} processado com sucesso. Status alterado para AwaitingPayment", request.OrderId);
@@ -59,7 +65,7 @@ public class ProcessCheckoutCommandHandler : IRequestHandler<ProcessCheckoutComm
                 QrCode = qrCode,
                 Status = order.Status.ToString(),
                 TotalAmount = order.TotalPrice,
-                ProcessedAt = DateTime.UtcNow
+                ProcessedAt = Entity.GetBrasilDateTime()
             };
         }
         catch (Exception ex) when (ex is not NotFoundException && ex is not ValidationException)

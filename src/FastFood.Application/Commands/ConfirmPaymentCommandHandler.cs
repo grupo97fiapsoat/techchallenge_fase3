@@ -2,8 +2,10 @@ using FastFood.Application.Common.Exceptions;
 using FastFood.Domain.Orders.Repositories;
 using FastFood.Domain.Orders.Services;
 using FastFood.Domain.Orders.ValueObjects;
+using FastFood.Domain.Shared.Entities;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using System;
 
 namespace FastFood.Application.Commands;
 

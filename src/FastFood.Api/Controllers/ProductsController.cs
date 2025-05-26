@@ -129,10 +129,10 @@ public class ProductsController : ControllerBase
     [HttpGet("{id}")]
     [ProducesResponseType(typeof(ProductDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetById(Guid id)
+    public Task<IActionResult> GetById(Guid id)
     {
         // Como não implementamos essa query específica, vamos deixar o método como não implementado por enquanto
-        return StatusCode(StatusCodes.Status501NotImplemented, "Método não implementado");
+        return Task.FromResult<IActionResult>(StatusCode(StatusCodes.Status501NotImplemented, "Método não implementado"));
     }
 
     /// <summary>
