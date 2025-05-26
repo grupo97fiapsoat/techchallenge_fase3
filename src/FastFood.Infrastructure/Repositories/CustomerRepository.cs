@@ -1,5 +1,6 @@
 using FastFood.Domain.Customers.Entities;
 using FastFood.Domain.Customers.Repositories;
+using FastFood.Domain.Customers.ValueObjects;
 using FastFood.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,12 +13,24 @@ public class CustomerRepository : RepositoryBase<Customer>, ICustomerRepository
 {
     public CustomerRepository(FastFoodDbContext context) : base(context)
     {
-    }
-
-    public async Task<Customer?> GetByCpfAsync(string cpf)
+    }    public async Task<Customer?> GetByCpfAsync(string cpf)
     {
-        return await DbSet
-            .FirstOrDefaultAsync(x => x.Cpf.Value == cpf);
+        if (string.IsNullOrWhiteSpace(cpf))
+            return null;
+
+        try
+        {
+            // Usa o Value Object para fazer a validação e normalização
+            var cpfValue = Cpf.Create(cpf);
+            
+            return await DbSet
+                .FirstOrDefaultAsync(x => x.Cpf.Value == cpfValue.Value);
+        }
+        catch
+        {
+            // Se o CPF for inválido, retorna null
+            return null;
+        }
     }
 
     public override async Task<IEnumerable<Customer>> GetAllAsync(int pageNumber = 1, int pageSize = 10)
