@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 
 namespace FastFood.Application.DTOs;
 
@@ -13,7 +14,12 @@ public class CreateCustomerDto
     [StringLength(100, ErrorMessage = "O e-mail não pode ter mais de 100 caracteres")]
     public string Email { get; set; }
 
+    private string _cpf;
+    
     [Required(ErrorMessage = "O CPF é obrigatório")]
-    [StringLength(14, MinimumLength = 11, ErrorMessage = "O CPF deve ter 11 dígitos")]
-    public string Cpf { get; set; }
+    public string Cpf 
+    { 
+        get => _cpf;
+        set => _cpf = value != null ? new string(value.Where(char.IsDigit).ToArray()) : null;
+    }
 }

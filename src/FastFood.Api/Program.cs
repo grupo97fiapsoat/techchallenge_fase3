@@ -23,7 +23,7 @@ builder.Services.AddControllers(options =>
     options.Filters.Add<ApiExceptionFilterAttribute>();
 });
 
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+
 builder.Services.AddOpenApi();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -32,7 +32,7 @@ var app = builder.Build();
 
 if (commandLineArgs.Contains("--migrate"))
 {
-    Console.WriteLine("🔧 Executando migrations...");
+    Console.WriteLine("Executando migrations...");
     try
     {
         using var scope = app.Services.CreateScope();
@@ -40,19 +40,19 @@ if (commandLineArgs.Contains("--migrate"))
         
         // Aplicar migrations pendentes
         await context.Database.MigrateAsync();
-        Console.WriteLine("✅ Migrations executadas com sucesso!");
+        Console.WriteLine("Migrations executadas com sucesso!");
         return 0;
     }
     catch (Exception ex)
     {
-        Console.WriteLine($"❌ Erro ao executar migrations: {ex.Message}");
+        Console.WriteLine($"Erro ao executar migrations: {ex.Message}");
         return 1;
     }
 }
 
 if (commandLineArgs.Contains("--check-db"))
 {
-    Console.WriteLine("🔍 Verificando conexão com banco de dados...");
+    Console.WriteLine("Verificando conexão com banco de dados...");
     try
     {
         using var scope = app.Services.CreateScope();
@@ -62,18 +62,18 @@ if (commandLineArgs.Contains("--check-db"))
         var canConnect = await context.Database.CanConnectAsync();
         if (canConnect)
         {
-            Console.WriteLine("✅ Conexão com banco de dados OK!");
+            Console.WriteLine("Conexão com banco de dados OK!");
             return 0;
         }
         else
         {
-            Console.WriteLine("❌ Não foi possível conectar ao banco de dados!");
+            Console.WriteLine("Não foi possível conectar ao banco de dados!");
             return 1;
         }
     }
     catch (Exception ex)
     {
-        Console.WriteLine($"❌ Erro ao verificar banco: {ex.Message}");
+        Console.WriteLine($"Erro ao verificar banco: {ex.Message}");
         return 1;
     }
 }
@@ -105,11 +105,11 @@ if (app.Environment.IsDevelopment())
         
         // Aplicar migrations pendentes
         await context.Database.MigrateAsync();
-        Console.WriteLine("✅ Migrations aplicadas automaticamente no startup!");
+        Console.WriteLine("Migrations aplicadas automaticamente no startup!");
     }
     catch (Exception ex)
     {
-        Console.WriteLine($"❌ Erro ao aplicar migrations no startup: {ex.Message}");
+        Console.WriteLine($"Erro ao aplicar migrations no startup: {ex.Message}");
         // Não falhar o startup por causa de erros de migração
     }
 }

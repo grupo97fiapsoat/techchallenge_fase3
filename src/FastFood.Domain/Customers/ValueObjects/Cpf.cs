@@ -1,5 +1,7 @@
 using System.Text.RegularExpressions;
 using FastFood.Domain.Customers.Exceptions;
+using System.IO;
+using System.Linq;
 
 namespace FastFood.Domain.Customers.ValueObjects;
 
@@ -9,10 +11,16 @@ namespace FastFood.Domain.Customers.ValueObjects;
 public sealed record Cpf
 {
     private const int CPF_LENGTH = 11;
-    private const string CPF_FORMAT = @"^\d{11}$"; // Regex para CPF normalizado
+    private const string CPF_FORMAT = @"^(\d{3}\.?\d{3}\.?\d{3}\-?\d{2}|\d{11})$"; // Aceita CPF com ou sem formatação
     private const string NUMERIC_ONLY_FORMAT = @"[^\d]";
-    private static readonly int[] MULTIPLIER1 = new int[9] { 10, 9, 8, 7, 6, 5, 4, 3, 2 };
-    private static readonly int[] MULTIPLIER2 = new int[10] { 11, 10, 9, 8, 7, 6, 5, 4, 3, 2 };
+    private static readonly int[] MULTIPLIER1 = { 10, 9, 8, 7, 6, 5, 4, 3, 2 };
+    private static readonly int[] MULTIPLIER2 = { 11, 10, 9, 8, 7, 6, 5, 4, 3, 2 };
+
+    private static string GetMultipliersString()
+    {
+        return $"MULTIPLIER1: [{string.Join(", ", MULTIPLIER1)}]\nMULTIPLIER2: [{string.Join(", ", MULTIPLIER2)}]";
+    }
+
     private static readonly Regex CPF_REGEX = new(CPF_FORMAT, RegexOptions.Compiled);
     private static readonly Regex NUMERIC_REGEX = new(NUMERIC_ONLY_FORMAT, RegexOptions.Compiled);
 
@@ -31,13 +39,19 @@ public sealed record Cpf
     {
         ArgumentNullException.ThrowIfNull(value, nameof(value));
 
-        if (!CPF_REGEX.IsMatch(value))
+        // Primeiro normaliza o CPF
+        var normalizedCpf = NormalizeCpf(value);
+
+        // Depois valida o formato
+        if (!CPF_REGEX.IsMatch(normalizedCpf))
             throw new CustomerDomainException("O CPF deve conter exatamente 11 dígitos");
 
-        if (!IsCpfValid(value))
+        // Por fim, valida os dígitos verificadores
+        if (!IsCpfValid(normalizedCpf))
             throw new CustomerDomainException("O CPF informado não é válido");
 
-        Value = value;
+        // Armazena o CPF normalizado (apenas dígitos)
+        Value = normalizedCpf;
     }
 
     /// <summary>
@@ -68,10 +82,18 @@ public sealed record Cpf
     /// <returns>O CPF apenas com dígitos.</returns>
     private static string NormalizeCpf(string cpf)
     {
+        Console.WriteLine($"[DEBUG] Normalizando CPF: {cpf}");
+        
         if (string.IsNullOrWhiteSpace(cpf))
+        {
+            Console.WriteLine("[DEBUG] CPF vazio ou nulo");
             return string.Empty;
+        }
 
-        return NUMERIC_REGEX.Replace(cpf.Trim(), "");
+        var normalized = NUMERIC_REGEX.Replace(cpf.Trim(), "");
+        Console.WriteLine($"[DEBUG] CPF normalizado: {normalized}");
+        
+        return normalized;
     }
 
     /// <summary>
@@ -81,41 +103,113 @@ public sealed record Cpf
     /// <returns>True se o CPF é válido, False caso contrário.</returns>
     private static bool IsCpfValid(string cpf)
     {
-        // Validações básicas
-        if (string.IsNullOrWhiteSpace(cpf) || cpf.Length != CPF_LENGTH)
+        try
+        {
+            // Usar um StringBuilder para coletar os logs
+            var log = new System.Text.StringBuilder();
+            log.AppendLine("\n=============================================");
+            log.AppendLine("[DEBUG] ===== INÍCIO DA VALIDAÇÃO DO CPF =====");
+            log.AppendLine($"[DEBUG] CPF a ser validado: {cpf}");
+            log.AppendLine(GetMultipliersString());
+            
+            // Validações básicas
+            if (string.IsNullOrWhiteSpace(cpf))
+            {
+                log.AppendLine("[ERRO] CPF não pode ser nulo ou vazio");
+                Console.WriteLine(log.ToString());
+                return false;
+            }
+
+            log.AppendLine($"[DEBUG] Tamanho do CPF: {cpf.Length} (esperado: {CPF_LENGTH})");
+            
+            if (cpf.Length != CPF_LENGTH)
+            {
+                log.AppendLine($"[ERRO] CPF inválido - Tamanho incorreto: {cpf.Length} (esperado: {CPF_LENGTH})");
+                Console.WriteLine(log.ToString());
+                return false;
+            }
+
+            // Valida se todos os caracteres são numéricos
+            if (!cpf.All(char.IsDigit))
+            {
+                log.AppendLine("[ERRO] CPF contém caracteres não numéricos");
+                Console.WriteLine(log.ToString());
+                return false;
+            }
+
+            // Valida CPFs com dígitos iguais
+            var distinctDigits = cpf.Distinct().Count();
+            log.AppendLine($"[DEBUG] Número de dígitos distintos: {distinctDigits}");
+            
+            if (distinctDigits == 1)
+            {
+                log.AppendLine("[ERRO] CPF inválido - Todos os dígitos são iguais");
+                Console.WriteLine(log.ToString());
+                return false;
+            }
+
+            // Validação do primeiro dígito
+            var tempCpf = cpf.Substring(0, 9);
+            var sum = 0;
+
+            log.AppendLine("\n[DEBUG] Validando primeiro dígito verificador...");
+            log.AppendLine($"[DEBUG] Dígitos: {string.Join(" ", tempCpf.Select(c => c.ToString()))}");
+            log.AppendLine($"[DEBUG] Pesos:    {string.Join(" ", MULTIPLIER1.Select(m => m.ToString().PadLeft(2)))}");
+            
+            for (int i = 0; i < 9; i++)
+            {
+                int digit = int.Parse(tempCpf[i].ToString());
+                int mult = MULTIPLIER1[i];
+                int product = digit * mult;
+                sum += product;
+                log.AppendLine($"[DEBUG]   {digit} * {mult} = {product.ToString().PadLeft(2)} (soma parcial: {sum})");
+            }
+
+            var remainder = sum % 11;
+            var firstDigit = remainder < 2 ? 0 : 11 - remainder;
+            tempCpf += firstDigit.ToString();
+            
+            log.AppendLine($"[DEBUG]   Soma total: {sum}, Resto: {remainder}, Primeiro dígito: {firstDigit}");
+            log.AppendLine($"[DEBUG]   CPF com primeiro dígito: {tempCpf}");
+
+            // Validação do segundo dígito
+            sum = 0;
+            log.AppendLine("\n[DEBUG] Validando segundo dígito verificador...");
+            log.AppendLine($"[DEBUG] Dígitos: {string.Join(" ", tempCpf.Select(c => c.ToString()))}");
+            log.AppendLine($"[DEBUG] Pesos:    {string.Join(" ", MULTIPLIER2.Select(m => m.ToString().PadLeft(2)))}");
+            
+            for (int i = 0; i < 10; i++)
+            {
+                int digit = int.Parse(tempCpf[i].ToString());
+                int mult = MULTIPLIER2[i];
+                int product = digit * mult;
+                sum += product;
+                log.AppendLine($"[DEBUG]   {digit} * {mult} = {product.ToString().PadLeft(2)} (soma parcial: {sum})");
+            }
+
+            remainder = sum % 11;
+            var secondDigit = remainder < 2 ? 0 : 11 - remainder;
+            tempCpf += secondDigit.ToString();
+            
+            log.AppendLine($"[DEBUG]   Soma total: {sum}, Resto: {remainder}, Segundo dígito: {secondDigit}");
+            log.AppendLine($"[DEBUG]   CPF calculado: {tempCpf}");
+            log.AppendLine($"[DEBUG]   CPF original: {cpf}");
+            bool isValid = cpf == tempCpf;
+            log.AppendLine($"[DEBUG]   CPF válido? {isValid}");
+            log.AppendLine("[DEBUG] ===== FIM DA VALIDAÇÃO DO CPF =====");
+            log.AppendLine("=============================================\n");
+            
+            // Escrever todos os logs de uma vez
+            Console.WriteLine(log.ToString());
+            
+            return isValid;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[ERRO] Erro ao validar CPF: {ex.Message}");
+            Console.WriteLine($"[ERRO] StackTrace: {ex.StackTrace}");
             return false;
-
-        // Valida se todos os caracteres são numéricos
-        if (!cpf.All(char.IsDigit))
-            return false;
-
-        // Valida CPFs com dígitos iguais
-        if (cpf.Distinct().Count() == 1)
-            return false;
-
-        // Validação do primeiro dígito
-        var tempCpf = cpf.Substring(0, 9);
-        var sum = 0;
-
-        for (int i = 0; i < 9; i++)
-            sum += int.Parse(tempCpf[i].ToString()) * MULTIPLIER1[i];
-
-        var remainder = sum % 11;
-        remainder = remainder < 2 ? 0 : 11 - remainder;
-
-        tempCpf += remainder.ToString();
-
-        // Validação do segundo dígito
-        sum = 0;
-        for (int i = 0; i < 10; i++)
-            sum += int.Parse(tempCpf[i].ToString()) * MULTIPLIER2[i];
-
-        remainder = sum % 11;
-        remainder = remainder < 2 ? 0 : 11 - remainder;
-
-        tempCpf += remainder.ToString();
-
-        return cpf == tempCpf;
+        }
     }
 
     /// <summary>
