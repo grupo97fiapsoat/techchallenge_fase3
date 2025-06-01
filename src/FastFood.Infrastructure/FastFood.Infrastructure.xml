@@ -1,0 +1,197 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>FastFood.Infrastructure</name>
+    </assembly>
+    <members>
+        <member name="T:FastFood.Infrastructure.Data.Mappings.OrderMapping">
+            <summary>
+            Configuração do mapeamento de Order para o EF Core.
+            </summary>
+        </member>
+        <member name="T:FastFood.Infrastructure.Data.Mappings.UserMapping">
+            <summary>
+            Configuração do EF Core para a entidade User.
+            </summary>
+        </member>
+        <member name="M:FastFood.Infrastructure.Data.Mappings.UserMapping.Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder{FastFood.Domain.Users.Entities.User})">
+            <summary>
+            Configura o mapeamento da entidade User.
+            </summary>
+            <param name="builder">Builder para configuração da entidade</param>
+        </member>
+        <member name="T:FastFood.Infrastructure.Data.Migrations.InitialCreate">
+            <inheritdoc />
+        </member>
+        <member name="M:FastFood.Infrastructure.Data.Migrations.InitialCreate.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:FastFood.Infrastructure.Data.Migrations.InitialCreate.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:FastFood.Infrastructure.Data.Migrations.InitialCreate.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:FastFood.Infrastructure.Data.Migrations.AddUsersTable">
+            <inheritdoc />
+        </member>
+        <member name="M:FastFood.Infrastructure.Data.Migrations.AddUsersTable.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:FastFood.Infrastructure.Data.Migrations.AddUsersTable.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:FastFood.Infrastructure.Data.Migrations.AddUsersTable.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:FastFood.Infrastructure.Data.RepositoryBase`1">
+            <summary>
+            Classe base para implementação de repositórios usando Entity Framework Core.
+            </summary>
+            <typeparam name="T">O tipo da entidade gerenciada pelo repositório</typeparam>
+        </member>
+        <member name="T:FastFood.Infrastructure.Repositories.CustomerRepository">
+            <summary>
+            Implementação do repositório de clientes usando Entity Framework Core.
+            </summary>
+        </member>
+        <member name="T:FastFood.Infrastructure.Repositories.OrderRepository">
+            <summary>
+            Implementação do repositório de pedidos usando Entity Framework Core.
+            </summary>
+        </member>
+        <member name="T:FastFood.Infrastructure.Repositories.ProductRepository">
+            <summary>
+            Implementação do repositório de produtos usando Entity Framework Core.
+            </summary>
+        </member>
+        <member name="T:FastFood.Infrastructure.Repositories.UserRepository">
+            <summary>
+            Implementação do repositório de usuários usando Entity Framework Core.
+            </summary>
+        </member>
+        <member name="M:FastFood.Infrastructure.Repositories.UserRepository.#ctor(FastFood.Infrastructure.Data.FastFoodDbContext)">
+            <summary>
+            Inicializa uma nova instância do repositório.
+            </summary>
+            <param name="context">Contexto do EF Core</param>
+        </member>
+        <member name="M:FastFood.Infrastructure.Repositories.UserRepository.GetByIdAsync(System.Guid)">
+            <summary>
+            Obtém um usuário pelo ID.
+            </summary>
+            <param name="id">ID do usuário</param>
+            <returns>O usuário encontrado ou null</returns>
+        </member>
+        <member name="M:FastFood.Infrastructure.Repositories.UserRepository.GetByUsernameAsync(System.String)">
+            <summary>
+            Obtém um usuário pelo nome de usuário.
+            </summary>
+            <param name="username">Nome de usuário</param>
+            <returns>O usuário encontrado ou null</returns>
+        </member>
+        <member name="M:FastFood.Infrastructure.Repositories.UserRepository.GetByEmailAsync(System.String)">
+            <summary>
+            Obtém um usuário pelo email.
+            </summary>
+            <param name="email">Email do usuário</param>
+            <returns>O usuário encontrado ou null</returns>
+        </member>
+        <member name="M:FastFood.Infrastructure.Repositories.UserRepository.GetByUsernameOrEmailAsync(System.String)">
+            <summary>
+            Obtém um usuário pelo nome de usuário ou email.
+            </summary>
+            <param name="usernameOrEmail">Nome de usuário ou email</param>
+            <returns>O usuário encontrado ou null</returns>
+        </member>
+        <member name="M:FastFood.Infrastructure.Repositories.UserRepository.CreateAsync(FastFood.Domain.Users.Entities.User)">
+            <summary>
+            Cria um novo usuário.
+            </summary>
+            <param name="user">Usuário a ser criado</param>
+        </member>
+        <member name="M:FastFood.Infrastructure.Repositories.UserRepository.UpdateAsync(FastFood.Domain.Users.Entities.User)">
+            <summary>
+            Atualiza um usuário existente.
+            </summary>
+            <param name="user">Usuário a ser atualizado</param>
+        </member>
+        <member name="M:FastFood.Infrastructure.Repositories.UserRepository.DeleteAsync(System.Guid)">
+            <summary>
+            Exclui um usuário.
+            </summary>
+            <param name="id">ID do usuário a ser excluído</param>
+        </member>
+        <member name="T:FastFood.Infrastructure.Services.AuthService">
+            <summary>
+            Implementação do serviço de autenticação.
+            </summary>
+        </member>
+        <member name="M:FastFood.Infrastructure.Services.AuthService.#ctor(Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Inicializa uma nova instância do serviço de autenticação.
+            </summary>
+            <param name="configuration">Configuração da aplicação</param>
+        </member>
+        <member name="M:FastFood.Infrastructure.Services.AuthService.HashPassword(System.String)">
+            <summary>
+            Cria um hash para a senha fornecida.
+            </summary>
+            <param name="password">Senha em texto puro</param>
+            <returns>Hash da senha</returns>
+        </member>
+        <member name="M:FastFood.Infrastructure.Services.AuthService.VerifyPassword(System.String,System.String)">
+            <summary>
+            Verifica se a senha fornecida corresponde ao hash armazenado.
+            </summary>
+            <param name="password">Senha em texto puro</param>
+            <param name="passwordHash">Hash da senha armazenado</param>
+            <returns>true se a senha corresponde ao hash; false caso contrário</returns>
+        </member>
+        <member name="M:FastFood.Infrastructure.Services.AuthService.GenerateJwtToken(FastFood.Domain.Users.Entities.User)">
+            <summary>
+            Gera um token JWT para o usuário.
+            </summary>
+            <param name="user">Usuário para o qual gerar o token</param>
+            <returns>Token JWT</returns>
+        </member>
+        <member name="M:FastFood.Infrastructure.Services.AuthService.ValidateToken(System.String)">
+            <summary>
+            Valida um token JWT.
+            </summary>
+            <param name="token">Token JWT a ser validado</param>
+            <returns>true se o token é válido; false caso contrário</returns>
+        </member>
+        <member name="T:FastFood.Infrastructure.Services.EmailNotificationService">
+            <summary>
+            Implementação do serviço de notificação por email.
+            </summary>
+        </member>
+        <member name="T:FastFood.Infrastructure.Services.FakePaymentService">
+            <summary>
+            Implementação simulada do serviço de pagamento para desenvolvimento e testes.
+            </summary>
+        </member>
+        <member name="M:FastFood.Infrastructure.Services.FakePaymentService.GenerateQrCodeAsync(System.Guid,System.Decimal)">
+            <summary>
+            Gera um QR Code simulado para pagamento.
+            </summary>
+            <param name="orderId">ID do pedido.</param>
+            <param name="amount">Valor a ser pago.</param>
+            <returns>String simulando um QR Code.</returns>
+        </member>
+        <member name="M:FastFood.Infrastructure.Services.FakePaymentService.ProcessPaymentAsync(System.Guid,System.String)">
+            <summary>
+            Simula o processamento de um pagamento.
+            </summary>
+            <param name="orderId">ID do pedido.</param>
+            <param name="qrCode">QR Code usado para pagamento.</param>
+            <returns>True em 95% dos casos, simulando uma taxa de sucesso realista.</returns>
+        </member>
+        <member name="T:FastFood.Infrastructure.Services.SmsNotificationService">
+            <summary>
+            Implementação do serviço de notificação por SMS.
+            </summary>
+        </member>
+    </members>
+</doc>
