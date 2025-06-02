@@ -27,12 +27,18 @@ public static class DependencyInjection
         services.AddScoped<IUserRepository, UserRepository>();        // Registrar serviços
         // Configurar serviço de pagamento baseado na configuração
         var useFakePayment = configuration.GetValue<bool>("UseFakePayment", false);
+        
+        // Log para debug
+        Console.WriteLine($"[DI CONFIG] UseFakePayment = {useFakePayment}");
+        
         if (useFakePayment)
         {
+            Console.WriteLine("[DI CONFIG] Registrando FakePaymentService");
             services.AddScoped<IPaymentService, FakePaymentService>();
         }
         else
         {
+            Console.WriteLine("[DI CONFIG] Registrando MercadoPagoPaymentService");
             services.AddScoped<IPaymentService, MercadoPagoPaymentService>();
             // Registrar MercadoPagoPaymentService separadamente para acesso direto pelo WebhookController
             services.AddScoped<MercadoPagoPaymentService>();

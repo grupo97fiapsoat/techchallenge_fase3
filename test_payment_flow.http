@@ -1,0 +1,47 @@
+### Teste do fluxo de pagamento fake
+
+### 1. Primeiro, criar um cliente
+POST http://localhost:5000/api/v1/customers
+Content-Type: application/json
+
+{
+  "name": "Cliente Teste",
+  "email": "teste@email.com",
+  "cpf": "11144477735"
+}
+
+### 2. Criar um produto
+POST http://localhost:5000/api/v1/products
+Content-Type: application/json
+
+{
+  "name": "Hambúrguer Teste",
+  "description": "Hambúrguer para teste de pagamento",
+  "category": "Lanche",
+  "price": 25.50
+}
+
+### 3. Criar um pedido
+POST http://localhost:5000/api/v1/orders
+Content-Type: application/json
+
+{
+  "customerId": "{{CUSTOMER_ID}}",
+  "items": [
+    {
+      "productId": "{{PRODUCT_ID}}",
+      "quantity": 1
+    }
+  ]
+}
+
+### 4. Fazer checkout (gerar QR Code)
+POST http://localhost:5000/api/v1/orders/{{ORDER_ID}}/checkout
+
+### 5. Confirmar pagamento (usar o QR Code retornado no passo 4)
+POST http://localhost:5000/api/v1/orders/{{ORDER_ID}}/confirm-payment
+Content-Type: application/json
+
+{
+  "qrCode": "{{QR_CODE_FROM_CHECKOUT}}"
+}

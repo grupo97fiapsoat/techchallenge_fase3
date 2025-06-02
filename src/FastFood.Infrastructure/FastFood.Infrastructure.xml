@@ -195,10 +195,11 @@
         <member name="M:FastFood.Infrastructure.Services.FakePaymentService.ProcessPaymentAsync(System.Guid,System.String)">
             <summary>
             Simula o processamento de um pagamento.
+            Valida se o QR Code fornecido corresponde ao QR Code gerado para o pedido.
             </summary>
             <param name="orderId">ID do pedido.</param>
             <param name="qrCode">QR Code usado para pagamento.</param>
-            <returns>True em 95% dos casos, simulando uma taxa de sucesso realista.</returns>
+            <returns>True se o pagamento for válido e processado com sucesso.</returns>
         </member>
         <member name="T:FastFood.Infrastructure.Services.SmsNotificationService">
             <summary>
