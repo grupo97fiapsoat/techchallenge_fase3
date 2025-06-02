@@ -186,10 +186,9 @@ public class CustomersController : ControllerBase
     /// 1. **Autenticação**: Inclua o token JWT de administrador no header Authorization
     /// 2. **Paginação**: Use os parâmetros pageSize e pageNumber para controlar a quantidade de resultados
     /// 3. **Ordenação**: Os resultados são ordenados por data de cadastro (mais recentes primeiro)
-    /// 
-    /// **Exemplo de uso:**
+    ///    /// **Exemplo de uso:**
     /// ```
-    /// GET /api/v1/customers?pageNumber=1&pageSize=20
+    /// GET /api/v1/customers?pageNumber=1&amp;pageSize=20
     /// Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
     /// ```
     /// 
