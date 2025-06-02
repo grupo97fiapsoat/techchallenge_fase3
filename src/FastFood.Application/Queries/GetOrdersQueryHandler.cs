@@ -38,14 +38,12 @@ public class GetOrdersQueryHandler : IRequestHandler<GetOrdersQuery, GetOrdersQu
                 request.PageNumber, 
                 request.PageSize,
                 request.CustomerId,
-                status);
-
-            // Map to DTO
+                status);            // Map to DTO
             var orderItems = orders.Select(o => new OrderItem
             {
                 Id = o.Id,
                 CustomerId = o.CustomerId,
-                CustomerName = o.Customer.Name,
+                CustomerName = o.Customer?.Name, // Null para pedidos anônimos
                 TotalPrice = o.TotalPrice,
                 Status = o.Status.ToString(),
                 CreatedAt = o.CreatedAt,

@@ -82,14 +82,18 @@ public class OrderRepository : RepositoryBase<Order>, IOrderRepository
         if (status.HasValue)
             query = query.Where(o => o.Status == status);
 
-        var totalCount = await query.CountAsync();
-
-        var orders = await query
+        var totalCount = await query.CountAsync();        var orders = await query
             .OrderByDescending(o => o.CreatedAt)
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync();
 
         return (orders, totalCount);
+    }
+
+    public async Task<bool> CustomerHasOrdersAsync(Guid customerId, CancellationToken cancellationToken = default)
+    {
+        return await DbSet
+            .AnyAsync(o => o.CustomerId == customerId, cancellationToken);
     }
 }

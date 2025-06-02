@@ -30,13 +30,11 @@ public class GetOrderByIdQueryHandler : IRequestHandler<GetOrderByIdQuery, GetOr
                     Success = false,
                     Error = $"Pedido com ID {request.Id} não encontrado"
                 };
-            }
-
-            var orderDto = new OrderDto
+            }            var orderDto = new OrderDto
             {
                 Id = order.Id,
                 CustomerId = order.CustomerId,
-                CustomerName = order.Customer.Name,
+                CustomerName = order.Customer?.Name, // Null para pedidos anônimos
                 Status = order.Status.ToString(),
                 TotalPrice = order.TotalPrice,
                 CreatedAt = order.CreatedAt,

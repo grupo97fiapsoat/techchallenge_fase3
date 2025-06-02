@@ -9,11 +9,10 @@ namespace FastFood.Api.Filters
     /// Filtro para adicionar suporte a autenticação JWT no Swagger
     /// </summary>
     public class SecurityRequirementsOperationFilter : IOperationFilter
-    {
-        public void Apply(OpenApiOperation operation, OperationFilterContext context)
+    {        public void Apply(OpenApiOperation operation, OperationFilterContext context)
         {
             // Verifica se o endpoint tem o atributo [AllowAnonymous]
-            var hasAllowAnonymous = context.MethodInfo.DeclaringType.GetCustomAttributes(true)
+            var hasAllowAnonymous = (context.MethodInfo.DeclaringType?.GetCustomAttributes(true) ?? Enumerable.Empty<object>())
                 .Union(context.MethodInfo.GetCustomAttributes(true))
                 .OfType<Microsoft.AspNetCore.Authorization.AllowAnonymousAttribute>()
                 .Any();
@@ -22,15 +21,29 @@ namespace FastFood.Api.Filters
                 return;
 
             // Verifica se o endpoint requer autenticação
-            var hasAuthorize = context.MethodInfo.DeclaringType.GetCustomAttributes(true)
+            var hasAuthorize = (context.MethodInfo.DeclaringType?.GetCustomAttributes(true) ?? Enumerable.Empty<object>())
                 .Union(context.MethodInfo.GetCustomAttributes(true))
                 .OfType<Microsoft.AspNetCore.Authorization.AuthorizeAttribute>()
-                .Any();
-
-            if (hasAuthorize)
+                .Any();if (hasAuthorize)
             {
-                operation.Responses.Add("401", new OpenApiResponse { Description = "Não autorizado - Token JWT inválido ou expirado" });
-                operation.Responses.Add("403", new OpenApiResponse { Description = "Acesso negado - Permissões insuficientes" });
+                operation.Responses.Add("401", new OpenApiResponse 
+                { 
+                    Description = "**Não autorizado** - Token JWT inválido, expirado ou ausente. Faça login em `/api/v1/auth/login` para obter um token válido." 
+                });
+                operation.Responses.Add("403", new OpenApiResponse 
+                { 
+                    Description = "**Acesso negado** - Token válido, mas permissões insuficientes para esta operação." 
+                });
+
+                // Adiciona uma descrição mais clara sobre a necessidade de autenticação
+                if (string.IsNullOrEmpty(operation.Description))
+                {
+                    operation.Description = "**Este endpoint requer autenticação JWT.**";
+                }
+                else
+                {
+                    operation.Description = $"**Este endpoint requer autenticação JWT.**\n\n{operation.Description}";
+                }
 
                 var jwtbearerScheme = new OpenApiSecurityScheme
                 {
@@ -44,6 +57,18 @@ namespace FastFood.Api.Filters
                         [jwtbearerScheme] = new string[] {}
                     }
                 };
+            }
+            else
+            {
+                // Adiciona informação para endpoints públicos
+                if (string.IsNullOrEmpty(operation.Description))
+                {
+                    operation.Description = "**Endpoint público** - Não requer autenticação.";
+                }
+                else
+                {
+                    operation.Description = $"**Endpoint público** - Não requer autenticação.\n\n{operation.Description}";
+                }
             }
         }
     }

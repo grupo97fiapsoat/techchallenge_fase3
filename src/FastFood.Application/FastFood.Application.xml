@@ -59,6 +59,26 @@
             Handler do comando de confirmação de pagamento
             </summary>
         </member>
+        <member name="T:FastFood.Application.Commands.DeleteCustomerCommand">
+            <summary>
+            Command para excluir um cliente
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.Commands.DeleteCustomerCommand.Id">
+            <summary>
+            Identificador único do cliente a ser excluído
+            </summary>
+        </member>
+        <member name="T:FastFood.Application.Commands.DeleteCustomerCommandHandler">
+            <summary>
+            Handler para processar o command de exclusão de cliente
+            </summary>
+        </member>
+        <member name="T:FastFood.Application.Commands.DeleteCustomerCommandValidator">
+            <summary>
+            Validador para o command de exclusão de cliente
+            </summary>
+        </member>
         <member name="T:FastFood.Application.Commands.LoginCommand">
             <summary>
             Comando para autenticação de usuário.
@@ -214,6 +234,76 @@
             Nome de usuário do usuário registrado.
             </summary>
         </member>
+        <member name="T:FastFood.Application.Commands.UpdateCustomerCommand">
+            <summary>
+            Command para atualizar um cliente existente
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.Commands.UpdateCustomerCommand.Id">
+            <summary>
+            Identificador único do cliente a ser atualizado
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.Commands.UpdateCustomerCommand.Name">
+            <summary>
+            Novo nome do cliente (opcional)
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.Commands.UpdateCustomerCommand.Email">
+            <summary>
+            Novo email do cliente (opcional)
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.Commands.UpdateCustomerCommand.Cpf">
+            <summary>
+            Novo CPF do cliente (opcional)
+            </summary>
+        </member>
+        <member name="T:FastFood.Application.Commands.UpdateCustomerCommandResult">
+            <summary>
+            Resultado do command de atualização de cliente
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.Commands.UpdateCustomerCommandResult.Id">
+            <summary>
+            Identificador único do cliente
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.Commands.UpdateCustomerCommandResult.Name">
+            <summary>
+            Nome atualizado do cliente
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.Commands.UpdateCustomerCommandResult.Email">
+            <summary>
+            Email atualizado do cliente
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.Commands.UpdateCustomerCommandResult.Cpf">
+            <summary>
+            CPF atualizado do cliente
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.Commands.UpdateCustomerCommandResult.CreatedAt">
+            <summary>
+            Data e hora de criação do registro
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.Commands.UpdateCustomerCommandResult.UpdatedAt">
+            <summary>
+            Data e hora da última atualização
+            </summary>
+        </member>
+        <member name="T:FastFood.Application.Commands.UpdateCustomerCommandHandler">
+            <summary>
+            Handler para processar o command de atualização de cliente
+            </summary>
+        </member>
+        <member name="T:FastFood.Application.Commands.UpdateCustomerCommandValidator">
+            <summary>
+            Validador para o command de atualização de cliente
+            </summary>
+        </member>
         <member name="T:FastFood.Application.DTOs.ConfirmPaymentDto">
             <summary>
             DTO para confirmação de pagamento de um pedido
@@ -278,7 +368,7 @@
         </member>
         <member name="P:FastFood.Application.DTOs.CreateOrderDto.CustomerId">
             <summary>
-            ID do cliente que está fazendo o pedido
+            ID do cliente que está fazendo o pedido (opcional para pedidos anônimos)
             </summary>
             <example>f47ac10b-58cc-4372-a567-0e02b2c3d479</example>
         </member>
@@ -474,12 +564,12 @@
         </member>
         <member name="P:FastFood.Application.DTOs.OrderDto.CustomerId">
             <summary>
-            Identificador do cliente que fez o pedido
+            Identificador do cliente que fez o pedido (null para pedidos anônimos)
             </summary>
         </member>
         <member name="P:FastFood.Application.DTOs.OrderDto.CustomerName">
             <summary>
-            Nome do cliente que fez o pedido
+            Nome do cliente que fez o pedido (null para pedidos anônimos)
             </summary>
         </member>
         <member name="P:FastFood.Application.DTOs.OrderDto.Items">
@@ -545,6 +635,42 @@
         <member name="P:FastFood.Application.DTOs.OrderItemDto.Observation">
             <summary>
             Observações do item (exemplo: sem cebola, sem tomate, etc.)
+            </summary>
+        </member>
+        <member name="T:FastFood.Application.DTOs.OrderStatusDto">
+            <summary>
+            DTO para consulta pública do status de um pedido
+            Usado pelo endpoint público que permite acompanhamento de pedidos anônimos
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.DTOs.OrderStatusDto.OrderId">
+            <summary>
+            ID único do pedido
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.DTOs.OrderStatusDto.Status">
+            <summary>
+            Status atual do pedido
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.DTOs.OrderStatusDto.StatusDescription">
+            <summary>
+            Descrição amigável do status atual
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.DTOs.OrderStatusDto.TotalPrice">
+            <summary>
+            Valor total do pedido
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.DTOs.OrderStatusDto.CreatedAt">
+            <summary>
+            Data e hora de criação do pedido
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.DTOs.OrderStatusDto.IsAnonymous">
+            <summary>
+            Indica se o pedido foi feito por um cliente anônimo
             </summary>
         </member>
         <member name="T:FastFood.Application.DTOs.ProcessCheckoutDto">
@@ -676,6 +802,26 @@
             </summary>
             <example>Senha@123</example>
         </member>
+        <member name="T:FastFood.Application.DTOs.UpdateCustomerDto">
+            <summary>
+            DTO para atualização de dados de um cliente existente
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.DTOs.UpdateCustomerDto.Name">
+            <summary>
+            Nome completo do cliente
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.DTOs.UpdateCustomerDto.Email">
+            <summary>
+            Endereço de e-mail do cliente
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.DTOs.UpdateCustomerDto.Cpf">
+            <summary>
+            CPF do cliente (apenas números)
+            </summary>
+        </member>
         <member name="T:FastFood.Application.DTOs.UpdateOrderStatusDto">
             <summary>
             DTO para atualização do status de um pedido
@@ -806,6 +952,76 @@
             <param name="request">Dados do registro</param>
             <param name="cancellationToken">Token de cancelamento</param>
             <returns>Resultado do registro</returns>
+        </member>
+        <member name="T:FastFood.Application.Queries.GetAllCustomersQuery">
+            <summary>
+            Query para listar todos os clientes com suporte a paginação
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.Queries.GetAllCustomersQuery.PageNumber">
+            <summary>
+            Número da página (começando em 1)
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.Queries.GetAllCustomersQuery.PageSize">
+            <summary>
+            Quantidade de itens por página
+            </summary>
+        </member>
+        <member name="T:FastFood.Application.Queries.GetAllCustomersQueryResult">
+            <summary>
+            Resultado da query de listagem de clientes
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.Queries.GetAllCustomersQueryResult.Customers">
+            <summary>
+            Lista de clientes encontrados
+            </summary>
+        </member>
+        <member name="T:FastFood.Application.Queries.GetAllCustomersQueryResult.CustomerResult">
+            <summary>
+            Informações de um cliente no resultado da query
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.Queries.GetAllCustomersQueryResult.CustomerResult.Id">
+            <summary>
+            Identificador único do cliente
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.Queries.GetAllCustomersQueryResult.CustomerResult.Name">
+            <summary>
+            Nome completo do cliente
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.Queries.GetAllCustomersQueryResult.CustomerResult.Email">
+            <summary>
+            Endereço de e-mail do cliente
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.Queries.GetAllCustomersQueryResult.CustomerResult.Cpf">
+            <summary>
+            CPF do cliente (apenas números)
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.Queries.GetAllCustomersQueryResult.CustomerResult.CreatedAt">
+            <summary>
+            Data e hora de criação do registro
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.Queries.GetAllCustomersQueryResult.CustomerResult.UpdatedAt">
+            <summary>
+            Data e hora da última atualização
+            </summary>
+        </member>
+        <member name="T:FastFood.Application.Queries.GetAllCustomersQueryHandler">
+            <summary>
+            Handler para processar a query de listagem de todos os clientes
+            </summary>
+        </member>
+        <member name="T:FastFood.Application.Queries.GetAllCustomersQueryValidator">
+            <summary>
+            Validador para a query de listagem de clientes
+            </summary>
         </member>
         <member name="T:FastFood.Application.Queries.GetProductByIdQuery">
             <summary>

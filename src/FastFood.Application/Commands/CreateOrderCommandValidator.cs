@@ -4,11 +4,13 @@ using FastFood.Application.Commands;
 namespace FastFood.Application.Commands;
 
 public class CreateOrderCommandValidator : AbstractValidator<CreateOrderCommand>
-{
-    public CreateOrderCommandValidator()
+{    public CreateOrderCommandValidator()
     {
+        // CustomerId é opcional para pedidos anônimos
+        // Quando informado, deve ser um GUID válido (não vazio)
         RuleFor(x => x.CustomerId)
-            .NotEmpty().WithMessage("O ID do cliente é obrigatório");
+            .Must(customerId => !customerId.HasValue || customerId.Value != Guid.Empty)
+            .WithMessage("Quando informado, o ID do cliente deve ser um GUID válido");
 
         RuleFor(x => x.Items)
             .NotEmpty().WithMessage("Os itens do pedido são obrigatórios")

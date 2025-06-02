@@ -8,7 +8,18 @@ using Microsoft.AspNetCore.Mvc;
 namespace FastFood.Api.Controllers;
 
 /// <summary>
-/// Controlador para autenticação de usuários
+/// Controlador para autenticação e registro de usuários
+/// 
+/// **Finalidade:** Gerencia o sistema de autenticação JWT da aplicação.
+/// 
+/// **Endpoints disponíveis:**
+/// - **Login**: Autentica um usuário e retorna um token JWT
+/// - **Registro**: Registra um novo usuário no sistema
+/// 
+/// **Fluxo típico:**
+/// 1. Registre-se usando o endpoint `/register` 
+/// 2. Faça login usando o endpoint `/login`
+/// 3. Use o token retornado no header `Authorization: Bearer {token}` para acessar endpoints protegidos
 /// </summary>
 [ApiController]
 [Route("api/v1/auth")]
@@ -26,16 +37,32 @@ public class AuthController : ControllerBase
     {
         _mediator = mediator;
         _logger = logger;
-    }
-
-    /// <summary>
-    /// Realiza o login de um usuário
+    }    /// <summary>
+    /// Realiza o login de um usuário existente
+    /// 
+    /// **Como usar:**
+    /// 1. Envie as credenciais (username e password) no corpo da requisição
+    /// 2. Se as credenciais estiverem corretas, receberá um token JWT na resposta
+    /// 3. Use este token no header `Authorization: Bearer {token}` para acessar endpoints protegidos
+    /// 
+    /// **Exemplo de uso:**
+    /// ```json
+    /// {
+    ///   "username": "admin",
+    ///   "password": "admin123"
+    /// }
+    /// ```
+    /// 
+    /// **Resposta de sucesso inclui:**
+    /// - Token JWT válido por 24 horas
+    /// - Informações básicas do usuário
+    /// - Data de expiração do token
     /// </summary>
-    /// <param name="request">Dados de login</param>
-    /// <returns>Token JWT e informações do usuário</returns>
-    /// <response code="200">Login realizado com sucesso</response>
-    /// <response code="400">Dados inválidos</response>
-    /// <response code="401">Credenciais inválidas</response>
+    /// <param name="request">Dados de login (username e password)</param>
+    /// <returns>Token JWT e informações do usuário autenticado</returns>
+    /// <response code="200">Login realizado com sucesso - Retorna token JWT</response>
+    /// <response code="400">Dados inválidos - Verifique o formato dos dados enviados</response>
+    /// <response code="401">Credenciais inválidas - Username ou password incorretos</response>
     [HttpPost("login")]
     [AllowAnonymous]
     [ProducesResponseType(typeof(LoginCommandResult), StatusCodes.Status200OK)]
@@ -62,15 +89,35 @@ public class AuthController : ControllerBase
 
         _logger.LogInformation("Login bem-sucedido para usuário: {Username}", request.Username);
         return Ok(result);
-    }
-
-    /// <summary>
-    /// Registra um novo usuário
+    }    /// <summary>
+    /// Registra um novo usuário no sistema
+    /// 
+    /// **Como usar:**
+    /// 1. Envie os dados do novo usuário no corpo da requisição
+    /// 2. A senha deve ter pelo menos 6 caracteres
+    /// 3. O username deve ser único no sistema
+    /// 4. Após o registro, use o endpoint `/login` para obter um token
+    /// 
+    /// **Validações aplicadas:**
+    /// - Username: obrigatório e único
+    /// - Email: formato válido e único
+    /// - Password: mínimo 6 caracteres
+    /// - ConfirmPassword: deve ser igual ao password
+    /// 
+    /// **Exemplo de uso:**
+    /// ```json
+    /// {
+    ///   "username": "novouser",
+    ///   "email": "user@email.com",
+    ///   "password": "senha123",
+    ///   "confirmPassword": "senha123"
+    /// }
+    /// ```
     /// </summary>
-    /// <param name="request">Dados do novo usuário</param>
-    /// <returns>Informações do usuário registrado</returns>
-    /// <response code="201">Usuário registrado com sucesso</response>
-    /// <response code="400">Dados inválidos</response>
+    /// <param name="request">Dados do novo usuário (username, email, password, confirmPassword)</param>
+    /// <returns>Informações do usuário registrado (sem token - faça login para obter)</returns>
+    /// <response code="201">Usuário registrado com sucesso - Faça login para obter o token</response>
+    /// <response code="400">Dados inválidos - Verifique se todos os campos estão preenchidos corretamente</response>
     [HttpPost("register")]
     [AllowAnonymous]
     [ProducesResponseType(typeof(RegisterUserCommandResult), StatusCodes.Status201Created)]

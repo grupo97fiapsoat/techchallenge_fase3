@@ -17,11 +17,14 @@ public abstract class RepositoryBase<T> : IRepository<T> where T : class, IEntit
     {
         Context = context;
         DbSet = context.Set<T>();
-    }
-
-    public virtual async Task<T?> GetByIdAsync(Guid id)
+    }    public virtual async Task<T?> GetByIdAsync(Guid id)
     {
         return await DbSet.FindAsync(id);
+    }
+    
+    public virtual async Task<T?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+    {
+        return await DbSet.FindAsync(new object[] { id }, cancellationToken);
     }
 
     public virtual async Task<IEnumerable<T>> GetAllAsync(int pageNumber = 1, int pageSize = 10)
@@ -30,6 +33,14 @@ public abstract class RepositoryBase<T> : IRepository<T> where T : class, IEntit
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync();
+    }
+    
+    public virtual async Task<IEnumerable<T>> GetAllAsync(int pageNumber, int pageSize, CancellationToken cancellationToken)
+    {
+        return await DbSet
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync(cancellationToken);
     }
 
     public virtual async Task<T> CreateAsync(T entity)
@@ -43,12 +54,16 @@ public abstract class RepositoryBase<T> : IRepository<T> where T : class, IEntit
     {
         DbSet.Update(entity);
         await Context.SaveChangesAsync();
-    }
-
-    public virtual async Task DeleteAsync(T entity)
+    }    public virtual async Task DeleteAsync(T entity)
     {
         DbSet.Remove(entity);
         await Context.SaveChangesAsync();
+    }
+
+    public virtual async Task DeleteAsync(T entity, CancellationToken cancellationToken)
+    {
+        DbSet.Remove(entity);
+        await Context.SaveChangesAsync(cancellationToken);
     }
 
     protected virtual IQueryable<T> AddPagination(IQueryable<T> query, int pageNumber = 1, int pageSize = 10)

@@ -2,6 +2,10 @@
 
 ## Fluxo de Pedidos com Pagamento via QR Code
 
+### Suporte a Pedidos Anônimos
+
+O sistema agora suporta **pedidos anônimos**, permitindo que clientes façam pedidos sem se identificar. Para acompanhar esses pedidos, foi criado um endpoint público específico.
+
 ### Status dos Pedidos
 
 O sistema de pedidos agora possui os seguintes status:
@@ -139,6 +143,40 @@ O sistema envia notificações automáticas:
 
 - **Mudança de Status**: Para todas as mudanças de status
 - **Pedido Pronto**: Notificação especial quando status vira `Ready`
+
+### Acompanhamento de Pedidos (Público)
+
+#### Consultar Status do Pedido - PÚBLICO
+```http
+GET /api/v1/orders/{id}/status
+```
+
+**Finalidade:** Permite que qualquer cliente (incluindo anônimos) consulte o status de um pedido usando apenas o OrderId.
+
+**Características:**
+- **Endpoint público** - Não requer autenticação
+- **Seguro** - Retorna apenas informações básicas (sem dados pessoais)
+- **Para clientes anônimos** - Solução para acompanhamento sem login
+
+**Resposta:**
+```json
+{
+  "orderId": "550e8400-e29b-41d4-a716-446655440000",
+  "status": "Processing",
+  "statusDescription": "Seu pedido está sendo preparado",
+  "totalPrice": 45.50,
+  "createdAt": "2025-06-02T10:30:00Z",
+  "isAnonymous": true
+}
+```
+
+**Status e Descrições:**
+- `Pending` → "Pedido criado, aguardando pagamento"
+- `AwaitingPayment` → "Aguardando confirmação do pagamento"
+- `Paid` → "Pagamento confirmado"
+- `Processing` → "Seu pedido está sendo preparado"
+- `Ready` → "Pedido pronto para retirada"
+- `Completed` → "Pedido finalizado"
 
 ### Retrocompatibilidade
 

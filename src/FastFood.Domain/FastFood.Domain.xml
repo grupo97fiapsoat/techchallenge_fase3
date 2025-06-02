@@ -86,6 +86,14 @@
             <param name="cpf">O CPF do cliente</param>
             <returns>O cliente encontrado ou null se não existir</returns>
         </member>
+        <member name="M:FastFood.Domain.Customers.Repositories.ICustomerRepository.GetByCpfAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Obtém um cliente pelo seu CPF com suporte a cancelamento.
+            </summary>
+            <param name="cpf">O CPF do cliente</param>
+            <param name="cancellationToken">Token de cancelamento da operação</param>
+            <returns>O cliente encontrado ou null se não existir</returns>
+        </member>
         <member name="T:FastFood.Domain.Customers.ValueObjects.Cpf">
             <summary>
             Value Object que representa um CPF válido.
@@ -215,7 +223,7 @@
         </member>
         <member name="P:FastFood.Domain.Orders.Entities.Order.CustomerId">
             <summary>
-            ID do cliente que realizou o pedido.
+            ID do cliente que realizou o pedido. Null para pedidos anônimos.
             </summary>
         </member>
         <member name="P:FastFood.Domain.Orders.Entities.Order.Items">
@@ -248,18 +256,18 @@
             Construtor privado para uso do EF Core.
             </summary>
         </member>
-        <member name="M:FastFood.Domain.Orders.Entities.Order.#ctor(System.Guid,System.Collections.Generic.List{FastFood.Domain.Orders.ValueObjects.OrderItem})">
+        <member name="M:FastFood.Domain.Orders.Entities.Order.#ctor(System.Nullable{System.Guid},System.Collections.Generic.List{FastFood.Domain.Orders.ValueObjects.OrderItem})">
             <summary>
             Construtor interno para criação de pedido.
             </summary>
-            <param name="customerId">ID do cliente que está realizando o pedido.</param>
+            <param name="customerId">ID do cliente que está realizando o pedido (null para pedidos anônimos).</param>
             <param name="items">Itens do pedido.</param>
         </member>
-        <member name="M:FastFood.Domain.Orders.Entities.Order.Create(System.Guid,System.Collections.Generic.List{FastFood.Domain.Orders.ValueObjects.OrderItem})">
+        <member name="M:FastFood.Domain.Orders.Entities.Order.Create(System.Nullable{System.Guid},System.Collections.Generic.List{FastFood.Domain.Orders.ValueObjects.OrderItem})">
             <summary>
             Factory method para criar um novo pedido com validação de todos os campos.
             </summary>
-            <param name="customerId">ID do cliente que está realizando o pedido.</param>
+            <param name="customerId">ID do cliente que está realizando o pedido (null para pedidos anônimos).</param>
             <param name="items">Itens do pedido.</param>
             <returns>Uma nova instância de Order com os dados validados.</returns>
             <exception cref="T:FastFood.Domain.Orders.Exceptions.OrderDomainException">Lançada quando algum dos campos é inválido.</exception>
@@ -355,6 +363,14 @@
             <param name="customerId">Filtro opcional por cliente</param>
             <param name="status">Filtro opcional por status</param>
             <returns>Uma tupla com os pedidos encontrados e o total de registros</returns>
+        </member>
+        <member name="M:FastFood.Domain.Orders.Repositories.IOrderRepository.CustomerHasOrdersAsync(System.Guid,System.Threading.CancellationToken)">
+            <summary>
+            Verifica se um cliente possui pedidos associados.
+            </summary>
+            <param name="customerId">O identificador do cliente</param>
+            <param name="cancellationToken">Token de cancelamento da operação</param>
+            <returns>True se o cliente possui pedidos, False caso contrário</returns>
         </member>
         <member name="T:FastFood.Domain.Orders.Services.INotificationService">
             <summary>
@@ -737,12 +753,29 @@
             <param name="id">O identificador da entidade</param>
             <returns>A entidade encontrada ou null se não existir</returns>
         </member>
+        <member name="M:FastFood.Domain.Shared.Repositories.IRepository`1.GetByIdAsync(System.Guid,System.Threading.CancellationToken)">
+            <summary>
+            Obtém uma entidade pelo seu identificador com suporte a cancelamento.
+            </summary>
+            <param name="id">O identificador da entidade</param>
+            <param name="cancellationToken">Token de cancelamento da operação</param>
+            <returns>A entidade encontrada ou null se não existir</returns>
+        </member>
         <member name="M:FastFood.Domain.Shared.Repositories.IRepository`1.GetAllAsync(System.Int32,System.Int32)">
             <summary>
             Obtém todas as entidades do tipo, com suporte a paginação.
             </summary>
             <param name="pageNumber">O número da página, começando em 1</param>
             <param name="pageSize">O tamanho da página</param>
+            <returns>Uma coleção com as entidades encontradas</returns>
+        </member>
+        <member name="M:FastFood.Domain.Shared.Repositories.IRepository`1.GetAllAsync(System.Int32,System.Int32,System.Threading.CancellationToken)">
+            <summary>
+            Obtém todas as entidades do tipo, com suporte a paginação e cancelamento.
+            </summary>
+            <param name="pageNumber">O número da página, começando em 1</param>
+            <param name="pageSize">O tamanho da página</param>
+            <param name="cancellationToken">Token de cancelamento da operação</param>
             <returns>Uma coleção com as entidades encontradas</returns>
         </member>
         <member name="M:FastFood.Domain.Shared.Repositories.IRepository`1.CreateAsync(`0)">
@@ -763,6 +796,13 @@
             Remove uma entidade do repositório.
             </summary>
             <param name="entity">A entidade a ser removida</param>
+        </member>
+        <member name="M:FastFood.Domain.Shared.Repositories.IRepository`1.DeleteAsync(`0,System.Threading.CancellationToken)">
+            <summary>
+            Remove uma entidade do repositório com suporte a cancelamento.
+            </summary>
+            <param name="entity">A entidade a ser removida</param>
+            <param name="cancellationToken">Token de cancelamento da operação</param>
         </member>
         <member name="T:FastFood.Domain.Shared.ValueObjects.IValueObject">
             <summary>
