@@ -13,9 +13,14 @@ public class ConfirmPaymentCommand : IRequest<ConfirmPaymentCommandResult>
     public Guid OrderId { get; set; }
     
     /// <summary>
-    /// QR Code usado para pagamento (para validação)
+    /// ID da preferência de pagamento (recomendado)
     /// </summary>
-    public string QrCode { get; set; } = string.Empty;
+    public string? PreferenceId { get; set; }
+
+    /// <summary>
+    /// QR Code usado para pagamento (compatibilidade retroativa)
+    /// </summary>
+    public string? QrCode { get; set; }
 }
 
 /// <summary>

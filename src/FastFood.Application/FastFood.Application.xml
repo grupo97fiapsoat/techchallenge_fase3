@@ -14,9 +14,14 @@
             ID do pedido a ser confirmado
             </summary>
         </member>
+        <member name="P:FastFood.Application.Commands.ConfirmPaymentCommand.PreferenceId">
+            <summary>
+            ID da preferência de pagamento (recomendado)
+            </summary>
+        </member>
         <member name="P:FastFood.Application.Commands.ConfirmPaymentCommand.QrCode">
             <summary>
-            QR Code usado para pagamento (para validação)
+            QR Code usado para pagamento (compatibilidade retroativa)
             </summary>
         </member>
         <member name="T:FastFood.Application.Commands.ConfirmPaymentCommandResult">
@@ -214,11 +219,22 @@
             DTO para confirmação de pagamento de um pedido
             </summary>
         </member>
+        <member name="P:FastFood.Application.DTOs.ConfirmPaymentDto.PreferenceId">
+            <summary>
+            ID da preferência de pagamento (recomendado)
+            </summary>
+            <example>FAKE-12345678-abcd-1234-abcd-123456789abc</example>
+        </member>
         <member name="P:FastFood.Application.DTOs.ConfirmPaymentDto.QrCode">
             <summary>
-            QR Code usado para pagamento
+            QR Code usado para pagamento (compatibilidade retroativa)
             </summary>
-            <example>QR_CODE_12345_ABCDEF</example>
+            <example>https://sandbox.mercadopago.com.br/checkout/v1/redirect?pref_id=FAKE-12345</example>
+        </member>
+        <member name="P:FastFood.Application.DTOs.ConfirmPaymentDto.IsValid">
+            <summary>
+            Valida se pelo menos um dos campos foi fornecido
+            </summary>
         </member>
         <member name="T:FastFood.Application.DTOs.ConfirmPaymentResponseDto">
             <summary>

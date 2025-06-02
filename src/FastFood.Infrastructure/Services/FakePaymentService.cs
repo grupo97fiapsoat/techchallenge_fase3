@@ -42,6 +42,7 @@ public class FakePaymentService : IPaymentService
     }    /// <summary>
     /// Simula o processamento de um pagamento.
     /// Valida se o QR Code fornecido corresponde ao QR Code gerado para o pedido.
+    /// Agora extrai o PreferenceId do QR Code para validação, seguindo o padrão da indústria.
     /// </summary>
     /// <param name="orderId">ID do pedido.</param>
     /// <param name="qrCode">QR Code usado para pagamento.</param>
@@ -72,28 +73,38 @@ public class FakePaymentService : IPaymentService
         }
 
         _logger.LogInformation("[FAKE PAYMENT] Pedido encontrado - Status: {Status}", order.Status);
-        _logger.LogInformation("[FAKE PAYMENT] QR Code no banco: {QrCodeInDatabase}", order.QrCode ?? "NULL");
+        _logger.LogInformation("[FAKE PAYMENT] PreferenceId no banco: {PreferenceIdInDatabase}", order.PreferenceId ?? "NULL");
         
-        // Validação se o QR Code foi definido para o pedido
-        if (string.IsNullOrWhiteSpace(order.QrCode))
+        // Validação se o PreferenceId foi definido para o pedido
+        if (string.IsNullOrWhiteSpace(order.PreferenceId))
         {
-            _logger.LogWarning("[FAKE PAYMENT] QR Code não foi definido para o pedido {OrderId}", orderId);
+            _logger.LogWarning("[FAKE PAYMENT] PreferenceId não foi definido para o pedido {OrderId}", orderId);
             return false;
         }
 
-        // Comparação exata dos QR Codes
-        bool qrCodeMatches = string.Equals(order.QrCode.Trim(), qrCode.Trim(), StringComparison.OrdinalIgnoreCase);
-        _logger.LogInformation("[FAKE PAYMENT] QR Codes são iguais? {QrCodeMatches}", qrCodeMatches);
+        // Extrai o PreferenceId do QR Code
+        var extractedPreferenceId = ExtractPreferenceIdFromQrCode(qrCode);
+        _logger.LogInformation("[FAKE PAYMENT] PreferenceId extraído do QR Code: {ExtractedPreferenceId}", extractedPreferenceId ?? "NULL");
         
-        if (!qrCodeMatches)
+        if (string.IsNullOrWhiteSpace(extractedPreferenceId))
         {
-            _logger.LogWarning("[FAKE PAYMENT] QR Code inválido para o pedido {OrderId}", orderId);
-            _logger.LogWarning("[FAKE PAYMENT] Esperado: '{Expected}'", order.QrCode);
-            _logger.LogWarning("[FAKE PAYMENT] Recebido: '{Received}'", qrCode);
+            _logger.LogWarning("[FAKE PAYMENT] Não foi possível extrair PreferenceId do QR Code: {QrCode}", qrCode);
             return false;
         }
 
-        // Simula uma taxa de sucesso de 95% (apenas para pedidos com QR Code válido)
+        // Comparação dos PreferenceIds
+        bool preferenceIdMatches = string.Equals(order.PreferenceId.Trim(), extractedPreferenceId.Trim(), StringComparison.OrdinalIgnoreCase);
+        _logger.LogInformation("[FAKE PAYMENT] PreferenceIds são iguais? {PreferenceIdMatches}", preferenceIdMatches);
+        
+        if (!preferenceIdMatches)
+        {
+            _logger.LogWarning("[FAKE PAYMENT] PreferenceId inválido para o pedido {OrderId}", orderId);
+            _logger.LogWarning("[FAKE PAYMENT] Esperado: '{Expected}'", order.PreferenceId);
+            _logger.LogWarning("[FAKE PAYMENT] Extraído do QR Code: '{Extracted}'", extractedPreferenceId);
+            return false;
+        }
+
+        // Simula uma taxa de sucesso de 95% (apenas para pedidos com PreferenceId válido)
         var success = Random.Shared.NextDouble() <= 0.95;
 
         if (success)
@@ -107,5 +118,31 @@ public class FakePaymentService : IPaymentService
 
         _logger.LogInformation("[FAKE PAYMENT] === FIM DO PROCESSAMENTO DE PAGAMENTO ===");
         return success;
+    }
+
+    /// <summary>
+    /// Extrai o PreferenceId de uma URL de QR Code do MercadoPago (real ou fake).
+    /// </summary>
+    /// <param name="qrCode">URL do QR Code.</param>
+    /// <returns>PreferenceId extraído ou null se não encontrado.</returns>
+    private string? ExtractPreferenceIdFromQrCode(string qrCode)
+    {
+        try
+        {
+            // Procura pelo parâmetro pref_id na URL
+            // Exemplo: https://sandbox.mercadopago.com.br/checkout/v1/redirect?pref_id=FAKE-12345
+            var uri = new Uri(qrCode);
+            var query = System.Web.HttpUtility.ParseQueryString(uri.Query);
+            var preferenceId = query["pref_id"];
+            
+            _logger.LogDebug("[FAKE PAYMENT] Extraindo PreferenceId de: {QrCode} -> {PreferenceId}", qrCode, preferenceId ?? "NULL");
+            
+            return preferenceId;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "[FAKE PAYMENT] Erro ao extrair PreferenceId do QR Code: {QrCode}", qrCode);
+            return null;
+        }
     }
 }

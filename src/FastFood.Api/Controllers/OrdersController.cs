@@ -227,14 +227,20 @@ public class OrdersController : ControllerBase
     [HttpPost("{id:guid}/confirm-payment")]
     [ProducesResponseType(typeof(ConfirmPaymentResponseDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> ConfirmPayment([FromRoute] Guid id, [FromBody] ConfirmPaymentDto request)
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]    public async Task<IActionResult> ConfirmPayment([FromRoute] Guid id, [FromBody] ConfirmPaymentDto request)
     {
         _logger.LogInformation("Iniciando confirmação de pagamento do pedido {OrderId}", id);
+
+        // Validação inicial do DTO
+        if (!request.IsValid)
+        {
+            return BadRequest("É obrigatório fornecer o PreferenceId ou o QrCode para validação do pagamento");
+        }
 
         var command = new ConfirmPaymentCommand 
         { 
             OrderId = id,
+            PreferenceId = request.PreferenceId,
             QrCode = request.QrCode
         };
         
