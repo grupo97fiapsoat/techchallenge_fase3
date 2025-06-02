@@ -80,6 +80,7 @@ public class OrdersController : ControllerBase
     /// <returns>Lista de pedidos paginada</returns>
     /// <response code="200">Lista de pedidos</response>
     [HttpGet]
+    [Authorize] // Exige autenticação para listar todos os pedidos
     [ProducesResponseType(typeof(GetOrdersQueryResult), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAll(
         [FromQuery] Guid? customerId,
@@ -111,6 +112,7 @@ public class OrdersController : ControllerBase
     /// <response code="200">Pedido encontrado</response>
     /// <response code="404">Pedido não encontrado</response>
     [HttpGet("{id:guid}")]
+    [Authorize] // Exige autenticação para visualizar detalhes de um pedido
     [ProducesResponseType(typeof(OrderDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetById([FromRoute] Guid id)

@@ -25,22 +25,24 @@ public class ProductsController : ControllerBase
     /// <response code="201">Produto criado com sucesso</response>
     /// <response code="400">Dados inválidos do produto</response>
     [HttpPost]
-    [Authorize] // Apenas endpoints administrativos requerem autenticação
+    [Authorize] // Exige autenticação para criar um produto
     [ProducesResponseType(typeof(ProductDto), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Create(CreateProductDto createProductDto)
+    public async Task<IActionResult> Create([FromBody] CreateProductDto request)
     {
         var command = new CreateProductCommand
         {
-            Name = createProductDto.Name,
-            Description = createProductDto.Description,
-            Category = createProductDto.Category,
-            Price = createProductDto.Price,
-            ImageUrl = createProductDto.ImageUrl,
-            Images = createProductDto.Images
+            Name = request.Name,
+            Description = request.Description,
+            Category = request.Category,
+            Price = request.Price,
+            ImageUrl = request.ImageUrl,
+            Images = request.Images
         };
 
-        var result = await _mediator.Send(command);        var productDto = new ProductDto
+        var result = await _mediator.Send(command);
+
+        var productDto = new ProductDto
         {
             Id = result.Id,
             Name = result.Name,
@@ -55,7 +57,9 @@ public class ProductsController : ControllerBase
         };
 
         return CreatedAtAction(nameof(GetById), new { id = result.Id }, productDto);
-    }    /// <summary>
+    }
+
+    /// <summary>
     /// Atualiza as informações de um produto existente
     /// </summary>
     /// <param name="id">ID do produto a ser atualizado</param>
@@ -65,24 +69,26 @@ public class ProductsController : ControllerBase
     /// <response code="400">Dados inválidos do produto</response>
     /// <response code="404">Produto não encontrado</response>
     [HttpPut("{id}")]
-    [Authorize] // Apenas endpoints administrativos requerem autenticação
+    [Authorize] // Exige autenticação para atualizar um produto
     [ProducesResponseType(typeof(ProductDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Update(Guid id, UpdateProductDto updateProductDto)
+    public async Task<IActionResult> Update(Guid id, [FromBody] UpdateProductDto request)
     {
         var command = new UpdateProductCommand
         {
             Id = id,
-            Name = updateProductDto.Name,
-            Description = updateProductDto.Description,
-            Category = updateProductDto.Category,
-            Price = updateProductDto.Price,
-            ImageUrl = updateProductDto.ImageUrl,
-            Images = updateProductDto.Images
+            Name = request.Name,
+            Description = request.Description,
+            Category = request.Category,
+            Price = request.Price,
+            ImageUrl = request.ImageUrl,
+            Images = request.Images
         };
 
-        var result = await _mediator.Send(command);        var productDto = new ProductDto
+        var result = await _mediator.Send(command);
+
+        var productDto = new ProductDto
         {
             Id = result.Id,
             Name = result.Name,
@@ -97,7 +103,9 @@ public class ProductsController : ControllerBase
         };
 
         return Ok(productDto);
-    }    /// <summary>
+    }
+
+    /// <summary>
     /// Exclui um produto do catálogo
     /// </summary>
     /// <param name="id">ID do produto a ser excluído</param>
@@ -105,7 +113,7 @@ public class ProductsController : ControllerBase
     /// <response code="204">Produto excluído com sucesso</response>
     /// <response code="404">Produto não encontrado</response>
     [HttpDelete("{id}")]
-    [Authorize] // Apenas endpoints administrativos requerem autenticação
+    [Authorize] // Exige autenticação para excluir um produto
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(Guid id)

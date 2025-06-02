@@ -27,15 +27,16 @@ public class CustomersController : ControllerBase
     /// <response code="201">Cliente criado com sucesso</response>
     /// <response code="400">Dados inválidos</response>
     [HttpPost]
+    [Authorize] // Exige autenticação para criar um cliente
     [ProducesResponseType(typeof(CustomerDto), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Create([FromBody] CreateCustomerDto request)
+    public async Task<IActionResult> Create([FromBody] CreateCustomerDto createCustomerDto)
     {
         var command = new CreateCustomerCommand
         {
-            Name = request.Name,
-            Email = request.Email,
-            Cpf = request.Cpf
+            Name = createCustomerDto.Name,
+            Email = createCustomerDto.Email,
+            Cpf = createCustomerDto.Cpf
         };
 
         var result = await _mediator.Send(command);

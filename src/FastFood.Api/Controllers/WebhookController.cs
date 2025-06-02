@@ -1,4 +1,5 @@
 using FastFood.Infrastructure.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Text;
 using Microsoft.Extensions.Logging;
@@ -7,6 +8,7 @@ namespace FastFood.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [AllowAnonymous] // Permite acesso sem autenticação, pois é chamado pelo Mercado Pago
     public class WebhookController : ControllerBase
     {
         private readonly ILogger<WebhookController> _logger;

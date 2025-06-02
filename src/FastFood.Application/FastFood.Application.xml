@@ -573,7 +573,7 @@
         </member>
         <member name="P:FastFood.Application.DTOs.ProductDto.Id">
             <summary> 
-            Identificador £nico do produto 
+            Identificador �nico do produto 
             </summary> 
         </member>
         <member name="P:FastFood.Application.DTOs.ProductDto.Name">
@@ -583,7 +583,7 @@
         </member>
         <member name="P:FastFood.Application.DTOs.ProductDto.Description">
             <summary> 
-            Descri‡Æo detalhada do produto 
+            Descri��o detalhada do produto 
             </summary> 
         </member>
         <member name="P:FastFood.Application.DTOs.ProductDto.Category">
@@ -593,12 +593,12 @@
         </member>
         <member name="P:FastFood.Application.DTOs.ProductDto.CategoryName">
             <summary> 
-            Nome da categoria do produto (representa‡Æo em string) 
+            Nome da categoria do produto (representa��o em string) 
             </summary> 
         </member>
         <member name="P:FastFood.Application.DTOs.ProductDto.Price">
             <summary> 
-            Pre‡o do produto 
+            Pre�o do produto 
             </summary> 
         </member>
         <member name="P:FastFood.Application.DTOs.ProductDto.ImageUrl">
@@ -613,12 +613,12 @@
         </member>
         <member name="P:FastFood.Application.DTOs.ProductDto.CreatedAt">
             <summary> 
-            Data e hora de cria‡Æo do produto 
+            Data e hora de cria��o do produto 
             </summary> 
         </member>
         <member name="P:FastFood.Application.DTOs.ProductDto.UpdatedAt">
             <summary> 
-            Data e hora da £ltima atualiza‡Æo do produto 
+            Data e hora da �ltima atualiza��o do produto 
             </summary> 
         </member>
         <member name="T:FastFood.Application.DTOs.RegisterUserDto">

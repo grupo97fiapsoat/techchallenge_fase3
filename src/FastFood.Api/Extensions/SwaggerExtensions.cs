@@ -1,4 +1,5 @@
 using FastFood.Api.Examples.Swagger;
+using FastFood.Api.Filters;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
 using System.Reflection;
@@ -43,16 +44,20 @@ public static class SwaggerExtensions
             options.TagActionsBy(api => new[] { api.GroupName ?? api.ActionDescriptor.RouteValues["controller"] });
             options.DocInclusionPredicate((name, api) => true);
 
-            // Configura autenticação (caso seja implementada no futuro)
+            // Configura autenticação JWT
             options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {
-                Description = "JWT Authorization header using the Bearer scheme. Enter 'Bearer' [space] and then your token in the text input below.",
+                Description = "JWT Authorization header using the Bearer scheme.\n\n" +
+                              "Digite 'Bearer' [espaço] e então seu token no campo abaixo.\n\n" +
+                              "Exemplo: \"Bearer 12345abcdef\"",
                 Name = "Authorization",
                 In = ParameterLocation.Header,
                 Type = SecuritySchemeType.ApiKey,
-                Scheme = "Bearer"
+                Scheme = "Bearer",
+                BearerFormat = "JWT"
             });
 
+            // Adiciona a exigência de segurança globalmente
             options.AddSecurityRequirement(new OpenApiSecurityRequirement
             {
                 {
@@ -62,11 +67,17 @@ public static class SwaggerExtensions
                         {
                             Type = ReferenceType.SecurityScheme,
                             Id = "Bearer"
-                        }
+                        },
+                        Scheme = "oauth2",
+                        Name = "Bearer",
+                        In = ParameterLocation.Header,
                     },
-                    Array.Empty<string>()
+                    new List<string>()
                 }
             });
+            
+            // Adiciona o filtro de segurança para documentar os endpoints que requerem autenticação
+            options.OperationFilter<Filters.SecurityRequirementsOperationFilter>();
 
             // Configura exemplos de requests/responses
             ConfigureExamples(options);

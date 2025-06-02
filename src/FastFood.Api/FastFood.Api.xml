@@ -224,6 +224,11 @@
             Configura o Swagger/OpenAPI com documentação XML e outras configurações
             </summary>
         </member>
+        <member name="T:FastFood.Api.Filters.SecurityRequirementsOperationFilter">
+            <summary>
+            Filtro para adicionar suporte a autenticação JWT no Swagger
+            </summary>
+        </member>
         <member name="T:FastFood.Api.Models.ErrorResponse">
             <summary>
             Modelo de resposta para erros na API.

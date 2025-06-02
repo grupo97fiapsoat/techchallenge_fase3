@@ -4,7 +4,7 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS migration
 # Install SQL Server tools
 RUN apt-get update && \
     apt-get install -y curl gnupg2 && \
-    curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - && \
+    curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > /etc/apt/trusted.gpg.d/microsoft.gpg && \
     curl https://packages.microsoft.com/config/ubuntu/20.04/prod.list > /etc/apt/sources.list.d/mssql-release.list && \
     apt-get update && \
     ACCEPT_EULA=Y apt-get install -y msodbcsql18 mssql-tools18 unixodbc-dev && \
@@ -23,7 +23,7 @@ COPY ["src/FastFood.Domain/FastFood.Domain.csproj", "src/FastFood.Domain/"]
 COPY ["src/FastFood.Infrastructure/FastFood.Infrastructure.csproj", "src/FastFood.Infrastructure/"]
 
 # Restore dependencies
-RUN dotnet restore "FastFood.sln"
+RUN dotnet restore "FastFood.sln" --runtime linux-x64 --no-cache
 
 # Copy remaining source code
 COPY src/ ./src/
@@ -36,25 +36,11 @@ RUN echo '{ \
   "Logging": { \
     "LogLevel": { \
       "Default": "Information", \
-      "Microsoft.AspNetCore": "Information", \
-      "Microsoft.EntityFrameworkCore": "Information" \
+      "Microsoft": "Warning", \
+      "Microsoft.Hosting.Lifetime": "Information" \
     } \
   } \
 }' > /app/src/FastFood.Api/appsettings.Development.json
-
-# Copy migration script and make it executable
-# Não vamos mais depender de scripts externos - criamos diretamente no container
-RUN echo '#!/bin/bash' > /app/migrate.sh && \
-    echo 'set -e' >> /app/migrate.sh && \
-    echo 'echo "[MIGRATION] Iniciando processo de migração..."' >> /app/migrate.sh && \
-    echo 'echo "[MIGRATION] Verificando SQL Server..."' >> /app/migrate.sh && \
-    echo 'export ConnectionStrings__DefaultConnection="Server=db;Database=FastFood;User Id=sa;Password=\${DB_PASSWORD:-FastFood2025};TrustServerCertificate=true;"' >> /app/migrate.sh && \
-    echo 'cd /app' >> /app/migrate.sh && \
-    echo 'dotnet build -c Release src/FastFood.Api/FastFood.Api.csproj --no-restore' >> /app/migrate.sh && \
-    echo 'cd src/FastFood.Api' >> /app/migrate.sh && \
-    echo 'dotnet ef database update --verbose' >> /app/migrate.sh && \
-    echo 'echo "[MIGRATION] Migrações aplicadas com sucesso!"' >> /app/migrate.sh && \
-    chmod +x /app/migrate.sh
 
 # Install EF Core global tool
 RUN dotnet tool install --global dotnet-ef
@@ -62,17 +48,23 @@ RUN dotnet tool install --global dotnet-ef
 # Ensure global tools and SQL Server tools are in PATH
 ENV PATH="${PATH}:/root/.dotnet/tools:/opt/mssql-tools18/bin"
 
-# Set working directory to root
-WORKDIR /app
+# Set working directory to the API project
+WORKDIR /app/src/FastFood.Api
 
-# Debug information
-RUN echo "Current directory: $(pwd)" && \
-    echo "Files in current directory:" && \
-    ls -la && \
-    echo "Files in /app/src:" && \
-    ls -la /app/src && \
-    echo "Migration script:" && \
-    cat /app/migrate.sh
+# Build the project
+RUN dotnet build -c Release --no-restore
 
-# Use the migrate.sh script as entrypoint
-ENTRYPOINT ["/app/migrate.sh"]
+# Create a simple migration script
+RUN echo '#!/bin/bash' > /app/run-migrations.sh && \
+    echo 'set -e' >> /app/run-migrations.sh && \
+    echo 'echo "[MIGRATION] Iniciando processo de migração..."' >> /app/run-migrations.sh && \
+    echo 'echo "[MIGRATION] Verificando SQL Server..."' >> /app/run-migrations.sh && \
+    echo 'export ConnectionStrings__DefaultConnection="Server=db;Database=FastFood;User Id=sa;Password=FastFood2025;TrustServerCertificate=true;MultipleActiveResultSets=true;"' >> /app/run-migrations.sh && \
+    echo 'cd /app/src/FastFood.Api' >> /app/run-migrations.sh && \
+    echo 'echo "[MIGRATION] Aplicando migrações..."' >> /app/run-migrations.sh && \
+    echo 'dotnet ef database update --verbose' >> /app/run-migrations.sh && \
+    echo 'echo "[MIGRATION] Migrações aplicadas com sucesso!"' >> /app/run-migrations.sh && \
+    chmod +x /app/run-migrations.sh
+
+# Set the entrypoint to run migrations
+ENTRYPOINT ["/bin/bash", "/app/run-migrations.sh"]
