@@ -43,12 +43,14 @@ public class ProcessCheckoutCommandHandler : IRequestHandler<ProcessCheckoutComm
             {
                 throw new ValidationException($"O pedido {request.OrderId} não está no status correto para checkout. Status atual: {order.Status}");
             }            // Gerar QR Code para pagamento
-            var qrCode = await _paymentService.GenerateQrCodeAsync(order.Id, order.TotalPrice);
+            var (qrCode, preferenceId) = await _paymentService.GenerateQrCodeAsync(order.Id, order.TotalPrice);
 
             _logger.LogInformation("QR Code gerado para o pedido {OrderId}. Aguardando confirmação de pagamento", request.OrderId);
+            _logger.LogInformation("ID da Preferência: {PreferenceId}", preferenceId);
 
             // Primeiro, associar o QR Code ao pedido (ainda em status Pending)
             order.SetQrCode(qrCode);
+            order.SetPreferenceId(preferenceId);
             
             // Depois, atualizar o status para AwaitingPayment
             order.UpdateStatus(OrderStatus.AwaitingPayment);
@@ -63,6 +65,7 @@ public class ProcessCheckoutCommandHandler : IRequestHandler<ProcessCheckoutComm
             {
                 OrderId = order.Id,
                 QrCode = qrCode,
+                PreferenceId = preferenceId,
                 Status = order.Status.ToString(),
                 TotalAmount = order.TotalPrice,
                 ProcessedAt = Entity.GetBrasilDateTime()

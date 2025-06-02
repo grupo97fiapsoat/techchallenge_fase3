@@ -40,6 +40,11 @@ public class Order : Entity
     public string? QrCode { get; private set; }
 
     /// <summary>
+    /// ID da preferência no Mercado Pago.
+    /// </summary>
+    public string? PreferenceId { get; private set; }
+
+    /// <summary>
     /// Construtor privado para uso do EF Core.
     /// </summary>
     private Order() : base()
@@ -138,19 +143,28 @@ public class Order : Entity
     }
 
     /// <summary>
-    /// Define o QR Code para pagamento do pedido.
+    /// Define o QR Code do pedido.
     /// </summary>
-    /// <param name="qrCode">QR Code gerado para pagamento.</param>
-    /// <exception cref="OrderDomainException">Lançada quando o pedido não está no status adequado para gerar QR Code.</exception>
+    /// <param name="qrCode">Código QR gerado para pagamento.</param>
     public void SetQrCode(string qrCode)
     {
-        if (Status != OrderStatus.Pending)
-            throw new OrderDomainException("QR Code só pode ser definido para pedidos pendentes");
-
         if (string.IsNullOrWhiteSpace(qrCode))
-            throw new OrderDomainException("QR Code não pode ser vazio");
+            throw new OrderDomainException("O QR Code não pode ser vazio");
 
         QrCode = qrCode;
+        SetUpdatedAt();
+    }
+
+    /// <summary>
+    /// Define o ID da preferência do Mercado Pago para o pedido.
+    /// </summary>
+    /// <param name="preferenceId">ID da preferência no Mercado Pago.</param>
+    public void SetPreferenceId(string preferenceId)
+    {
+        if (string.IsNullOrWhiteSpace(preferenceId))
+            throw new OrderDomainException("O ID da preferência não pode ser vazio");
+
+        PreferenceId = preferenceId;
         SetUpdatedAt();
     }
 

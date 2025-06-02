@@ -134,6 +134,11 @@
             QR Code gerado para pagamento
             </summary>
         </member>
+        <member name="P:FastFood.Application.Commands.ProcessCheckoutCommandResult.PreferenceId">
+            <summary>
+            ID da preferência no Mercado Pago
+            </summary>
+        </member>
         <member name="P:FastFood.Application.Commands.ProcessCheckoutCommandResult.Status">
             <summary>
             Status atual do pedido
@@ -549,6 +554,11 @@
         <member name="P:FastFood.Application.DTOs.CheckoutResponseDto.QrCode">
             <summary>
             QR Code para pagamento
+            </summary>
+        </member>
+        <member name="P:FastFood.Application.DTOs.CheckoutResponseDto.PreferenceId">
+            <summary>
+            ID da preferência no Mercado Pago
             </summary>
         </member>
         <member name="P:FastFood.Application.DTOs.CheckoutResponseDto.Status">

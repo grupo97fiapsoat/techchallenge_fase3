@@ -3,6 +3,7 @@ using FastFood.Application.Commands;
 using FastFood.Application.Common.Exceptions;
 using FastFood.Application.DTOs;
 using FastFood.Application.Queries;
+using FastFood.Domain.Orders.Services;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -15,11 +16,13 @@ public class OrdersController : ControllerBase
 {
     private readonly IMediator _mediator;
     private readonly ILogger<OrdersController> _logger;
+    private readonly IPaymentService _paymentService;
 
-    public OrdersController(IMediator mediator, ILogger<OrdersController> logger)
+    public OrdersController(IMediator mediator, ILogger<OrdersController> logger, IPaymentService paymentService)
     {
         _mediator = mediator;
         _logger = logger;
+        _paymentService = paymentService;
     }
 
     /// <summary>
@@ -195,14 +198,20 @@ public class OrdersController : ControllerBase
         var command = new ProcessCheckoutCommand { OrderId = id };
         var result = await _mediator.Send(command);
 
+        // Gera o QR Code e obtém a preferência do Mercado Pago
+        string qrCode = result.QrCode;
+        string preferenceId = result.PreferenceId;
+
         var response = new CheckoutResponseDto
         {
             OrderId = result.OrderId,
-            QrCode = result.QrCode,
-            Status = result.Status,
+            QrCode = qrCode,
+            PreferenceId = preferenceId,
             TotalAmount = result.TotalAmount,
             ProcessedAt = result.ProcessedAt
-        };        _logger.LogInformation("Checkout do pedido {OrderId} processado com sucesso. QR Code gerado.", id);
+        };
+
+        _logger.LogInformation("Checkout do pedido {OrderId} processado com sucesso. QR Code gerado.", id);
         return Ok(response);
     }
     

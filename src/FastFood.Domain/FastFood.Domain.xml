@@ -238,6 +238,11 @@
             QR Code gerado para pagamento do pedido.
             </summary>
         </member>
+        <member name="P:FastFood.Domain.Orders.Entities.Order.PreferenceId">
+            <summary>
+            ID da preferência no Mercado Pago.
+            </summary>
+        </member>
         <member name="M:FastFood.Domain.Orders.Entities.Order.#ctor">
             <summary>
             Construtor privado para uso do EF Core.
@@ -283,10 +288,15 @@
         </member>
         <member name="M:FastFood.Domain.Orders.Entities.Order.SetQrCode(System.String)">
             <summary>
-            Define o QR Code para pagamento do pedido.
+            Define o QR Code do pedido.
             </summary>
-            <param name="qrCode">QR Code gerado para pagamento.</param>
-            <exception cref="T:FastFood.Domain.Orders.Exceptions.OrderDomainException">Lançada quando o pedido não está no status adequado para gerar QR Code.</exception>
+            <param name="qrCode">Código QR gerado para pagamento.</param>
+        </member>
+        <member name="M:FastFood.Domain.Orders.Entities.Order.SetPreferenceId(System.String)">
+            <summary>
+            Define o ID da preferência do Mercado Pago para o pedido.
+            </summary>
+            <param name="preferenceId">ID da preferência no Mercado Pago.</param>
         </member>
         <member name="M:FastFood.Domain.Orders.Entities.Order.IsValidStatusTransition(FastFood.Domain.Orders.ValueObjects.OrderStatus,FastFood.Domain.Orders.ValueObjects.OrderStatus)">
             <summary>
@@ -377,7 +387,7 @@
             </summary>
             <param name="orderId">ID do pedido.</param>
             <param name="amount">Valor a ser pago.</param>
-            <returns>String contendo o QR Code gerado.</returns>
+            <returns>Tupla contendo a URL do QR Code e o ID da preferência no Mercado Pago.</returns>
         </member>
         <member name="M:FastFood.Domain.Orders.Services.IPaymentService.ProcessPaymentAsync(System.Guid,System.String)">
             <summary>

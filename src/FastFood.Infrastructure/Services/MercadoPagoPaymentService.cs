@@ -5,6 +5,12 @@ using MercadoPago.Resource.Preference;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System.Text.Json;
+using System.Web;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using MercadoPago.Client.Payment;
+using MercadoPago.Http;
 
 namespace FastFood.Infrastructure.Services
 {
@@ -23,14 +29,117 @@ namespace FastFood.Infrastructure.Services
             var accessToken = _configuration["MercadoPago:AccessToken"];
             if (string.IsNullOrEmpty(accessToken))
             {
-                throw new InvalidOperationException("Mercado Pago Access Token não configurado");
+                _logger.LogWarning("MercadoPago:AccessToken não configurado. O serviço de pagamento não funcionará corretamente.");
             }
+            else
+            {
+                MercadoPagoConfig.AccessToken = accessToken;
+                _preferenceClient = new PreferenceClient();
+                _logger.LogInformation("MercadoPago Payment Service inicializado");
+            }
+        }
 
-            MercadoPagoConfig.AccessToken = accessToken;
-            _preferenceClient = new PreferenceClient();
+        public async Task<bool> ProcessPaymentAsync(Guid orderId, string qrCode)
+        {
+            try
+            {
+                _logger.LogInformation("Verificando status do pagamento para pedido {OrderId}", orderId);
 
-            _logger.LogInformation("MercadoPago Payment Service inicializado");
-        }        public async Task<string> GenerateQrCodeAsync(Guid orderId, decimal amount)
+                // Extrair o ID da preferência do QR Code
+                var preferenceId = ExtractPreferenceIdFromQrCode(qrCode);
+                if (string.IsNullOrEmpty(preferenceId))
+                {
+                    _logger.LogWarning("Não foi possível extrair o ID da preferência do QR Code");
+                    return false;
+                }
+
+
+                // Busca os pagamentos para esta preferência
+                var paymentClient = new MercadoPago.Client.Payment.PaymentClient();
+                
+                // Primeiro, tenta buscar por external_reference (ID do pedido)
+                // Busca pagamentos por external_reference (ID do pedido)
+                var searchRequest = new MercadoPago.Client.SearchRequest
+                {
+                    Limit = 10,
+                    Offset = 0,
+                    Filters = new Dictionary<string, object>
+                    {
+                        ["external_reference"] = orderId.ToString()
+                    }
+                };
+
+                _logger.LogInformation("Buscando pagamentos para o pedido {OrderId}", orderId);
+                var searchResults = await paymentClient.SearchAsync(searchRequest);
+                
+                // Verifica se há algum pagamento aprovado
+                var approvedPayment = searchResults.Results?
+                    .FirstOrDefault(p => p.Status == "approved" || p.Status == "authorized");
+
+                if (approvedPayment != null)
+                {
+                    _logger.LogInformation("Pagamento aprovado encontrado para o pedido {OrderId}. Payment ID: {PaymentId}", 
+                        orderId, approvedPayment.Id);
+                    return true;
+                }
+
+
+                _logger.LogWarning("Nenhum pagamento aprovado encontrado para o pedido {OrderId}", orderId);
+                
+                // Se não encontrou, tenta buscar diretamente pelo ID da preferência
+                _logger.LogInformation("Tentando buscar pagamento diretamente pela preferência {PreferenceId}", preferenceId);
+                
+                try
+                {
+                    // Tenta obter a preferência para ver seus pagamentos
+                    var preference = await _preferenceClient.GetAsync(preferenceId);
+                    
+                    // Verifica se há pagamentos associados a esta preferência
+                    // Busca pagamentos diretamente pelo ID da preferência
+                    var preferenceSearchRequest = new MercadoPago.Client.SearchRequest
+                    {
+                        Limit = 10,
+                        Offset = 0,
+                        Filters = new Dictionary<string, object>
+                        {
+                            ["preference_id"] = preferenceId
+                        }
+                    };
+                    
+                    var paymentsForPreference = await paymentClient.SearchAsync(preferenceSearchRequest);
+                    
+                    var approvedPaymentForPreference = paymentsForPreference.Results?
+                        .FirstOrDefault(p => p.Status == "approved" || p.Status == "authorized");
+                        
+                    if (approvedPaymentForPreference != null)
+                    {
+                        _logger.LogInformation("Pagamento aprovado encontrado para a preferência {PreferenceId}. Payment ID: {PaymentId}", 
+                            preferenceId, approvedPaymentForPreference.Id);
+                        return true;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Erro ao buscar preferência {PreferenceId} no Mercado Pago", preferenceId);
+                }
+                
+                // Para fins de teste, você pode descomentar a linha abaixo para simular um pagamento aprovado
+                // return true;
+                
+                _logger.LogWarning("Nenhum pagamento aprovado encontrado para o pedido {OrderId} ou preferência {PreferenceId}", 
+                    orderId, preferenceId);
+                return false;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Erro ao verificar status do pagamento para o pedido {OrderId}", orderId);
+                return false;
+            }
+        }
+
+
+
+        public async Task<(string QrCodeUrl, string PreferenceId)> GenerateQrCodeAsync(Guid orderId, decimal amount)
         {
             try
             {
@@ -63,8 +172,8 @@ namespace FastFood.Infrastructure.Services
                     ExpirationDateTo = DateTime.Now.AddMinutes(30), // Expira em 30 minutos
                     Payer = new PreferencePayerRequest
                     {
-                        Name = "Cliente FastFood",
-                        Email = "cliente@fastfood.com"
+                        Name = "Cliente Teste",
+                        Email = "test_user_123456@testuser.com" // Email de teste do Mercado Pago
                     }
                 };
 
@@ -72,50 +181,29 @@ namespace FastFood.Infrastructure.Services
                 
                 _logger.LogInformation("Preferência criada com sucesso. ID: {PreferenceId}", preference.Id);
 
-                // No ambiente real, você retornaria preference.QrCode ou preference.SandboxInitPoint
-                // Para QR Code, use preference.QrCode se disponível
-                return preference.SandboxInitPoint ?? preference.InitPoint;
+                // Retorna tanto a URL do QR Code quanto o ID da preferência
+                string qrCodeUrl = preference.SandboxInitPoint ?? preference.InitPoint;
+                return (qrCodeUrl, preference.Id);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Erro ao gerar QR Code para pedido {OrderId}", orderId);
                 throw new InvalidOperationException($"Erro ao gerar QR Code: {ex.Message}", ex);
             }
-        }        public Task<bool> ProcessPaymentAsync(Guid orderId, string qrCode)
+        }        private string ExtractPreferenceIdFromQrCode(string qrCode)
         {
             try
             {
-                _logger.LogInformation("Processando pagamento para pedido {OrderId} com QR Code: {QrCode}", orderId, qrCode);
-
-                // Parse dos dados do webhook do Mercado Pago
-                var webhookData = JsonSerializer.Deserialize<MercadoPagoWebhookData>(qrCode);
-                
-                if (webhookData == null)
-                {
-                    _logger.LogWarning("Dados de webhook inválidos recebidos para pedido {OrderId}", orderId);
-                    return Task.FromResult(false);
-                }
-
-                // Verificar o status do pagamento
-                var isApproved = webhookData.Action == "payment.updated" && 
-                                webhookData.Data?.Id != null;
-
-                if (isApproved)
-                {
-                    _logger.LogInformation("Pagamento aprovado para pedido {OrderId}. Payment ID: {PaymentId}", 
-                        orderId, webhookData.Data?.Id);
-                    return Task.FromResult(true);
-                }
-                else
-                {
-                    _logger.LogWarning("Pagamento não aprovado para pedido {OrderId}", orderId);
-                    return Task.FromResult(false);
-                }
+                // Extrai o ID da preferência da URL do QR Code
+                // Exemplo: https://sandbox.mercadopago.com.br/checkout/v1/redirect?pref_id=123456789-abc123
+                var uri = new Uri(qrCode);
+                var query = System.Web.HttpUtility.ParseQueryString(uri.Query);
+                return query["pref_id"];
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Erro ao processar pagamento para pedido {OrderId}", orderId);
-                return Task.FromResult(false);
+                _logger.LogError(ex, "Erro ao extrair ID da preferência do QR Code");
+                return null;
             }
         }
 

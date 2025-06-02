@@ -27,18 +27,19 @@ public class FakePaymentService : IPaymentService
     /// </summary>
     /// <param name="orderId">ID do pedido.</param>
     /// <param name="amount">Valor a ser pago.</param>
-    /// <returns>String simulando um QR Code.</returns>
-    public async Task<string> GenerateQrCodeAsync(Guid orderId, decimal amount)
+    /// <returns>Tupla contendo a URL simulada do QR Code e um ID de preferência fake.</returns>
+    public async Task<(string QrCodeUrl, string PreferenceId)> GenerateQrCodeAsync(Guid orderId, decimal amount)
     {
         // Simula uma latência de rede
         await Task.Delay(100);
 
         // Gera um QR Code fake no formato: ORDEM_{orderId}_VALOR_{amount}
-        var qrCode = $"ORDEM_{orderId}_VALOR_{amount:F2}";
+        var qrCode = $"https://sandbox.mercadopago.com.br/checkout/v1/redirect?pref_id=FAKE-{Guid.NewGuid()}";
+        var preferenceId = $"FAKE-{Guid.NewGuid()}";
         
         _logger.LogInformation("QR Code gerado para o pedido {OrderId}: {QrCode}", orderId, qrCode);
 
-        return qrCode;
+        return (qrCode, preferenceId);
     }
 
     /// <summary>

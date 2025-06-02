@@ -13,8 +13,8 @@ public interface IPaymentService
     /// </summary>
     /// <param name="orderId">ID do pedido.</param>
     /// <param name="amount">Valor a ser pago.</param>
-    /// <returns>String contendo o QR Code gerado.</returns>
-    Task<string> GenerateQrCodeAsync(Guid orderId, decimal amount);
+    /// <returns>Tupla contendo a URL do QR Code e o ID da preferência no Mercado Pago.</returns>
+    Task<(string QrCodeUrl, string PreferenceId)> GenerateQrCodeAsync(Guid orderId, decimal amount);
 
     /// <summary>
     /// Processa o pagamento de um pedido.

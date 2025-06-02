@@ -29,6 +29,10 @@ public class OrderMapping : IEntityTypeConfiguration<Order>
 
         builder.Property(o => o.UpdatedAt);
 
+        builder.Property(o => o.PreferenceId)
+            .HasMaxLength(100)
+            .IsRequired(false);
+
         // Relacionamento com Customer
         builder.HasOne(o => o.Customer)
             .WithMany()
