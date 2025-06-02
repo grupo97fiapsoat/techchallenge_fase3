@@ -183,10 +183,10 @@ public class CustomersController : ControllerBase
     /// **Finalidade:** Permite listar todos os clientes cadastrados, facilitando a gestão de campanhas promocionais.
     /// 
     /// **Como usar:**
-    /// 1. **Autenticação**: Inclua o token JWT de administrador no header Authorization
-    /// 2. **Paginação**: Use os parâmetros pageSize e pageNumber para controlar a quantidade de resultados
+    /// 1. **Autenticação**: Inclua o token JWT de administrador no header Authorization    /// 2. **Paginação**: Use os parâmetros pageSize e pageNumber para controlar a quantidade de resultados
     /// 3. **Ordenação**: Os resultados são ordenados por data de cadastro (mais recentes primeiro)
-    ///    /// **Exemplo de uso:**
+    /// 
+    /// **Exemplo de uso:**
     /// ```
     /// GET /api/v1/customers?pageNumber=1&amp;pageSize=20
     /// Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...

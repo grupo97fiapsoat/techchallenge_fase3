@@ -24,16 +24,25 @@ namespace FastFood.Api.Filters
             var hasAuthorize = (context.MethodInfo.DeclaringType?.GetCustomAttributes(true) ?? Enumerable.Empty<object>())
                 .Union(context.MethodInfo.GetCustomAttributes(true))
                 .OfType<Microsoft.AspNetCore.Authorization.AuthorizeAttribute>()
-                .Any();if (hasAuthorize)
+                .Any();            if (hasAuthorize)
             {
-                operation.Responses.Add("401", new OpenApiResponse 
-                { 
-                    Description = "**Não autorizado** - Token JWT inválido, expirado ou ausente. Faça login em `/api/v1/auth/login` para obter um token válido." 
-                });
-                operation.Responses.Add("403", new OpenApiResponse 
-                { 
-                    Description = "**Acesso negado** - Token válido, mas permissões insuficientes para esta operação." 
-                });
+                // Adiciona resposta 401 apenas se não existir
+                if (!operation.Responses.ContainsKey("401"))
+                {
+                    operation.Responses.Add("401", new OpenApiResponse 
+                    { 
+                        Description = "**Não autorizado** - Token JWT inválido, expirado ou ausente. Faça login em `/api/v1/auth/login` para obter um token válido." 
+                    });
+                }
+                
+                // Adiciona resposta 403 apenas se não existir
+                if (!operation.Responses.ContainsKey("403"))
+                {
+                    operation.Responses.Add("403", new OpenApiResponse 
+                    { 
+                        Description = "**Acesso negado** - Token válido, mas permissões insuficientes para esta operação." 
+                    });
+                }
 
                 // Adiciona uma descrição mais clara sobre a necessidade de autenticação
                 if (string.IsNullOrEmpty(operation.Description))

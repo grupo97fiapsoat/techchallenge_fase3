@@ -449,14 +449,14 @@ public class OrdersController : ControllerBase
         };
 
         _logger.LogInformation("Checkout do pedido {OrderId} processado com sucesso. QR Code gerado.", id);
-        return Ok(response);    }
-      /// <summary>
+        return Ok(response);    }    /// <summary>
     /// Confirma o pagamento de um pedido após o cliente efetuar o pagamento
     /// 
     /// **Endpoint público** - Não requer autenticação (facilita confirmação automática).
     /// 
     /// **Finalidade:** Valida e confirma o pagamento do pedido, atualizando o status para "EmPreparacao" quando bem-sucedido.
-    ///    /// **Como usar:**
+    /// 
+    /// **Como usar:**
     /// 1. **ID do pedido**: Use o mesmo ID do checkout
     /// 2. **Dados de validação**: Forneça PreferenceId OU QrCode
     /// 3. **Confirmação**: Sistema valida com MercadoPago e atualiza status
@@ -496,9 +496,11 @@ public class OrdersController : ControllerBase
     /// </summary>
     /// <param name="id">ID único do pedido para confirmar pagamento (formato GUID)</param>
     /// <param name="request">Dados para validação do pagamento (PreferenceId ou QrCode)</param>
-    /// <returns>Resultado da confirmação do pagamento</returns>    /// <response code="200">Pagamento confirmado com sucesso - Pedido em preparação</response>
+    /// <returns>Resultado da confirmação do pagamento</returns>
+    /// <response code="200">Pagamento confirmado com sucesso - Pedido em preparação</response>
     /// <response code="400">Falha na confirmação - Pagamento não encontrado ou inválido</response>
-    /// <response code="404">Pedido não encontrado - Verifique se o ID está correto</response>[HttpPost("{id:guid}/confirm-payment")]
+    /// <response code="404">Pedido não encontrado - Verifique se o ID está correto</response>
+    [HttpPost("{id:guid}/confirm-payment")]
     [ProducesResponseType(typeof(ConfirmPaymentResponseDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]

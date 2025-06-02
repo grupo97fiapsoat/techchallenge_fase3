@@ -201,7 +201,58 @@
             <response code="404">Cliente não encontrado - CPF não cadastrado no sistema</response>
             <response code="400">CPF inválido - Formato ou dígitos verificadores incorretos</response>
         </member>
-        <!-- Badly formed XML comment ignored for member "M:FastFood.Api.Controllers.CustomersController.GetAll(System.Int32,System.Int32)" -->
+        <member name="M:FastFood.Api.Controllers.CustomersController.GetAll(System.Int32,System.Int32)">
+            <summary>
+            Lista todos os clientes cadastrados no sistema com suporte a paginação
+            
+            **Endpoint protegido** - Requer autenticação JWT (acesso administrativo).
+            
+            **Finalidade:** Permite listar todos os clientes cadastrados, facilitando a gestão de campanhas promocionais.
+            
+            **Como usar:**
+            1. **Autenticação**: Inclua o token JWT de administrador no header Authorization    /// 2. **Paginação**: Use os parâmetros pageSize e pageNumber para controlar a quantidade de resultados
+            3. **Ordenação**: Os resultados são ordenados por data de cadastro (mais recentes primeiro)
+            
+            **Exemplo de uso:**
+            ```
+            GET /api/v1/customers?pageNumber=1&amp;pageSize=20
+            Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+            ```
+            
+            **Resposta exemplo:**
+            ```json
+            [
+              {
+                "id": "550e8400-e29b-41d4-a716-446655440000",
+                "name": "João Silva",
+                "email": "joao.silva@email.com",
+                "cpf": "12345678901",
+                "createdAt": "2025-06-01T10:00:00Z",
+                "updatedAt": "2025-06-01T10:00:00Z"
+              },
+              {
+                "id": "550e8400-e29b-41d4-a716-446655440001",
+                "name": "Maria Oliveira",
+                "email": "maria.oliveira@email.com",
+                "cpf": "98765432109",
+                "createdAt": "2025-06-01T11:00:00Z",
+                "updatedAt": null
+              }
+            ]
+            ```
+            
+            **Caso de uso:**
+            - Gestão de campanhas promocionais
+            - Relatórios administrativos
+            - Análise de base de clientes
+            </summary>
+            <param name="pageNumber">Número da página (padrão: 1)</param>
+            <param name="pageSize">Itens por página (padrão: 10, máximo recomendado: 50)</param>
+            <returns>Lista paginada de clientes cadastrados</returns>
+            <response code="200">Lista de clientes retornada com sucesso</response>
+            <response code="401">Token JWT inválido ou ausente - Faça login primeiro</response>
+            <response code="403">Acesso negado - Token válido mas sem permissões adequadas</response>
+        </member>
         <member name="M:FastFood.Api.Controllers.CustomersController.Update(System.Guid,FastFood.Application.DTOs.UpdateCustomerDto)">
             <summary>
             Atualiza os dados de um cliente existente
@@ -544,7 +595,8 @@
             **Endpoint público** - Não requer autenticação (facilita confirmação automática).
             
             **Finalidade:** Valida e confirma o pagamento do pedido, atualizando o status para "EmPreparacao" quando bem-sucedido.
-               /// **Como usar:**
+            
+            **Como usar:**
             1. **ID do pedido**: Use o mesmo ID do checkout
             2. **Dados de validação**: Forneça PreferenceId OU QrCode
             3. **Confirmação**: Sistema valida com MercadoPago e atualiza status
@@ -584,9 +636,10 @@
             </summary>
             <param name="id">ID único do pedido para confirmar pagamento (formato GUID)</param>
             <param name="request">Dados para validação do pagamento (PreferenceId ou QrCode)</param>
-            <returns>Resultado da confirmação do pagamento</returns>    /// <response code="200">Pagamento confirmado com sucesso - Pedido em preparação</response>
+            <returns>Resultado da confirmação do pagamento</returns>
+            <response code="200">Pagamento confirmado com sucesso - Pedido em preparação</response>
             <response code="400">Falha na confirmação - Pagamento não encontrado ou inválido</response>
-            <response code="404">Pedido não encontrado - Verifique se o ID está correto</response>[HttpPost("{id:guid}/confirm-payment")]
+            <response code="404">Pedido não encontrado - Verifique se o ID está correto</response>
         </member>
         <member name="M:FastFood.Api.Controllers.OrdersController.GetStatusDescription(System.String)">
             <summary>
