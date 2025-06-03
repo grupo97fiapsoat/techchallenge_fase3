@@ -8,27 +8,25 @@ public class OrderDto
     /// <summary>
     /// Identificador único do pedido
     /// </summary>
-    public Guid Id { get; set; }
+    public Guid Id { get; set; }    /// <summary>
+    /// Identificador do cliente que fez o pedido (null para pedidos anônimos)
+    /// </summary>
+    public Guid? CustomerId { get; set; }
 
     /// <summary>
-    /// Identificador do cliente que fez o pedido
+    /// Nome do cliente que fez o pedido (null para pedidos anônimos)
     /// </summary>
-    public Guid CustomerId { get; set; }
-
-    /// <summary>
-    /// Nome do cliente que fez o pedido
-    /// </summary>
-    public string CustomerName { get; set; }
+    public string? CustomerName { get; set; }
 
     /// <summary>
     /// Lista de itens do pedido
     /// </summary>
-    public List<OrderItemDto> Items { get; set; }
+    public List<OrderItemDto> Items { get; set; } = new();
 
     /// <summary>
     /// Status atual do pedido (Pending, Processing, Ready, Completed, Cancelled)
     /// </summary>
-    public string Status { get; set; }
+    public string Status { get; set; } = string.Empty;
 
     /// <summary>
     /// Valor total do pedido

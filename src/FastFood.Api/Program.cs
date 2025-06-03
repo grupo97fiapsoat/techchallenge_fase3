@@ -4,8 +4,11 @@ using FastFood.Api.Middlewares;
 using FastFood.Application;
 using FastFood.Infrastructure;
 using FastFood.Infrastructure.Data;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using System.Globalization;
+using System.Text;
 
 // Handle command line arguments
 var commandLineArgs = Environment.GetCommandLineArgs();
@@ -28,6 +31,23 @@ AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApplication();
 
+// Configurar autenticação JWT
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
+                builder.Configuration["Jwt:Secret"] ?? throw new InvalidOperationException("JWT Secret não configurado")))
+        };
+    });
+
 // Add health checks
 builder.Services.AddHealthChecks();
 
@@ -36,10 +56,8 @@ builder.Services.AddControllers(options =>
     options.Filters.Add<ApiExceptionFilterAttribute>();
 });
 
-
 builder.Services.AddOpenApi();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
@@ -101,6 +119,9 @@ if (app.Environment.IsDevelopment())
 // app.UseMiddleware<ExceptionHandlerMiddleware>(); // Temporarily disabled to test filter
 
 app.UseHttpsRedirection();
+
+// Configurar os middlewares de autenticação e autorização
+app.UseAuthentication();
 app.UseAuthorization();
 
 // Map health check endpoint

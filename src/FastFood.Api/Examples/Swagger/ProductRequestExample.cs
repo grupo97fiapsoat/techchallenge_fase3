@@ -1,4 +1,5 @@
 using FastFood.Application.DTOs;
+using FastFood.Domain.Products.Enums;
 using Swashbuckle.AspNetCore.Filters;
 
 namespace FastFood.Api.Examples.Swagger;
@@ -14,7 +15,7 @@ public class CreateProductDtoExample : IExamplesProvider<CreateProductDto>
         {
             Name = "X-Bacon",
             Description = "Hambúrguer com bacon, queijo, alface, tomate e maionese",
-            Category = "Lanche",
+            Category = ProductCategory.Lanche,
             Price = 15.95m,
             ImageUrl = "https://example.com/images/x-bacon.jpg",
             Images = new List<string> { "https://example.com/images/x-bacon.jpg" }
@@ -34,7 +35,8 @@ public class ProductDtoExample : IExamplesProvider<ProductDto>
             Id = Guid.Parse("e47ac10b-58cc-4372-a567-0e02b2c3d123"),
             Name = "X-Bacon",
             Description = "Hambúrguer com bacon, queijo, alface, tomate e maionese",
-            Category = "Lanche",
+            Category = ProductCategory.Lanche,
+            CategoryName = "Lanche",
             Price = 15.95m,
             ImageUrl = "https://example.com/images/x-bacon.jpg",
             Images = new List<string> { "https://example.com/images/x-bacon.jpg" },

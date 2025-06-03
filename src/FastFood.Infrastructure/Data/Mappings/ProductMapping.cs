@@ -1,4 +1,5 @@
 using FastFood.Domain.Products.Entities;
+using FastFood.Domain.Products.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -20,7 +21,11 @@ public class ProductMapping : IEntityTypeConfiguration<Product>
 
         builder.Property(p => p.Category)
             .IsRequired()
-            .HasMaxLength(50);
+            .HasMaxLength(50)
+            .HasConversion(
+                v => v.ToString(),
+                v => Enum.Parse<ProductCategory>(v)
+            );
 
         builder.Property(p => p.Price)
             .IsRequired()

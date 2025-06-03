@@ -1,52 +1,59 @@
-namespace FastFood.Application.DTOs;
-
-/// <summary>
-/// DTO com os dados de um produto
-/// </summary>
-public class ProductDto
-{
-    /// <summary>
-    /// Identificador √∫nico do produto
-    /// </summary>
-    public required Guid Id { get; set; }
-
-    /// <summary>
-    /// Nome do produto
-    /// </summary>
-    public required string Name { get; set; }
-
-    /// <summary>
-    /// Descri√ß√£o detalhada do produto
-    /// </summary>
-    public required string Description { get; set; }
-
-    /// <summary>
-    /// Categoria do produto (ex: Lanche, Bebida, Sobremesa)
-    /// </summary>
-    public required string Category { get; set; }
-
-    /// <summary>
-    /// Pre√ßo do produto
-    /// </summary>
-    public required decimal Price { get; set; }
-
-    /// <summary>
-    /// URL principal da imagem do produto
-    /// </summary>
-    public string? ImageUrl { get; set; }
-
-    /// <summary>
-    /// URLs das imagens do produto
-    /// </summary>
-    public required List<string> Images { get; set; }
-
-    /// <summary>
-    /// Data e hora de cria√ß√£o do produto
-    /// </summary>
-    public required DateTime CreatedAt { get; set; }
-
-    /// <summary>
-    /// Data e hora da √∫ltima atualiza√ß√£o do produto
-    /// </summary>
-    public DateTime? UpdatedAt { get; set; }
-}
+using FastFood.Domain.Products.Enums; 
+ 
+namespace FastFood.Application.DTOs; 
+ 
+/// <summary> 
+/// DTO com os dados de um produto 
+/// </summary> 
+public class ProductDto 
+{ 
+    /// <summary> 
+    /// Identificador £nico do produto 
+    /// </summary> 
+    public required Guid Id { get; set; } 
+ 
+    /// <summary> 
+    /// Nome do produto 
+    /// </summary> 
+    public required string Name { get; set; } 
+ 
+    /// <summary> 
+    /// Descriá∆o detalhada do produto 
+    /// </summary> 
+    public required string Description { get; set; } 
+ 
+    /// <summary> 
+    /// Categoria do produto (enum) 
+    /// </summary> 
+    public required ProductCategory Category { get; set; } 
+ 
+    /// <summary> 
+    /// Nome da categoria do produto (representaá∆o em string) 
+    /// </summary> 
+    public required string CategoryName { get; set; } 
+ 
+    /// <summary> 
+    /// Preáo do produto 
+    /// </summary> 
+    public required decimal Price { get; set; } 
+ 
+    /// <summary> 
+    /// URL principal da imagem do produto 
+    /// </summary> 
+    public string? ImageUrl { get; set; } 
+ 
+    /// <summary> 
+    /// URLs das imagens do produto 
+    /// </summary> 
+    public required List<string> Images { get; set; } 
+ 
+    /// <summary> 
+    /// Data e hora de criaá∆o do produto 
+    /// </summary> 
+    public required DateTime CreatedAt { get; set; } 
+ 
+    /// <summary> 
+    /// Data e hora da £ltima atualizaá∆o do produto 
+    /// </summary> 
+    public DateTime? UpdatedAt { get; set; } 
+} 

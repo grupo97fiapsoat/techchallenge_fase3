@@ -29,6 +29,11 @@ public class ProcessCheckoutCommandResult
     public string QrCode { get; set; }
 
     /// <summary>
+    /// ID da preferência no Mercado Pago
+    /// </summary>
+    public string PreferenceId { get; set; }
+
+    /// <summary>
     /// Status atual do pedido
     /// </summary>
     public string Status { get; set; }

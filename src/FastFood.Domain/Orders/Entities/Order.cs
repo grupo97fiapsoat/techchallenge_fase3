@@ -13,12 +13,10 @@ public class Order : Entity
 {    /// <summary>
     /// Cliente que realizou o pedido.
     /// </summary>
-    public Customer? Customer { get; private set; }
-
-    /// <summary>
-    /// ID do cliente que realizou o pedido.
+    public Customer? Customer { get; private set; }    /// <summary>
+    /// ID do cliente que realizou o pedido. Null para pedidos anônimos.
     /// </summary>
-    public Guid CustomerId { get; private set; }
+    public Guid? CustomerId { get; private set; }
 
     /// <summary>
     /// Itens do pedido.
@@ -40,6 +38,11 @@ public class Order : Entity
     public string? QrCode { get; private set; }
 
     /// <summary>
+    /// ID da preferência no Mercado Pago.
+    /// </summary>
+    public string? PreferenceId { get; private set; }
+
+    /// <summary>
     /// Construtor privado para uso do EF Core.
     /// </summary>
     private Order() : base()
@@ -47,32 +50,29 @@ public class Order : Entity
         _items = new List<OrderItem>();
         Status = OrderStatus.Pending;
         TotalPrice = 0;
-    }
-
-    /// <summary>
+    }    /// <summary>
     /// Construtor interno para criação de pedido.
     /// </summary>
-    /// <param name="customerId">ID do cliente que está realizando o pedido.</param>
+    /// <param name="customerId">ID do cliente que está realizando o pedido (null para pedidos anônimos).</param>
     /// <param name="items">Itens do pedido.</param>
-    private Order(Guid customerId, List<OrderItem> items) : base()
+    private Order(Guid? customerId, List<OrderItem> items) : base()
     {
         CustomerId = customerId;
         _items = items ?? new List<OrderItem>();
         Status = OrderStatus.Pending;
         CalculateTotalPrice();
-    }
-
-    /// <summary>
+    }    /// <summary>
     /// Factory method para criar um novo pedido com validação de todos os campos.
     /// </summary>
-    /// <param name="customerId">ID do cliente que está realizando o pedido.</param>
+    /// <param name="customerId">ID do cliente que está realizando o pedido (null para pedidos anônimos).</param>
     /// <param name="items">Itens do pedido.</param>
     /// <returns>Uma nova instância de Order com os dados validados.</returns>
     /// <exception cref="OrderDomainException">Lançada quando algum dos campos é inválido.</exception>
-    public static Order Create(Guid customerId, List<OrderItem> items)
+    public static Order Create(Guid? customerId, List<OrderItem> items)
     {
-        if (customerId == Guid.Empty)
-            throw new OrderDomainException("O ID do cliente é obrigatório");
+        // Validar que quando customerId é informado, não pode ser Guid.Empty
+        if (customerId.HasValue && customerId.Value == Guid.Empty)
+            throw new OrderDomainException("Quando informado, o ID do cliente deve ser um GUID válido");
 
         if (items == null || !items.Any())
             throw new OrderDomainException("O pedido deve ter pelo menos um item");
@@ -138,19 +138,28 @@ public class Order : Entity
     }
 
     /// <summary>
-    /// Define o QR Code para pagamento do pedido.
+    /// Define o QR Code do pedido.
     /// </summary>
-    /// <param name="qrCode">QR Code gerado para pagamento.</param>
-    /// <exception cref="OrderDomainException">Lançada quando o pedido não está no status adequado para gerar QR Code.</exception>
+    /// <param name="qrCode">Código QR gerado para pagamento.</param>
     public void SetQrCode(string qrCode)
     {
-        if (Status != OrderStatus.Pending)
-            throw new OrderDomainException("QR Code só pode ser definido para pedidos pendentes");
-
         if (string.IsNullOrWhiteSpace(qrCode))
-            throw new OrderDomainException("QR Code não pode ser vazio");
+            throw new OrderDomainException("O QR Code não pode ser vazio");
 
         QrCode = qrCode;
+        SetUpdatedAt();
+    }
+
+    /// <summary>
+    /// Define o ID da preferência do Mercado Pago para o pedido.
+    /// </summary>
+    /// <param name="preferenceId">ID da preferência no Mercado Pago.</param>
+    public void SetPreferenceId(string preferenceId)
+    {
+        if (string.IsNullOrWhiteSpace(preferenceId))
+            throw new OrderDomainException("O ID da preferência não pode ser vazio");
+
+        PreferenceId = preferenceId;
         SetUpdatedAt();
     }
 

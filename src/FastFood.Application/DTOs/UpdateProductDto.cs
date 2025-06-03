@@ -1,3 +1,4 @@
+using FastFood.Domain.Products.Enums;
 using System.ComponentModel.DataAnnotations;
 
 namespace FastFood.Application.DTOs;
@@ -24,14 +25,12 @@ public class UpdateProductDto
     public required string Description { get; set; }
 
     /// <summary>
-    /// Nova categoria do produto
+    /// Nova categoria do produto (Lanche, Acompanhamento, Bebida, Sobremesa)
     /// </summary>
     /// <example>Lanche</example>
     [Required(ErrorMessage = "A categoria é obrigatória")]
-    [StringLength(50, MinimumLength = 3, ErrorMessage = "A categoria deve ter entre 3 e 50 caracteres")]
-    public required string Category { get; set; }
-
-    /// <summary>
+    [EnumDataType(typeof(ProductCategory), ErrorMessage = "Categoria inválida. Valores permitidos: Lanche, Acompanhamento, Bebida, Sobremesa")]
+    public required ProductCategory Category { get; set; }    /// <summary>
     /// Novo preço do produto (maior que zero)
     /// </summary>
     /// <example>19.90</example>

@@ -16,12 +16,9 @@ public class UpdateProductCommandValidator : AbstractValidator<UpdateProductComm
 
         RuleFor(x => x.Description)
             .NotEmpty().WithMessage("A descrição é obrigatória")
-            .MaximumLength(500).WithMessage("A descrição não pode ter mais de 500 caracteres");
-
-        RuleFor(x => x.Category)
-            .NotEmpty().WithMessage("A categoria é obrigatória")
-            .MinimumLength(3).WithMessage("A categoria deve ter pelo menos 3 caracteres")
-            .MaximumLength(50).WithMessage("A categoria não pode ter mais de 50 caracteres");
+            .MaximumLength(500).WithMessage("A descrição não pode ter mais de 500 caracteres");        RuleFor(x => x.Category)
+            .NotNull().WithMessage("A categoria é obrigatória")
+            .IsInEnum().WithMessage("A categoria deve ser uma categoria válida");
 
         RuleFor(x => x.Price)
             .GreaterThan(0).WithMessage("O preço deve ser maior que zero");

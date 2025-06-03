@@ -30,6 +30,7 @@ public class GetProductsByCategoryQueryHandler : IRequestHandler<GetProductsByCa
                 Name = p.Name,
                 Description = p.Description,
                 Category = p.Category,
+                CategoryName = p.Category.ToString(),
                 Price = p.Price,
                 Images = p.Images,
                 CreatedAt = p.CreatedAt,

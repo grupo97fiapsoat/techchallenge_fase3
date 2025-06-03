@@ -1,3 +1,5 @@
+using System;
+using FastFood.Domain.Products.Enums;
 using FastFood.Domain.Products.Exceptions;
 using FastFood.Domain.Shared.Entities;
 
@@ -11,17 +13,17 @@ public class Product : Entity
     /// <summary>
     /// Nome do produto.
     /// </summary>
-    public string Name { get; private set; }
+    public string Name { get; private set; } = string.Empty;
 
     /// <summary>
     /// Descrição do produto.
     /// </summary>
-    public string Description { get; private set; }
+    public string Description { get; private set; } = string.Empty;
 
     /// <summary>
     /// Categoria do produto.
     /// </summary>
-    public string Category { get; private set; }
+    public ProductCategory Category { get; private set; }
 
     /// <summary>
     /// Preço do produto.
@@ -31,14 +33,11 @@ public class Product : Entity
     /// <summary>
     /// URLs das imagens do produto.
     /// </summary>
-    public List<string> Images { get; private set; }
-
-    /// <summary>
+    public List<string> Images { get; private set; } = new List<string>();/// <summary>
     /// Construtor privado para uso do EF Core.
     /// </summary>
     private Product() : base() 
     {
-        Images = new List<string>();
     }
 
     /// <summary>
@@ -49,13 +48,36 @@ public class Product : Entity
     /// <param name="category">Categoria do produto.</param>
     /// <param name="price">Preço do produto.</param>
     /// <param name="images">URLs das imagens do produto (opcional).</param>
-    public Product(string name, string description, string category, decimal price, List<string>? images = null) : base()
+    public Product(string name, string description, ProductCategory category, decimal price, List<string>? images = null) : base()
     {
         ValidateAndSetName(name);
         ValidateAndSetDescription(description);
         ValidateAndSetCategory(category);
         ValidateAndSetPrice(price);
-        Images = images ?? new List<string>();
+        if (images != null)
+        {
+            Images = images;
+        }
+    }
+
+    /// <summary>
+    /// Construtor para criação de um novo produto a partir de uma string de categoria.
+    /// </summary>
+    /// <param name="name">Nome do produto.</param>
+    /// <param name="description">Descrição do produto.</param>
+    /// <param name="categoryName">Nome da categoria do produto.</param>
+    /// <param name="price">Preço do produto.</param>
+    /// <param name="images">URLs das imagens do produto (opcional).</param>
+    public Product(string name, string description, string categoryName, decimal price, List<string>? images = null) : base()
+    {
+        ValidateAndSetName(name);
+        ValidateAndSetDescription(description);
+        ValidateAndSetCategoryFromString(categoryName);
+        ValidateAndSetPrice(price);
+        if (images != null)
+        {
+            Images = images;
+        }
     }
 
     /// <summary>
@@ -66,11 +88,34 @@ public class Product : Entity
     /// <param name="category">Nova categoria do produto.</param>
     /// <param name="price">Novo preço do produto.</param>
     /// <param name="images">Novas URLs das imagens do produto.</param>
-    public void Update(string name, string description, string category, decimal price, List<string>? images = null)
+    public void Update(string name, string description, ProductCategory category, decimal price, List<string>? images = null)
     {
         ValidateAndSetName(name);
         ValidateAndSetDescription(description);
         ValidateAndSetCategory(category);
+        ValidateAndSetPrice(price);
+
+        if (images != null)
+        {
+            Images = images;
+        }
+
+        SetUpdatedAt();
+    }
+
+    /// <summary>
+    /// Atualiza os dados do produto usando uma string para a categoria.
+    /// </summary>
+    /// <param name="name">Novo nome do produto.</param>
+    /// <param name="description">Nova descrição do produto.</param>
+    /// <param name="categoryName">Nova categoria do produto (string).</param>
+    /// <param name="price">Novo preço do produto.</param>
+    /// <param name="images">Novas URLs das imagens do produto.</param>
+    public void Update(string name, string description, string categoryName, decimal price, List<string>? images = null)
+    {
+        ValidateAndSetName(name);
+        ValidateAndSetDescription(description);
+        ValidateAndSetCategoryFromString(categoryName);
         ValidateAndSetPrice(price);
 
         if (images != null)
@@ -106,16 +151,19 @@ public class Product : Entity
         Description = description;
     }
 
-    private void ValidateAndSetCategory(string category)
+    private void ValidateAndSetCategory(ProductCategory category)
     {
-        if (string.IsNullOrWhiteSpace(category))
+        // O enum já garante que o valor é válido
+        Category = category;
+    }
+
+    private void ValidateAndSetCategoryFromString(string categoryName)
+    {
+        if (string.IsNullOrWhiteSpace(categoryName))
             throw new ProductDomainException("A categoria não pode ser vazia");
 
-        if (category.Length < 3)
-            throw new ProductDomainException("A categoria deve ter pelo menos 3 caracteres");
-
-        if (category.Length > 50)
-            throw new ProductDomainException("A categoria não pode ter mais de 50 caracteres");
+        if (!Enum.TryParse(categoryName, true, out ProductCategory category))
+            throw new ProductDomainException($"A categoria '{categoryName}' não é válida");
 
         Category = category;
     }

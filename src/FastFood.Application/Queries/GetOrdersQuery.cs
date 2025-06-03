@@ -12,7 +12,7 @@ public class GetOrdersQuery : IRequest<GetOrdersQueryResult>
 
 public class GetOrdersQueryResult
 {
-    public List<OrderItem> Orders { get; set; }
+    public List<OrderItem> Orders { get; set; } = new();
     public int PageNumber { get; set; }
     public int PageSize { get; set; }
     public int TotalCount { get; set; }
@@ -22,10 +22,10 @@ public class GetOrdersQueryResult
 public class OrderItem
 {
     public Guid Id { get; set; }
-    public Guid CustomerId { get; set; }
-    public string CustomerName { get; set; }
+    public Guid? CustomerId { get; set; }
+    public string? CustomerName { get; set; }
     public decimal TotalPrice { get; set; }
-    public string Status { get; set; }
+    public string Status { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
     public int ItemsCount { get; set; }

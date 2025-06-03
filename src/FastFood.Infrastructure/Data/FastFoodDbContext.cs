@@ -2,6 +2,7 @@ using FastFood.Domain.Customers.Entities;
 using FastFood.Domain.Orders.Entities;
 using FastFood.Domain.Products.Entities;
 using FastFood.Domain.Shared.Entities;
+using FastFood.Domain.Users.Entities;
 using Microsoft.EntityFrameworkCore;
 using System;
 
@@ -12,6 +13,7 @@ public class FastFoodDbContext : DbContext
     public DbSet<Customer> Customers { get; set; }
     public DbSet<Product> Products { get; set; }
     public DbSet<Order> Orders { get; set; }
+    public DbSet<User> Users { get; set; }
 
     public FastFoodDbContext(DbContextOptions<FastFoodDbContext> options) : base(options)
     {

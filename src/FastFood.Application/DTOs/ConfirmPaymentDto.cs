@@ -8,12 +8,21 @@ namespace FastFood.Application.DTOs;
 public class ConfirmPaymentDto
 {
     /// <summary>
-    /// QR Code usado para pagamento
+    /// ID da preferência de pagamento (recomendado)
     /// </summary>
-    /// <example>QR_CODE_12345_ABCDEF</example>
-    [Required(ErrorMessage = "O QR Code é obrigatório")]
-    [MinLength(10, ErrorMessage = "QR Code deve ter pelo menos 10 caracteres")]
-    public required string QrCode { get; set; }
+    /// <example>FAKE-12345678-abcd-1234-abcd-123456789abc</example>
+    public string? PreferenceId { get; set; }
+
+    /// <summary>
+    /// QR Code usado para pagamento (compatibilidade retroativa)
+    /// </summary>
+    /// <example>https://sandbox.mercadopago.com.br/checkout/v1/redirect?pref_id=FAKE-12345</example>
+    public string? QrCode { get; set; }
+
+    /// <summary>
+    /// Valida se pelo menos um dos campos foi fornecido
+    /// </summary>
+    public bool IsValid => !string.IsNullOrWhiteSpace(PreferenceId) || !string.IsNullOrWhiteSpace(QrCode);
 }
 
 /// <summary>

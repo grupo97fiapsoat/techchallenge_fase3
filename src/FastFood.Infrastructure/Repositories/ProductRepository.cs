@@ -1,7 +1,9 @@
 using FastFood.Domain.Products.Entities;
+using FastFood.Domain.Products.Enums;
 using FastFood.Domain.Products.Repositories;
 using FastFood.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
+using System;
 
 namespace FastFood.Infrastructure.Repositories;
 
@@ -14,7 +16,7 @@ public class ProductRepository : RepositoryBase<Product>, IProductRepository
     {
     }
 
-    public async Task<IEnumerable<Product>> GetByCategoryAsync(string category, int pageNumber = 1, int pageSize = 10)
+    public async Task<IEnumerable<Product>> GetByCategoryAsync(ProductCategory category, int pageNumber = 1, int pageSize = 10)
     {
         return await DbSet
             .Where(p => p.Category == category)
@@ -22,6 +24,17 @@ public class ProductRepository : RepositoryBase<Product>, IProductRepository
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync();
+    }
+
+    public async Task<IEnumerable<Product>> GetByCategoryAsync(string categoryName, int pageNumber = 1, int pageSize = 10)
+    {
+        if (Enum.TryParse<ProductCategory>(categoryName, true, out var category))
+        {
+            return await GetByCategoryAsync(category, pageNumber, pageSize);
+        }
+        
+        // Se não for possível converter a string para o enum, retorna uma lista vazia
+        return Enumerable.Empty<Product>();
     }
 
     public override async Task<IEnumerable<Product>> GetAllAsync(int pageNumber = 1, int pageSize = 10)

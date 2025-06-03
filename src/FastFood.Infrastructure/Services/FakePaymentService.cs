@@ -20,59 +20,129 @@ public class FakePaymentService : IPaymentService
     {
         _logger = logger;
         _orderRepository = orderRepository;
-    }
-
-    /// <summary>
+    }    /// <summary>
     /// Gera um QR Code simulado para pagamento.
     /// </summary>
     /// <param name="orderId">ID do pedido.</param>
     /// <param name="amount">Valor a ser pago.</param>
-    /// <returns>String simulando um QR Code.</returns>
-    public async Task<string> GenerateQrCodeAsync(Guid orderId, decimal amount)
+    /// <returns>Tupla contendo a URL simulada do QR Code e um ID de preferência fake.</returns>
+    public async Task<(string QrCodeUrl, string PreferenceId)> GenerateQrCodeAsync(Guid orderId, decimal amount)
     {
         // Simula uma latência de rede
         await Task.Delay(100);
 
-        // Gera um QR Code fake no formato: ORDEM_{orderId}_VALOR_{amount}
-        var qrCode = $"ORDEM_{orderId}_VALOR_{amount:F2}";
+        // Gera um QR Code fake no formato do Mercado Pago para manter consistência
+        var preferenceId = $"FAKE-{Guid.NewGuid()}";
+        var qrCode = $"https://sandbox.mercadopago.com.br/checkout/v1/redirect?pref_id={preferenceId}";
         
-        _logger.LogInformation("QR Code gerado para o pedido {OrderId}: {QrCode}", orderId, qrCode);
+        _logger.LogInformation("[FAKE PAYMENT] QR Code gerado para o pedido {OrderId}: {QrCode}", orderId, qrCode);
+        _logger.LogInformation("[FAKE PAYMENT] Preference ID: {PreferenceId}", preferenceId);
 
-        return qrCode;
-    }
-
-    /// <summary>
+        return (qrCode, preferenceId);
+    }    /// <summary>
     /// Simula o processamento de um pagamento.
+    /// Valida se o QR Code fornecido corresponde ao QR Code gerado para o pedido.
+    /// Agora extrai o PreferenceId do QR Code para validação, seguindo o padrão da indústria.
     /// </summary>
     /// <param name="orderId">ID do pedido.</param>
     /// <param name="qrCode">QR Code usado para pagamento.</param>
-    /// <returns>True em 95% dos casos, simulando uma taxa de sucesso realista.</returns>
+    /// <returns>True se o pagamento for válido e processado com sucesso.</returns>
     public async Task<bool> ProcessPaymentAsync(Guid orderId, string qrCode)
     {
         // Simula uma latência de rede
         await Task.Delay(500);
 
-        // Busca o pedido no banco de dados para validar o QR Code
-        var order = await _orderRepository.GetByIdAsync(orderId);
-        
-        if (order == null || string.IsNullOrEmpty(order.QrCode) || order.QrCode != qrCode)
+        _logger.LogInformation("[FAKE PAYMENT] === INICIANDO PROCESSAMENTO DE PAGAMENTO ===");
+        _logger.LogInformation("[FAKE PAYMENT] Pedido ID: {OrderId}", orderId);
+        _logger.LogInformation("[FAKE PAYMENT] QR Code recebido: {QrCodeReceived}", qrCode);
+
+        // Validação de entrada
+        if (string.IsNullOrWhiteSpace(qrCode))
         {
-            _logger.LogWarning("QR Code inválido ou não encontrado para o pedido {OrderId}", orderId);
+            _logger.LogWarning("[FAKE PAYMENT] QR Code recebido está vazio ou nulo");
             return false;
         }
 
-        // Simula uma taxa de sucesso de 95%
+        // Busca o pedido no banco de dados
+        var order = await _orderRepository.GetByIdAsync(orderId);
+        
+        if (order == null)
+        {
+            _logger.LogWarning("[FAKE PAYMENT] Pedido {OrderId} não encontrado no banco de dados", orderId);
+            return false;
+        }
+
+        _logger.LogInformation("[FAKE PAYMENT] Pedido encontrado - Status: {Status}", order.Status);
+        _logger.LogInformation("[FAKE PAYMENT] PreferenceId no banco: {PreferenceIdInDatabase}", order.PreferenceId ?? "NULL");
+        
+        // Validação se o PreferenceId foi definido para o pedido
+        if (string.IsNullOrWhiteSpace(order.PreferenceId))
+        {
+            _logger.LogWarning("[FAKE PAYMENT] PreferenceId não foi definido para o pedido {OrderId}", orderId);
+            return false;
+        }
+
+        // Extrai o PreferenceId do QR Code
+        var extractedPreferenceId = ExtractPreferenceIdFromQrCode(qrCode);
+        _logger.LogInformation("[FAKE PAYMENT] PreferenceId extraído do QR Code: {ExtractedPreferenceId}", extractedPreferenceId ?? "NULL");
+        
+        if (string.IsNullOrWhiteSpace(extractedPreferenceId))
+        {
+            _logger.LogWarning("[FAKE PAYMENT] Não foi possível extrair PreferenceId do QR Code: {QrCode}", qrCode);
+            return false;
+        }
+
+        // Comparação dos PreferenceIds
+        bool preferenceIdMatches = string.Equals(order.PreferenceId.Trim(), extractedPreferenceId.Trim(), StringComparison.OrdinalIgnoreCase);
+        _logger.LogInformation("[FAKE PAYMENT] PreferenceIds são iguais? {PreferenceIdMatches}", preferenceIdMatches);
+        
+        if (!preferenceIdMatches)
+        {
+            _logger.LogWarning("[FAKE PAYMENT] PreferenceId inválido para o pedido {OrderId}", orderId);
+            _logger.LogWarning("[FAKE PAYMENT] Esperado: '{Expected}'", order.PreferenceId);
+            _logger.LogWarning("[FAKE PAYMENT] Extraído do QR Code: '{Extracted}'", extractedPreferenceId);
+            return false;
+        }
+
+        // Simula uma taxa de sucesso de 95% (apenas para pedidos com PreferenceId válido)
         var success = Random.Shared.NextDouble() <= 0.95;
 
         if (success)
         {
-            _logger.LogInformation("Pagamento processado com sucesso para o pedido {OrderId}", orderId);
+            _logger.LogInformation("[FAKE PAYMENT] Pagamento processado com SUCESSO para o pedido {OrderId}", orderId);
         }
         else
         {
-            _logger.LogWarning("Falha no processamento do pagamento para o pedido {OrderId}", orderId);
+            _logger.LogWarning("[FAKE PAYMENT] Falha no processamento do pagamento para o pedido {OrderId} (simulação 5% de falha)", orderId);
         }
 
+        _logger.LogInformation("[FAKE PAYMENT] === FIM DO PROCESSAMENTO DE PAGAMENTO ===");
         return success;
+    }
+
+    /// <summary>
+    /// Extrai o PreferenceId de uma URL de QR Code do MercadoPago (real ou fake).
+    /// </summary>
+    /// <param name="qrCode">URL do QR Code.</param>
+    /// <returns>PreferenceId extraído ou null se não encontrado.</returns>
+    private string? ExtractPreferenceIdFromQrCode(string qrCode)
+    {
+        try
+        {
+            // Procura pelo parâmetro pref_id na URL
+            // Exemplo: https://sandbox.mercadopago.com.br/checkout/v1/redirect?pref_id=FAKE-12345
+            var uri = new Uri(qrCode);
+            var query = System.Web.HttpUtility.ParseQueryString(uri.Query);
+            var preferenceId = query["pref_id"];
+            
+            _logger.LogDebug("[FAKE PAYMENT] Extraindo PreferenceId de: {QrCode} -> {PreferenceId}", qrCode, preferenceId ?? "NULL");
+            
+            return preferenceId;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "[FAKE PAYMENT] Erro ao extrair PreferenceId do QR Code: {QrCode}", qrCode);
+            return null;
+        }
     }
 }

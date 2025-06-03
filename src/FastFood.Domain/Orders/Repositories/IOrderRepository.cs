@@ -43,4 +43,12 @@ public interface IOrderRepository : IRepository<Order>
     /// <param name="status">Filtro opcional por status</param>
     /// <returns>Uma tupla com os pedidos encontrados e o total de registros</returns>
     Task<(IEnumerable<Order> Orders, int TotalCount)> GetOrdersAsync(int pageNumber, int pageSize, Guid? customerId = null, OrderStatus? status = null);
+
+    /// <summary>
+    /// Verifica se um cliente possui pedidos associados.
+    /// </summary>
+    /// <param name="customerId">O identificador do cliente</param>
+    /// <param name="cancellationToken">Token de cancelamento da operação</param>
+    /// <returns>True se o cliente possui pedidos, False caso contrário</returns>
+    Task<bool> CustomerHasOrdersAsync(Guid customerId, CancellationToken cancellationToken);
 }

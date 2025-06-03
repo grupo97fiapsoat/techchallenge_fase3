@@ -1,4 +1,5 @@
 using FastFood.Application.Common.Exceptions;
+using FastFood.Domain.Customers.Entities;
 using FastFood.Domain.Customers.Repositories;
 using FastFood.Domain.Orders.Entities;
 using FastFood.Domain.Orders.Repositories;
@@ -22,14 +23,16 @@ public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommand, Cre
         _orderRepository = orderRepository;
         _customerRepository = customerRepository;
         _productRepository = productRepository;
-    }
-
-    public async Task<CreateOrderCommandResult> Handle(CreateOrderCommand request, CancellationToken cancellationToken)
+    }    public async Task<CreateOrderCommandResult> Handle(CreateOrderCommand request, CancellationToken cancellationToken)
     {
-        // Verificar se o cliente existe
-        var customer = await _customerRepository.GetByIdAsync(request.CustomerId);
-        if (customer == null)
-            throw new NotFoundException($"Cliente com ID {request.CustomerId} não encontrado");
+        // Verificar se o cliente existe (apenas se CustomerId foi informado)
+        Customer? customer = null;
+        if (request.CustomerId.HasValue)
+        {
+            customer = await _customerRepository.GetByIdAsync(request.CustomerId.Value);
+            if (customer == null)
+                throw new NotFoundException($"Cliente com ID {request.CustomerId.Value} não encontrado");
+        }
 
         // Criar os itens do pedido
         var orderItems = new List<OrderItem>();
@@ -52,7 +55,7 @@ public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommand, Cre
             orderItems.Add(orderItem);
         }
 
-        // Criar o pedido
+        // Criar o pedido (pode ser anônimo)
         var order = Order.Create(request.CustomerId, orderItems);
 
         // Persistir o pedido
@@ -63,7 +66,7 @@ public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommand, Cre
         {
             Id = order.Id,
             CustomerId = order.CustomerId,
-            CustomerName = customer.Name,
+            CustomerName = customer?.Name, // Null para pedidos anônimos
             Status = order.Status.ToString(),
             TotalPrice = order.TotalPrice,
             CreatedAt = order.CreatedAt,

@@ -29,11 +29,14 @@ public class OrderMapping : IEntityTypeConfiguration<Order>
 
         builder.Property(o => o.UpdatedAt);
 
-        // Relacionamento com Customer
+        builder.Property(o => o.PreferenceId)
+            .HasMaxLength(100)
+            .IsRequired(false);        // Relacionamento com Customer (opcional para pedidos anônimos)
         builder.HasOne(o => o.Customer)
             .WithMany()
             .HasForeignKey(o => o.CustomerId)
-            .OnDelete(DeleteBehavior.Restrict);        // Configuração de OrderItem como owned type em uma coleção
+            .IsRequired(false) // Permite CustomerId null para pedidos anônimos
+            .OnDelete(DeleteBehavior.Restrict);// Configuração de OrderItem como owned type em uma coleção
         builder.OwnsMany(o => o.Items, ownedBuilder =>
         {
             ownedBuilder.ToTable("OrderItems");

@@ -6,17 +6,18 @@ services:
     image: mcr.microsoft.com/mssql/server:2022-latest
     environment:
       - ACCEPT_EULA=Y
-      - MSSQL_SA_PASSWORD=${DB_PASSWORD:-FastFood2025}
+      - MSSQL_SA_PASSWORD=FastFood2025
       - MSSQL_PID=Express
     ports:
       - "1434:1433" # Externo:Interno
     volumes:
       - fastfood-data:/var/opt/mssql
+      - ./init-db.sh:/docker-entrypoint-initdb.d/init-db.sh
     networks:
       - fastfood-network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "/opt/mssql-tools18/bin/sqlcmd", "-S", "localhost", "-U", "sa", "-P", "${DB_PASSWORD:-FastFood2025}", "-Q", "SELECT 1", "-C", "-N"]
+      test: ["CMD", "/opt/mssql-tools18/bin/sqlcmd", "-S", "localhost", "-U", "sa", "-P", "FastFood2025", "-Q", "SELECT 1", "-C", "-N"]
       interval: 10s
       retries: 10
       timeout: 5s
@@ -28,14 +29,15 @@ services:
       context: .
       dockerfile: Dockerfile.migrations
     environment:
-      - DB_PASSWORD=${DB_PASSWORD:-FastFood2025}
       - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__DefaultConnection=Server=db;Database=FastFood;User Id=sa;Password=${DB_PASSWORD:-FastFood2025};TrustServerCertificate=true;MultipleActiveResultSets=true
+      - ConnectionStrings__DefaultConnection=Server=db,1433;Database=FastFood;User Id=sa;Password=FastFood2025;TrustServerCertificate=true;MultipleActiveResultSets=true;Connect Timeout=30
     networks:
       - fastfood-network
     depends_on:
       db:
         condition: service_healthy
+    volumes:
+      - ./src:/app/src
     restart: "no"
 
   # FastFood API
@@ -50,8 +52,8 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80;https://+:443
       - ASPNETCORE_Kestrel__Certificates__Default__Path=/app/certs/fastfood-dev.pfx
-      - ASPNETCORE_Kestrel__Certificates__Default__Password=${CERT_PASSWORD:-fastfood123}
-      - ConnectionStrings__DefaultConnection=Server=db;Database=FastFood;User Id=sa;Password=${DB_PASSWORD:-FastFood2025};TrustServerCertificate=true;MultipleActiveResultSets=true
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=fastfood123
+      - ConnectionStrings__DefaultConnection=Server=db,1433;Database=FastFood;User Id=sa;Password=FastFood2025;TrustServerCertificate=true;MultipleActiveResultSets=true;Connect Timeout=30
     volumes:
       - ./certs:/app/certs:ro
     networks:

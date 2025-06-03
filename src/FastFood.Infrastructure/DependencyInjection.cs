@@ -2,6 +2,8 @@ using FastFood.Domain.Customers.Repositories;
 using FastFood.Domain.Orders.Repositories;
 using FastFood.Domain.Orders.Services;
 using FastFood.Domain.Products.Repositories;
+using FastFood.Domain.Users.Repositories;
+using FastFood.Domain.Users.Services;
 using FastFood.Infrastructure.Data;
 using FastFood.Infrastructure.Repositories;
 using FastFood.Infrastructure.Services;
@@ -22,12 +24,32 @@ public static class DependencyInjection
         services.AddScoped<ICustomerRepository, CustomerRepository>();
         services.AddScoped<IProductRepository, ProductRepository>();
         services.AddScoped<IOrderRepository, OrderRepository>();
-    
-        // Registrar serviços
-        services.AddScoped<IPaymentService, FakePaymentService>(); // Adicionando serviço de pagamento
+        services.AddScoped<IUserRepository, UserRepository>();        // Registrar serviços
+        // Configurar serviço de pagamento baseado na configuração
+        var useFakePayment = configuration.GetValue<bool>("UseFakePayment", false);
+        
+        // Log para debug
+        Console.WriteLine($"[DI CONFIG] UseFakePayment = {useFakePayment}");
+        
+        if (useFakePayment)
+        {
+            Console.WriteLine("[DI CONFIG] Registrando FakePaymentService");
+            services.AddScoped<IPaymentService, FakePaymentService>();
+        }
+        else
+        {
+            Console.WriteLine("[DI CONFIG] Registrando MercadoPagoPaymentService");
+            services.AddScoped<IPaymentService, MercadoPagoPaymentService>();
+            // Registrar MercadoPagoPaymentService separadamente para acesso direto pelo WebhookController
+            services.AddScoped<MercadoPagoPaymentService>();
+        }
+        
         services.AddScoped<INotificationService, EmailNotificationService>();
         // Descomente a linha abaixo para usar notificações por SMS em vez de email
         // services.AddScoped<INotificationService, SmsNotificationService>();
+        
+        // Registrar serviço de autenticação
+        services.AddScoped<IAuthService, AuthService>();
 
         return services;
     }

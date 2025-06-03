@@ -1,4 +1,5 @@
 using FastFood.Application.Common.Exceptions;
+using FastFood.Domain.Products.Enums;
 using FastFood.Domain.Products.Repositories;
 using MediatR;
 
@@ -43,6 +44,7 @@ public class UpdateProductCommandHandler : IRequestHandler<UpdateProductCommand,
             Name = product.Name,
             Description = product.Description,
             Category = product.Category,
+            CategoryName = product.Category.ToString(),
             Price = product.Price,
             Images = product.Images,
             CreatedAt = product.CreatedAt,
