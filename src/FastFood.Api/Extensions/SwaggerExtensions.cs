@@ -167,14 +167,18 @@ A API utiliza **JWT (JSON Web Token)** para autenticação. Alguns endpoints sã
 
 ### Como Autenticar:
 1. **Registre-se** usando `POST /api/v1/auth/register`
+
 2. **Faça login** usando `POST /api/v1/auth/login`
+
 3. **Use o token** retornado no header `Authorization: Bearer {token}`
 
 ## Fluxo de Uso Típico
 
 ### Para Clientes:
 1. **Consultar Menu**: Use `GET /api/v1/products/category/{category}` para ver produtos
+
 2. **Criar Pedido**: Use `POST /api/v1/orders` com os produtos escolhidos
+
 3. **Acompanhar Pedido**: Use `GET /api/v1/orders/{id}` para ver status
 
 ### Para Administradores:
