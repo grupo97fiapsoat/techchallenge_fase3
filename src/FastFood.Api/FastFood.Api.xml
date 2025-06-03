@@ -42,7 +42,67 @@
             <response code="201">Usuário registrado com sucesso - Faça login para obter o token</response>
             <response code="400">Dados inválidos - Verifique se todos os campos estão preenchidos corretamente</response>
         </member>
+        <member name="T:FastFood.Api.Controllers.CustomersController">
+            <summary>
+            Controlador para gerenciamento de clientes do restaurante
+            
+            **Finalidade:** Gerencia o cadastro e consulta de clientes que fazem pedidos no sistema.
+            
+            **Funcionalidades principais:**
+            - Cadastro de novos clientes
+            - Consulta de clientes por CPF
+            - Listagem de todos os clientes
+            - Atualização de dados de clientes
+            - Exclusão de clientes
+            - Validação de dados pessoais
+            
+            **Níveis de acesso:**
+            - **Protegidos**: Criar, listar, atualizar e excluir clientes (apenas administradores)
+            - **Públicos**: Buscar cliente por CPF (para facilitar pedidos)
+            
+            **Validações implementadas:**
+            - CPF válido conforme algoritmo oficial
+            - Email em formato válido
+            - Nome obrigatório e não vazio
+            </summary>
+        </member>
         <member name="M:FastFood.Api.Controllers.CustomersController.Create(FastFood.Application.DTOs.CreateCustomerDto)">
+            <summary>
+            Cria um novo cliente no sistema
+            
+            **Endpoint protegido** - Requer autenticação JWT (acesso administrativo).
+            
+            **Finalidade:** Registra um novo cliente no sistema para que possa fazer pedidos.
+            
+            **Como usar:**
+            1. **Autenticação**: Inclua o token JWT de administrador no header Authorization
+            2. **Dados**: Envie nome, email e CPF válidos
+            3. **Validação**: Sistema valida CPF e email automaticamente
+            4. **Retorno**: Recebe ID do cliente criado
+            
+            **Exemplo de uso:**
+            ```json
+            POST /api/v1/customers
+            Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+            Content-Type: application/json
+            
+            {
+              "name": "João Silva",
+              "email": "joao.silva@email.com",
+              "cpf": "12345678901"
+            }
+            ```
+            
+            **Validações aplicadas:**
+            - **CPF**: Formato e dígitos verificadores válidos
+            - **Email**: Formato de email válido
+            - **Nome**: Obrigatório, não pode estar vazio
+            - **Unicidade**: CPF deve ser único no sistema
+            
+            **Próximos passos:**
+            - Use o ID retornado para associar pedidos ao cliente
+            - Cliente pode ser encontrado pelo CPF em consultas futuras
+            </summary>
             <param name="createCustomerDto">Dados do cliente (nome, email, CPF)</param>
             <returns>Cliente criado com ID único gerado</returns>
             <response code="201">Cliente criado com sucesso</response>
@@ -52,6 +112,45 @@
             <response code="409">CPF já cadastrado - Cliente já existe no sistema</response>
         </member>
         <member name="M:FastFood.Api.Controllers.CustomersController.GetByCpf(System.String)">
+            <summary>
+            Busca um cliente específico pelo CPF
+            
+            **Endpoint público** - Não requer autenticação (facilita criação de pedidos).
+            
+            **Finalidade:** Permite consultar se um cliente já está cadastrado usando seu CPF, facilitando o processo de criação de pedidos.
+            
+            **Como usar:**
+            1. **CPF**: Forneça o CPF no formato com ou sem formatação (123.456.789-01 ou 12345678901)
+            2. **Consulta**: Sistema busca cliente cadastrado
+            3. **Retorno**: Dados completos do cliente se encontrado
+            
+            **Exemplo de uso:**
+            ```
+            GET /api/v1/customers/cpf/12345678901
+            Content-Type: application/json
+            ```
+            
+            **Resposta exemplo:**
+            ```json
+            {
+              "id": "550e8400-e29b-41d4-a716-446655440000",
+              "name": "João Silva",
+              "email": "joao.silva@email.com",
+              "cpf": "12345678901",
+              "createdAt": "2025-06-01T10:00:00Z",
+              "updatedAt": "2025-06-01T10:00:00Z"
+            }
+            ```
+            
+            **Casos de uso:**
+            - **Cliente encontrado**: Use o ID para criar pedidos
+            - **Cliente não encontrado**: Cadastre novo cliente antes de criar pedido
+            - **Integração**: Perfeito para validar clientes em interfaces de pedido
+            
+            **Formatos de CPF aceitos:**
+            - `12345678901` (apenas números)
+            - `123.456.789-01` (formatado)
+            </summary>
             <param name="cpf">CPF do cliente (com ou sem formatação)</param>
             <returns>Dados completos do cliente encontrado</returns>
             <response code="200">Cliente encontrado e dados retornados</response>
@@ -59,6 +158,50 @@
             <response code="400">CPF inválido - Formato ou dígitos verificadores incorretos</response>
         </member>
         <member name="M:FastFood.Api.Controllers.CustomersController.GetAll(System.Int32,System.Int32)">
+            <summary>
+            Lista todos os clientes cadastrados no sistema com suporte a paginação
+            
+            **Endpoint protegido** - Requer autenticação JWT (acesso administrativo).
+            
+            **Finalidade:** Permite listar todos os clientes cadastrados, facilitando a gestão de campanhas promocionais.
+            
+            **Como usar:**
+            1. **Autenticação**: Inclua o token JWT de administrador no header Authorization    /// 2. **Paginação**: Use os parâmetros pageSize e pageNumber para controlar a quantidade de resultados
+            3. **Ordenação**: Os resultados são ordenados por data de cadastro (mais recentes primeiro)
+            
+            **Exemplo de uso:**
+            ```
+            GET /api/v1/customers?pageNumber=1&amp;pageSize=20
+            Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+            ```
+            
+            **Resposta exemplo:**
+            ```json
+            [
+              {
+                "id": "550e8400-e29b-41d4-a716-446655440000",
+                "name": "João Silva",
+                "email": "joao.silva@email.com",
+                "cpf": "12345678901",
+                "createdAt": "2025-06-01T10:00:00Z",
+                "updatedAt": "2025-06-01T10:00:00Z"
+              },
+              {
+                "id": "550e8400-e29b-41d4-a716-446655440001",
+                "name": "Maria Oliveira",
+                "email": "maria.oliveira@email.com",
+                "cpf": "98765432109",
+                "createdAt": "2025-06-01T11:00:00Z",
+                "updatedAt": null
+              }
+            ]
+            ```
+            
+            **Caso de uso:**
+            - Gestão de campanhas promocionais
+            - Relatórios administrativos
+            - Análise de base de clientes
+            </summary>
             <param name="pageNumber">Número da página (padrão: 1)</param>
             <param name="pageSize">Itens por página (padrão: 10, máximo recomendado: 50)</param>
             <returns>Lista paginada de clientes cadastrados</returns>
@@ -67,6 +210,36 @@
             <response code="403">Acesso negado - Token válido mas sem permissões adequadas</response>
         </member>
         <member name="M:FastFood.Api.Controllers.CustomersController.Update(System.Guid,FastFood.Application.DTOs.UpdateCustomerDto)">
+            <summary>
+            Atualiza os dados de um cliente existente
+            
+            **Endpoint protegido** - Requer autenticação JWT (acesso administrativo).
+            
+            **Finalidade:** Permite atualizar informações de um cliente já cadastrado no sistema.
+            
+            **Como usar:**
+            1. **Autenticação**: Inclua o token JWT de administrador no header Authorization
+            2. **ID do cliente**: Forneça o ID do cliente a ser atualizado na URL
+            3. **Dados**: Envie os novos dados no formato JSON
+            4. **Parcial**: Apenas os campos enviados serão atualizados
+            
+            **Exemplo de uso:**
+            ```json
+            PUT /api/v1/customers/550e8400-e29b-41d4-a716-446655440000
+            Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+            Content-Type: application/json
+            
+            {
+              "name": "João Silva Atualizado",
+              "email": "joao.silva.novo@email.com"
+            }
+            ```
+            
+            **Validações aplicadas:**
+            - **Email**: Formato de email válido
+            - **Nome**: Não pode estar vazio
+            - **CPF**: Se enviado, deve ser válido e não pode já estar em uso por outro cliente
+            </summary>
             <param name="id">ID do cliente a ser atualizado</param>
             <param name="updateCustomerDto">Novos dados do cliente</param>
             <returns>Cliente com dados atualizados</returns>
@@ -78,6 +251,27 @@
             <response code="409">CPF já cadastrado para outro cliente</response>
         </member>
         <member name="M:FastFood.Api.Controllers.CustomersController.Delete(System.Guid)">
+            <summary>
+            Exclui um cliente do sistema
+            
+            **Endpoint protegido** - Requer autenticação JWT (acesso administrativo).
+            
+            **Finalidade:** Permite remover um cliente do sistema, caso necessário.
+            
+            **Como usar:**
+            1. **Autenticação**: Inclua o token JWT de administrador no header Authorization
+            2. **ID do cliente**: Forneça o ID do cliente a ser excluído na URL
+            
+            **Restrições:**
+            - Clientes com pedidos associados não podem ser excluídos, para preservar o histórico
+            - Operação não pode ser desfeita
+            
+            **Exemplo de uso:**
+            ```
+            DELETE /api/v1/customers/550e8400-e29b-41d4-a716-446655440000
+            Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+            ```
+            </summary>
             <param name="id">ID do cliente a ser excluído</param>
             <returns>Sem conteúdo em caso de sucesso</returns>
             <response code="204">Cliente excluído com sucesso</response>
@@ -86,13 +280,97 @@
             <response code="403">Acesso negado - Token válido mas sem permissões adequadas</response>
             <response code="404">Cliente não encontrado - Verifique se o ID está correto</response>
         </member>
+        <member name="T:FastFood.Api.Controllers.OrdersController">
+            <summary>
+            Controlador para gerenciamento de pedidos do restaurante
+            
+            **Finalidade:** Gerencia todo o ciclo de vida dos pedidos, desde a criação até a entrega.
+            
+            **Fluxo do pedido:**
+            1. **Criação** - Cliente cria pedido (público)
+            2. **Pagamento** - Sistema processa pagamento automaticamente  
+            3. **Preparação** - Cozinha recebe e prepara o pedido
+            4. **Finalização** - Cliente retira o pedido
+            
+            **Status disponíveis:**
+            - **Recebido (0)**: Pedido criado, aguardando pagamento
+            - **EmPreparacao (1)**: Pago e sendo preparado na cozinha
+            - **Pronto (2)**: Pronto para retirada
+            - **Finalizado (3)**: Entregue ao cliente
+            
+            **Níveis de acesso:**
+            - **Públicos**: Criar pedido, processar checkout, confirmar pagamento
+            - **Protegidos**: Listar todos os pedidos, consultar detalhes, atualizar status
+            </summary>
+        </member>
         <member name="M:FastFood.Api.Controllers.OrdersController.Create(FastFood.Application.DTOs.CreateOrderDto)">
+            <summary>
+            Cria um novo pedido no sistema
+            
+            **Endpoint público** - Não requer autenticação (qualquer pessoa pode fazer pedidos).
+            
+            **Como usar:**
+            1. Selecione os produtos do menu usando os endpoints de produtos
+            2. Envie uma lista de itens com ProductId e Quantity
+            3. O sistema calculará automaticamente o valor total
+            4. O pedido será criado com status "Recebido"
+            5. Use o ID retornado para processar o checkout e pagamento
+            
+            **Exemplo de uso:**
+            ```json
+            {
+              "customerId": "550e8400-e29b-41d4-a716-446655440000",
+              "items": [
+                {
+                  "productId": "123e4567-e89b-12d3-a456-426614174000",
+                  "quantity": 2
+                },
+                {
+                  "productId": "987fcdeb-51a2-43d1-b789-123456789abc",
+                  "quantity": 1
+                }
+              ]
+            }
+            ```
+               /// **Próximos passos após criar o pedido:**
+            1. Use `POST /{id}/checkout` para gerar QR Code de pagamento
+            2. Use `POST /{id}/confirm-payment` para confirmar o pagamento
+            3. Acompanhe o status com `GET /{id}`
+            </summary>
             <param name="request">Dados do pedido (customerId e lista de itens)</param>
             <returns>Pedido criado</returns>
             <response code="201">Pedido criado com sucesso</response>
             <response code="400">Dados inválidos</response>
         </member>
         <member name="M:FastFood.Api.Controllers.OrdersController.GetAll(System.Nullable{System.Guid},System.String,System.Int32,System.Int32)">
+            <summary>
+            Lista todos os pedidos com opções de filtragem e paginação
+            
+            **Endpoint protegido** - Requer autenticação JWT (acesso administrativo).
+            
+            **Funcionalidades:**
+            - Lista todos os pedidos do sistema
+            - Filtragem por cliente e status
+            - Paginação para performance
+            - Ordenação por data de criação
+            
+            **Como usar:**
+            1. **Autenticação necessária**: Inclua o token JWT no header Authorization
+            2. **Filtros opcionais**: customerId, status para refinar a busca
+            3. **Paginação**: pageNumber e pageSize para controlar a quantidade de resultados
+            
+            **Exemplo de uso:**
+            ```
+            GET /api/v1/orders?status=EmPreparacao&amp;pageNumber=1&amp;pageSize=10
+            Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+            ```
+            
+            **Status válidos para filtro:**
+            - `Recebido` - Pedidos aguardando pagamento
+            - `EmPreparacao` - Pedidos sendo preparados
+            - `Pronto` - Pedidos prontos para retirada
+            - `Finalizado` - Pedidos entregues
+            </summary>
             <param name="customerId">ID do cliente para filtrar pedidos (opcional)</param>
             <param name="status">Status do pedido para filtrar (opcional)</param>
             <param name="pageNumber">Número da página para paginação (padrão: 1)</param>
@@ -103,6 +381,34 @@
             <response code="403">Acesso negado - Token válido mas sem permissões adequadas</response>
         </member>
         <member name="M:FastFood.Api.Controllers.OrdersController.GetById(System.Guid)">
+            <summary>
+            Obtém detalhes de um pedido específico pelo ID
+            
+            **Endpoint protegido** - Requer autenticação JWT.
+            
+            **Funcionalidades:**
+            - Exibe todos os detalhes do pedido
+            - Inclui informações do cliente e itens
+            - Mostra status atual e histórico
+            - Calcula valores totais e subtotais
+            
+            **Como usar:**
+            1. **Autenticação**: Inclua o token JWT no header Authorization
+            2. **ID do pedido**: Forneça o GUID do pedido na URL
+            3. **Resposta**: Retorna objeto completo com todos os detalhes
+            
+            **Exemplo de uso:**
+            ```
+            GET /api/v1/orders/550e8400-e29b-41d4-a716-446655440000
+            Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+            ```
+            
+            **Informações retornadas:**
+            - Dados do pedido (ID, status, valor total, data de criação)
+            - Informações do cliente (ID, nome)
+            - Lista detalhada de itens (produto, quantidade, preços)
+            - Timestamps de criação e atualizações
+            </summary>
             <param name="id">ID único do pedido (formato GUID)</param>
             <returns>Detalhes completos do pedido</returns>
             <response code="200">Pedido encontrado e retornado com sucesso</response>
@@ -111,6 +417,38 @@
             <response code="404">Pedido não encontrado - Verifique se o ID está correto</response>
         </member>
         <member name="M:FastFood.Api.Controllers.OrdersController.UpdateStatus(System.Guid,FastFood.Application.DTOs.UpdateOrderStatusDto)">
+            <summary>
+            Atualiza o status de um pedido específico
+            
+            **Endpoint protegido** - Requer autenticação JWT (acesso administrativo).
+            
+            **Finalidade:** Permite que administradores atualizem o status dos pedidos conforme eles progridem no fluxo de preparação e entrega.
+               /// **Como usar:**
+            1. **Autenticação**: Inclua o token JWT de administrador no header Authorization
+            2. **ID do pedido**: Forneça o GUID do pedido na URL
+            3. **Status**: Envie o novo status no body da requisição
+            4. **Confirmação**: Receba confirmação da atualização
+            
+            **Exemplo de uso:**
+            ```json
+            PUT /api/v1/orders/550e8400-e29b-41d4-a716-446655440000/status
+            Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+            Content-Type: application/json
+            
+            {
+              "status": "EmPreparacao"
+            }
+            ```
+            
+            **Status válidos:**
+            - `Recebido` - Pedido criado, aguardando pagamento
+            - `EmPreparacao` - Pedido pago, sendo preparado na cozinha
+            - `Pronto` - Pedido pronto para retirada pelo cliente
+            - `Finalizado` - Pedido entregue ao cliente
+            
+            **Fluxo típico de status:**
+            Recebido → EmPreparacao → Pronto → Finalizado
+            </summary>
             <param name="id">ID único do pedido (formato GUID)</param>
             <param name="request">Objeto contendo o novo status do pedido</param>
             <returns>Resultado da operação de atualização</returns>
@@ -120,19 +458,137 @@
             <response code="404">Pedido não encontrado - Verifique se o ID está correto</response>
         </member>
         <member name="M:FastFood.Api.Controllers.OrdersController.GetOrderStatus(System.Guid)">
+            <summary>
+            Consulta o status de um pedido de forma pública (para acompanhamento de clientes anônimos)
+            
+            **Endpoint público** - Não requer autenticação (permite acompanhamento de pedidos anônimos).
+            
+            **Finalidade:** Permite que qualquer cliente (incluindo anônimos) consulte o status atual de um pedido usando apenas o OrderId.
+            
+            **Como usar:**
+            1. **ID do pedido**: Use o ID retornado ao criar o pedido
+            2. **Sem autenticação**: Endpoint público, não precisa de token JWT
+            3. **Acompanhamento**: Consulte periodicamente para ver progresso
+            
+            **Exemplo de uso:**
+            ```
+            GET /api/v1/orders/550e8400-e29b-41d4-a716-446655440000/status
+            ```
+            
+            **Resposta exemplo:**
+            ```json
+            {
+              "orderId": "550e8400-e29b-41d4-a716-446655440000",
+              "status": "EmPreparacao",
+              "statusDescription": "Seu pedido está sendo preparado",
+              "totalPrice": 45.50,
+              "createdAt": "2025-06-02T10:30:00Z",
+              "isAnonymous": true
+            }
+            ```
+            
+            **Status possíveis:**
+            - `Pending` - Pedido criado, aguardando pagamento
+            - `AwaitingPayment` - Aguardando confirmação do pagamento
+            - `Paid` - Pagamento confirmado
+            - `Processing` - Sendo preparado na cozinha
+            - `Ready` - Pronto para retirada
+            - `Completed` - Entregue ao cliente
+            
+            **Privacidade:** Este endpoint retorna apenas informações básicas do pedido, sem dados pessoais do cliente.
+            </summary>
             <param name="id">ID único do pedido (formato GUID)</param>
             <returns>Status atual do pedido</returns>
             <response code="200">Status do pedido retornado com sucesso</response>
             <response code="404">Pedido não encontrado - Verifique se o ID está correto</response>
         </member>
         <member name="M:FastFood.Api.Controllers.OrdersController.ProcessCheckout(System.Guid)">
+            <summary>
+            Gera QR Code para pagamento do pedido via MercadoPago
+            
+            **Endpoint público** - Não requer autenticação (facilita o fluxo de pagamento).
+            
+            **Finalidade:** Gera QR Code e preferência do MercadoPago para que o cliente possa efetuar o pagamento do pedido.
+               /// **Como usar:**
+            1. **ID do pedido**: Use o ID retornado ao criar o pedido
+            2. **QR Code**: Escaneie o QR Code gerado com app do MercadoPago
+            3. **Próximo passo**: Use o endpoint de confirmação de pagamento
+            
+            **Exemplo de uso:**
+            ```
+            POST /api/v1/orders/550e8400-e29b-41d4-a716-446655440000/checkout
+            Content-Type: application/json
+            ```
+            
+            **Resposta exemplo:**
+            ```json
+            {
+              "orderId": "550e8400-e29b-41d4-a716-446655440000",
+              "qrCode": "00020126580014BR.GOV.BCB.PIX...",
+              "preferenceId": "1234567890",
+              "totalAmount": 45.50,
+              "processedAt": "2025-06-02T10:30:00Z"
+            }
+            ```
+            
+            **Fluxo de pagamento:**
+            1. Cliente cria pedido → 2. **Gera QR Code (este endpoint)** → 3. Cliente paga → 4. Confirma pagamento
+            
+            **Integração MercadoPago:**
+            - QR Code no formato PIX para pagamento instantâneo
+            - PreferenceId para rastreamento do pagamento
+            - Webhook automático para notificações
+            </summary>
             <param name="id">ID único do pedido para gerar pagamento (formato GUID)</param>
             <returns>QR Code e dados para pagamento via MercadoPago</returns>
             <response code="200">QR Code gerado com sucesso - Cliente pode efetuar pagamento</response>    /// <response code="400">Erro na geração do QR Code - Verifique se o pedido está válido</response>
             <response code="404">Pedido não encontrado - Verifique se o ID está correto</response>
         </member>
         <member name="M:FastFood.Api.Controllers.OrdersController.ConfirmPayment(System.Guid,FastFood.Application.DTOs.ConfirmPaymentDto)">
-            <param name="id">ID único do pedido para confirmar pagamento (formato GUID)</param>
+            <summary>
+            Confirma o pagamento de um pedido após o cliente efetuar o pagamento
+            
+            **Endpoint público** - Não requer autenticação (facilita confirmação automática).
+            
+            **Finalidade:** Valida e confirma o pagamento do pedido, atualizando o status para "EmPreparacao" quando bem-sucedido.
+               /// **Como usar:**
+            1. **ID do pedido**: Use o mesmo ID do checkout
+            2. **Dados de validação**: Forneça PreferenceId OU QrCode
+            3. **Confirmação**: Sistema valida com MercadoPago e atualiza status
+            4. **Próximo passo**: Pedido entra na fila de preparação
+            
+            **Exemplo de uso:**
+            ```json
+            POST /api/v1/orders/550e8400-e29b-41d4-a716-446655440000/confirm-payment
+            Content-Type: application/json
+            
+            {
+              "preferenceId": "1234567890",
+              "qrCode": "00020126580014BR.GOV.BCB.PIX..."
+            }
+            ```
+            
+            **Resposta exemplo (sucesso):**
+            ```json
+            {
+              "orderId": "550e8400-e29b-41d4-a716-446655440000",
+              "status": "EmPreparacao",
+              "totalAmount": 45.50,
+              "confirmedAt": "2025-06-02T10:35:00Z",
+              "paymentConfirmed": true,
+              "message": "Pagamento confirmado com sucesso"
+            }
+            ```
+            
+            **Fluxo após confirmação:**
+            1. Status atualizado para "EmPreparacao"
+            2. Notificação enviada para cozinha
+            3. Cliente pode acompanhar preparo
+            
+            **Validação obrigatória:**
+            - Pelo menos um dos campos é obrigatório: `preferenceId` ou `qrCode`
+            - Sistema valida pagamento com MercadoPago automaticamente
+            </summary>    /// <param name="id">ID único do pedido para confirmar pagamento (formato GUID)</param>
             <param name="request">Dados para validação do pagamento (PreferenceId ou QrCode)</param>
             <returns>Resultado da confirmação do pagamento</returns>
             <response code="200">Pagamento confirmado com sucesso - Pedido em preparação</response>
