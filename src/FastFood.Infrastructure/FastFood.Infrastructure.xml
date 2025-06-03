@@ -221,10 +221,5 @@
             <param name="qrCode">URL do QR Code.</param>
             <returns>PreferenceId extraído ou null se não encontrado.</returns>
         </member>
-        <member name="T:FastFood.Infrastructure.Services.SmsNotificationService">
-            <summary>
-            Implementação do serviço de notificação por SMS.
-            </summary>
-        </member>
     </members>
 </doc>

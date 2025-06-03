@@ -116,7 +116,7 @@ echo ========================================================================
 echo API disponivel em:
 echo  - HTTP:  http://localhost:5000
 echo  - HTTPS: https://localhost:5001
-echo  - Swagger: https://localhost:5000/swagger
+echo  - Swagger: https://localhost:5001/swagger
 echo.
 echo Banco de dados:
 echo  - Server: localhost,1434
