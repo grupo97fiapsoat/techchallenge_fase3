@@ -1,6 +1,6 @@
 # 🍔 FastFood API - Tech Challenge Fase 1
 
-Sistema de gerenciamento de pedidos para lanchonete com arquitetura Clean Architecture, desenvolvido em .NET 8 com integração ao MercadoPago.
+Sistema de gerenciamento de pedidos para lanchonete com arquitetura Clean Architecture/Hexagonal Architecture, desenvolvido em .NET 8.
 
 ## 📋 Índice
 
