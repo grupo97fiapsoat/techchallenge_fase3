@@ -2,6 +2,19 @@
 
 Sistema de gerenciamento de pedidos para lanchonete com arquitetura Clean Architecture/Hexagonal Architecture, desenvolvido em .NET 8.
 
+## 📚 Documentação do Projeto
+
+- **Vídeo da Arquitetura**: [Assistir no YouTube](https://www.youtube.com/watch?v=DjWIczeDQyg)
+- **Miro Board**: [Acessar Documentação Completa](https://miro.com/app/board/uXjVIFgMg1M=/)
+- **Dicionário de Termos**: [Acessar Dicionário de Termos](Dicionario Projeto/Dicionário.pdf) 
+
+A documentação inclui:
+- Event Storming dos fluxos de negócio
+- Diagramas de Domínio (DDD)
+- Arquitetura da Solução
+- Detalhes da Implementação
+
+
 ## 📋 Índice
 
 - [Sobre o Projeto](#sobre-o-projeto)
