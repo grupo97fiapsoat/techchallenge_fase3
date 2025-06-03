@@ -1,0 +1,317 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>FastFood.Api</name>
+    </assembly>
+    <members>
+        <member name="T:FastFood.Api.Controllers.AuthController">
+            <summary>
+            Controlador para autenticação e registro de usuários
+            
+            **Finalidade:** Gerencia o sistema de autenticação JWT da aplicação.
+            
+            **Endpoints disponíveis:**
+            - **Login**: Autentica um usuário e retorna um token JWT
+            - **Registro**: Registra um novo usuário no sistema
+            
+            **Fluxo típico:**
+            1. Registre-se usando o endpoint `/register` 
+            
+            2. Faça login usando o endpoint `/login`
+            
+            3. Use o token retornado no header `Authorization: Bearer {token}` para acessar endpoints protegidos
+            </summary>
+        </member>
+        <member name="M:FastFood.Api.Controllers.AuthController.#ctor(MediatR.IMediator,Microsoft.Extensions.Logging.ILogger{FastFood.Api.Controllers.AuthController})">
+            <summary>
+            Inicializa uma nova instância do controlador de autenticação
+            </summary>
+            <param name="mediator">Mediador para comandos e consultas</param>
+            <param name="logger">Logger</param>
+        </member>
+        <member name="M:FastFood.Api.Controllers.AuthController.Login(FastFood.Application.DTOs.LoginDto)">
+            <param name="request">Dados de login (username e password)</param>
+            <returns>Token JWT e informações do usuário autenticado</returns>
+            <response code="200">Login realizado com sucesso - Retorna token JWT</response>
+            <response code="400">Dados inválidos - Verifique o formato dos dados enviados</response>
+            <response code="401">Credenciais inválidas - Username ou password incorretos</response>
+        </member>
+        <member name="M:FastFood.Api.Controllers.AuthController.Register(FastFood.Application.DTOs.RegisterUserDto)">
+            <param name="request">Dados do novo usuário (username, email, password, confirmPassword)</param>
+            <returns>Informações do usuário registrado (sem token - faça login para obter)</returns>
+            <response code="201">Usuário registrado com sucesso - Faça login para obter o token</response>
+            <response code="400">Dados inválidos - Verifique se todos os campos estão preenchidos corretamente</response>
+        </member>
+        <member name="T:FastFood.Api.Controllers.CustomersController">
+            <summary>
+            Controlador para gerenciamento de clientes do restaurante
+            
+            **Finalidade:** Gerencia o cadastro e consulta de clientes que fazem pedidos no sistema.
+            
+            **Funcionalidades principais:**
+            - Cadastro de novos clientes
+            - Consulta de clientes por CPF
+            - Listagem de todos os clientes
+            - Atualização de dados de clientes
+            - Exclusão de clientes
+            - Validação de dados pessoais
+            
+            **Níveis de acesso:**
+            - **Protegidos**: Criar, listar, atualizar e excluir clientes (apenas administradores)
+            - **Públicos**: Buscar cliente por CPF (para facilitar pedidos)
+            
+            **Validações implementadas:**
+            - CPF válido conforme algoritmo oficial
+            - Email em formato válido
+            - Nome obrigatório e não vazio
+            </summary>
+        </member>
+        <member name="M:FastFood.Api.Controllers.CustomersController.Create(FastFood.Application.DTOs.CreateCustomerDto)">
+            <param name="createCustomerDto">Dados do cliente (nome, email, CPF)</param>
+            <returns>Cliente criado com ID único gerado</returns>
+            <response code="201">Cliente criado com sucesso</response>
+            <response code="400">Dados inválidos - Verifique CPF, email ou nome</response>
+            <response code="401">Token JWT inválido ou ausente - Faça login primeiro</response>
+            <response code="403">Acesso negado - Apenas administradores podem criar clientes</response>
+            <response code="409">CPF já cadastrado - Cliente já existe no sistema</response>
+        </member>
+        <member name="M:FastFood.Api.Controllers.CustomersController.GetByCpf(System.String)">
+            <param name="cpf">CPF do cliente (com ou sem formatação)</param>
+            <returns>Dados completos do cliente encontrado</returns>
+            <response code="200">Cliente encontrado e dados retornados</response>
+            <response code="404">Cliente não encontrado - CPF não cadastrado no sistema</response>
+            <response code="400">CPF inválido - Formato ou dígitos verificadores incorretos</response>
+        </member>
+        <member name="M:FastFood.Api.Controllers.CustomersController.GetAll(System.Int32,System.Int32)">
+            <param name="pageNumber">Número da página (padrão: 1)</param>
+            <param name="pageSize">Itens por página (padrão: 10, máximo recomendado: 50)</param>
+            <returns>Lista paginada de clientes cadastrados</returns>
+            <response code="200">Lista de clientes retornada com sucesso</response>
+            <response code="401">Token JWT inválido ou ausente - Faça login primeiro</response>
+            <response code="403">Acesso negado - Token válido mas sem permissões adequadas</response>
+        </member>
+        <member name="M:FastFood.Api.Controllers.CustomersController.Update(System.Guid,FastFood.Application.DTOs.UpdateCustomerDto)">
+            <param name="id">ID do cliente a ser atualizado</param>
+            <param name="updateCustomerDto">Novos dados do cliente</param>
+            <returns>Cliente com dados atualizados</returns>
+            <response code="200">Cliente atualizado com sucesso</response>
+            <response code="400">Dados inválidos - Verifique o formato dos dados</response>
+            <response code="401">Token JWT inválido ou ausente - Faça login primeiro</response>
+            <response code="403">Acesso negado - Token válido mas sem permissões adequadas</response>
+            <response code="404">Cliente não encontrado - Verifique se o ID está correto</response>
+            <response code="409">CPF já cadastrado para outro cliente</response>
+        </member>
+        <member name="M:FastFood.Api.Controllers.CustomersController.Delete(System.Guid)">
+            <param name="id">ID do cliente a ser excluído</param>
+            <returns>Sem conteúdo em caso de sucesso</returns>
+            <response code="204">Cliente excluído com sucesso</response>
+            <response code="400">Cliente não pode ser excluído - Possui pedidos associados</response>
+            <response code="401">Token JWT inválido ou ausente - Faça login primeiro</response>
+            <response code="403">Acesso negado - Token válido mas sem permissões adequadas</response>
+            <response code="404">Cliente não encontrado - Verifique se o ID está correto</response>
+        </member>
+        <member name="T:FastFood.Api.Controllers.OrdersController">
+            <summary>
+            Controlador para gerenciamento de pedidos do restaurante
+            
+            **Finalidade:** Gerencia todo o ciclo de vida dos pedidos, desde a criação até a entrega.
+            
+            **Fluxo do pedido:**
+            1. **Criação** - Cliente cria pedido (público)
+            2. **Pagamento** - Sistema processa pagamento automaticamente  
+            3. **Preparação** - Cozinha recebe e prepara o pedido
+            4. **Finalização** - Cliente retira o pedido
+            
+            **Status disponíveis:**
+            - **Recebido (0)**: Pedido criado, aguardando pagamento
+            - **EmPreparacao (1)**: Pago e sendo preparado na cozinha
+            - **Pronto (2)**: Pronto para retirada
+            - **Finalizado (3)**: Entregue ao cliente
+            
+            **Níveis de acesso:**
+            - **Públicos**: Criar pedido, processar checkout, confirmar pagamento
+            - **Protegidos**: Listar todos os pedidos, consultar detalhes, atualizar status
+            </summary>
+        </member>
+        <member name="M:FastFood.Api.Controllers.OrdersController.Create(FastFood.Application.DTOs.CreateOrderDto)">
+            <param name="request">Dados do pedido (customerId e lista de itens)</param>
+            <returns>Pedido criado</returns>
+            <response code="201">Pedido criado com sucesso</response>
+            <response code="400">Dados inválidos</response>
+        </member>
+        <member name="M:FastFood.Api.Controllers.OrdersController.GetAll(System.Nullable{System.Guid},System.String,System.Int32,System.Int32)">
+            <param name="customerId">ID do cliente para filtrar pedidos (opcional)</param>
+            <param name="status">Status do pedido para filtrar (opcional)</param>
+            <param name="pageNumber">Número da página para paginação (padrão: 1)</param>
+            <param name="pageSize">Quantidade de itens por página (padrão: 10, máximo: 100)</param>
+            <returns>Lista paginada de pedidos com metadados de paginação</returns>
+            <response code="200">Lista de pedidos retornada com sucesso</response>
+            <response code="401">Token JWT inválido ou ausente - Faça login primeiro</response>
+            <response code="403">Acesso negado - Token válido mas sem permissões adequadas</response>
+        </member>
+        <member name="M:FastFood.Api.Controllers.OrdersController.GetById(System.Guid)">
+            <param name="id">ID único do pedido (formato GUID)</param>
+            <returns>Detalhes completos do pedido</returns>
+            <response code="200">Pedido encontrado e retornado com sucesso</response>
+            <response code="401">Token JWT inválido ou ausente - Faça login primeiro</response>
+            <response code="403">Acesso negado - Token válido mas sem permissões adequadas</response>
+            <response code="404">Pedido não encontrado - Verifique se o ID está correto</response>
+        </member>
+        <member name="M:FastFood.Api.Controllers.OrdersController.UpdateStatus(System.Guid,FastFood.Application.DTOs.UpdateOrderStatusDto)">
+            <param name="id">ID único do pedido (formato GUID)</param>
+            <param name="request">Objeto contendo o novo status do pedido</param>
+            <returns>Resultado da operação de atualização</returns>
+            <response code="200">Status atualizado com sucesso</response>    /// <response code="400">Status inválido ou transição não permitida</response>
+            <response code="401">Token JWT inválido ou ausente - Faça login primeiro</response>
+            <response code="403">Acesso negado - Apenas administradores podem atualizar status</response>
+            <response code="404">Pedido não encontrado - Verifique se o ID está correto</response>
+        </member>
+        <member name="M:FastFood.Api.Controllers.OrdersController.GetOrderStatus(System.Guid)">
+            <param name="id">ID único do pedido (formato GUID)</param>
+            <returns>Status atual do pedido</returns>
+            <response code="200">Status do pedido retornado com sucesso</response>
+            <response code="404">Pedido não encontrado - Verifique se o ID está correto</response>
+        </member>
+        <member name="M:FastFood.Api.Controllers.OrdersController.ProcessCheckout(System.Guid)">
+            <param name="id">ID único do pedido para gerar pagamento (formato GUID)</param>
+            <returns>QR Code e dados para pagamento via MercadoPago</returns>
+            <response code="200">QR Code gerado com sucesso - Cliente pode efetuar pagamento</response>    /// <response code="400">Erro na geração do QR Code - Verifique se o pedido está válido</response>
+            <response code="404">Pedido não encontrado - Verifique se o ID está correto</response>
+        </member>
+        <member name="M:FastFood.Api.Controllers.OrdersController.ConfirmPayment(System.Guid,FastFood.Application.DTOs.ConfirmPaymentDto)">
+            <param name="id">ID único do pedido para confirmar pagamento (formato GUID)</param>
+            <param name="request">Dados para validação do pagamento (PreferenceId ou QrCode)</param>
+            <returns>Resultado da confirmação do pagamento</returns>
+            <response code="200">Pagamento confirmado com sucesso - Pedido em preparação</response>
+            <response code="400">Falha na confirmação - Pagamento não encontrado ou inválido</response>
+            <response code="404">Pedido não encontrado - Verifique se o ID está correto</response>
+        </member>
+        <member name="M:FastFood.Api.Controllers.OrdersController.GetStatusDescription(System.String)">
+            <summary>
+            Retorna uma descrição amigável para o status do pedido
+            </summary>
+            <param name="status">Status do pedido</param>
+            <returns>Descrição amigável do status</returns>
+        </member>
+        <member name="M:FastFood.Api.Controllers.ProductsController.Create(FastFood.Application.DTOs.CreateProductDto)">
+            <param name="request">Dados do produto a ser criado</param>
+            <returns>Produto criado com seus detalhes, incluindo ID gerado</returns>
+            <response code="201">Produto criado com sucesso - Disponível no catálogo</response>
+            <response code="400">Dados inválidos - Verifique os campos obrigatórios</response>
+            <response code="401">Não autorizado - Faça login para criar produtos</response>
+        </member>
+        <member name="M:FastFood.Api.Controllers.ProductsController.Update(System.Guid,FastFood.Application.DTOs.UpdateProductDto)">
+            <param name="id">ID do produto a ser atualizado</param>
+            <param name="request">Novos dados do produto</param>
+            <returns>Produto atualizado com seus detalhes</returns>
+            <response code="200">Produto atualizado com sucesso</response>
+            <response code="400">Dados inválidos - Verifique o formato dos dados</response>
+            <response code="404">Produto não encontrado - Verifique se o ID está correto</response>
+            <response code="401">Não autorizado - Faça login para atualizar produtos</response>
+        </member>
+        <member name="M:FastFood.Api.Controllers.ProductsController.Delete(System.Guid)">
+            <param name="id">ID do produto a ser excluído permanentemente</param>
+            <returns>Nenhum conteúdo em caso de sucesso</returns>
+            <response code="204">Produto excluído com sucesso</response>
+            <response code="404">Produto não encontrado - Verifique se o ID está correto</response>
+            <response code="401">Não autorizado - Faça login para excluir produtos</response>
+        </member>
+        <member name="M:FastFood.Api.Controllers.ProductsController.GetById(System.Guid)">
+            <param name="id">ID único do produto a ser buscado</param>
+            <returns>Detalhes completos do produto encontrado</returns>
+            <response code="200">Produto encontrado - Retorna todos os detalhes</response>
+            <response code="404">Produto não encontrado - Verifique se o ID está correto</response>
+        </member>
+        <member name="M:FastFood.Api.Controllers.ProductsController.GetByCategory(FastFood.Domain.Products.Enums.ProductCategory,System.Int32,System.Int32)">
+            <param name="category">Categoria dos produtos (0=Lanche, 1=Acompanhamento, 2=Bebida, 3=Sobremesa)</param>
+            <param name="pageSize">Número de itens por página (padrão: 10, máximo recomendado: 50)</param>
+            <param name="pageNumber">Número da página (padrão: 1, começa em 1)</param>
+            <returns>Lista paginada de produtos da categoria especificada</returns>
+            <response code="200">Lista de produtos encontrada - Pode estar vazia se a categoria não tiver produtos</response>
+            <response code="400">Categoria inválida - Use valores de 0 a 3</response>
+        </member>
+        <member name="M:FastFood.Api.Controllers.WebhookController.MercadoPagoWebhook">
+            <returns>Status 200 OK para confirmar recebimento ao MercadoPago</returns>
+            <response code="200">Webhook recebido e processado (sempre retorna 200)</response>
+        </member>
+        <member name="M:FastFood.Api.Controllers.WebhookController.Test">
+            <returns>Mensagem confirmando que o webhook está funcionando</returns>
+            <response code="200">Endpoint funcionando corretamente</response>
+        </member>
+        <member name="T:FastFood.Api.Examples.Swagger.ProcessCheckoutDtoExample">
+            <summary>
+            Exemplo de request para checkout
+            </summary>
+        </member>
+        <member name="T:FastFood.Api.Examples.Swagger.CheckoutResponseDtoExample">
+            <summary>
+            Exemplo de response para checkout
+            </summary>
+        </member>
+        <member name="T:FastFood.Api.Examples.Swagger.CreateCustomerDtoExample">
+            <summary>
+            Exemplo de request para criação de cliente
+            </summary>
+        </member>
+        <member name="T:FastFood.Api.Examples.Swagger.CustomerDtoExample">
+            <summary>
+            Exemplo de response para cliente
+            </summary>
+        </member>
+        <member name="T:FastFood.Api.Examples.Swagger.CreateOrderDtoExample">
+            <summary>
+            Exemplo de request para criação de pedido
+            </summary>
+        </member>
+        <member name="T:FastFood.Api.Examples.Swagger.OrderDtoExample">
+            <summary>
+            Exemplo de response para pedido
+            </summary>
+        </member>
+        <member name="T:FastFood.Api.Examples.Swagger.CreateProductDtoExample">
+            <summary>
+            Exemplo de request para criação de produto
+            </summary>
+        </member>
+        <member name="T:FastFood.Api.Examples.Swagger.ProductDtoExample">
+            <summary>
+            Exemplo de response para produto
+            </summary>
+        </member>
+        <member name="T:FastFood.Api.Extensions.SwaggerExtensions">
+            <summary>
+            Extensões para configuração do Swagger/OpenAPI
+            </summary>
+        </member>
+        <member name="M:FastFood.Api.Extensions.SwaggerExtensions.AddOpenApi(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Configura o Swagger/OpenAPI com documentação XML e outras configurações
+            </summary>
+        </member>
+        <member name="M:FastFood.Api.Extensions.SwaggerExtensions.BuildApiDescription">
+            <summary>
+            Constrói a descrição detalhada da API
+            </summary>
+        </member>
+        <member name="T:FastFood.Api.Filters.SecurityRequirementsOperationFilter">
+            <summary>
+            Filtro para adicionar suporte a autenticação JWT no Swagger
+            </summary>
+        </member>
+        <member name="T:FastFood.Api.Models.ErrorResponse">
+            <summary>
+            Modelo de resposta para erros na API.
+            </summary>
+        </member>
+        <member name="P:FastFood.Api.Models.ErrorResponse.Errors">
+            <summary>
+            Lista de mensagens de erro.
+            </summary>
+        </member>
+        <member name="P:FastFood.Api.Models.ErrorResponse.TraceId">
+            <summary>
+            Identificador de rastreamento da requisição.
+            </summary>
+        </member>
+    </members>
+</doc>
