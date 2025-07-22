@@ -31,18 +31,35 @@ A documentação inclui:
 
 ## 🎯 Sobre o Projeto
 
-**Inicio dadocumentação relacionada na segunda fase** ------------------
+** Inicio dadocumentação relacionada na segunda fase ** ------------------
 
-### 📌 Problema 
+## 📌 Os Requisitos do Negócio
+A lanchonete em questão está passando por um processo de expansão devido ao seu grande sucesso, mas enfrenta sérios desafios operacionais pela ausência de um sistema informatizado. Atualmente, os pedidos são anotados manualmente, o que gera diversos problemas como:
+
+- Erros na comunicação entre atendentes e cozinha; 
+- Atrasos na entrega dos pedidos; 
+- Perda ou esquecimento de pedidos; 
+- Clientes insatisfeitos, o que compromete a fidelização e a reputação do negócio. 
+
+### 🧩 Problema 
 Uma lanchonete de bairro está em processo de expansão, mas enfrenta dificuldades no atendimento devido à ausência de um sistema de controle de pedidos. A comunicação entre atendentes e cozinha é falha, ocasionando erros, atrasos e insatisfação dos clientes.
 
-### ✅ Solução
-O projeto propõe o desenvolvimento de um sistema de autoatendimento estilo fast food, onde os próprios clientes possam montar seus pedidos, pagar via QRCode (Mercado Pago) e acompanhar o progresso do pedido em tempo real, além de permitir ao estabelecimento:
+### ✅ Solução Proposta
+O sistema desenvolvido será um autoatendimento de fast food, permitindo que os próprios clientes realizem seus pedidos de forma autônoma, com as seguintes funcionalidades:
 
-- Gerenciar pedidos, produtos e categorias.
-- Acompanhar o preparo.
-- Identificar clientes para futuras campanhas.
-- Ter controle total via painel administrativo.
+- Identificação do cliente (CPF, cadastro ou anônimo); 
+- Montagem personalizada de combos (lanche, acompanhamento, bebida); 
+- Pagamento via QRCode (Mercado Pago); 
+- Acompanhamento em tempo real do pedido (Recebido → Em preparação → Pronto → Finalizado); 
+- Notificações para retirada do pedido. 
+
+## Os requisitos de infraestrutura:
+
+### Collection das APIs 
+http://localhost:5000/swagger/index.html 
+// TODO - Alterar o exemplo de aplicação de cada umad as apis
+
+
 
 -------------------
 
