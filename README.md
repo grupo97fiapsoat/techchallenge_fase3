@@ -31,6 +31,21 @@ A documentação inclui:
 
 ## 🎯 Sobre o Projeto
 
+**Inicio dadocumentação relacionada na segunda fase** ------------------
+
+### 📌 Problema 
+Uma lanchonete de bairro está em processo de expansão, mas enfrenta dificuldades no atendimento devido à ausência de um sistema de controle de pedidos. A comunicação entre atendentes e cozinha é falha, ocasionando erros, atrasos e insatisfação dos clientes.
+
+### ✅ Solução
+O projeto propõe o desenvolvimento de um sistema de autoatendimento estilo fast food, onde os próprios clientes possam montar seus pedidos, pagar via QRCode (Mercado Pago) e acompanhar o progresso do pedido em tempo real, além de permitir ao estabelecimento:
+
+- Gerenciar pedidos, produtos e categorias.
+- Acompanhar o preparo.
+- Identificar clientes para futuras campanhas.
+- Ter controle total via painel administrativo.
+
+-------------------
+
 Sistema completo de gestão de pedidos para lanchonetes que permite:
 
 - **Gestão de Clientes**: Cadastro e consulta com validação de CPF
