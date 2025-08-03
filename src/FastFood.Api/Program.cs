@@ -124,6 +124,17 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 
+
+app.Use(async (context, next) =>
+{
+    if (string.IsNullOrEmpty(context.Request.Path) || context.Request.Path == "/")
+    {
+        context.Response.Redirect("/swagger/index.html");
+        return;
+    }
+    await next();
+});
+
 // Map health check endpoint
 app.MapHealthChecks("/health");
 
