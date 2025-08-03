@@ -502,4 +502,4 @@ Este projeto está sob licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais
 
 ---
 
-**Desenvolvido para o Tech Challenge - Fase 1** 🚀
+**Desenvolvido para o Tech Challenge - Fase 2** 🚀
