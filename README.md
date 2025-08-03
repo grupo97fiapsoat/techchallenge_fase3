@@ -2,6 +2,8 @@
 
 Sistema de gerenciamento de pedidos para lanchonete com arquitetura Clean Architecture/Hexagonal Architecture, desenvolvido em .NET 8.
 
+Este projeto faz parte de um desafio de pós-graduação e contém a infraestrutura necessária para subir uma aplicação .NET API com SQL Server em um cluster Kubernetes local (via Minikube), utilizando Terraform.
+
 ## 📚 Documentação do Projeto
 
 - **Vídeo da Arquitetura**: [Assistir no YouTube](https://www.youtube.com/watch?v=DjWIczeDQyg)
@@ -31,9 +33,7 @@ A documentação inclui:
 
 ## 🎯 Sobre o Projeto
 
-** Inicio dadocumentação relacionada na segunda fase ** ------------------
-
-## 📌 Os Requisitos do Negócio
+### 📌 Os Requisitos do Negócio
 A lanchonete em questão está passando por um processo de expansão devido ao seu grande sucesso, mas enfrenta sérios desafios operacionais pela ausência de um sistema informatizado. Atualmente, os pedidos são anotados manualmente, o que gera diversos problemas como:
 
 - Erros na comunicação entre atendentes e cozinha; 
@@ -41,10 +41,10 @@ A lanchonete em questão está passando por um processo de expansão devido ao s
 - Perda ou esquecimento de pedidos; 
 - Clientes insatisfeitos, o que compromete a fidelização e a reputação do negócio. 
 
-### 🧩 Problema 
+#### 🧩 Problema 
 Uma lanchonete de bairro está em processo de expansão, mas enfrenta dificuldades no atendimento devido à ausência de um sistema de controle de pedidos. A comunicação entre atendentes e cozinha é falha, ocasionando erros, atrasos e insatisfação dos clientes.
 
-### ✅ Solução Proposta
+#### ✅ Solução Proposta
 O sistema desenvolvido será um autoatendimento de fast food, permitindo que os próprios clientes realizem seus pedidos de forma autônoma, com as seguintes funcionalidades:
 
 - Identificação do cliente (CPF, cadastro ou anônimo); 
@@ -53,15 +53,7 @@ O sistema desenvolvido será um autoatendimento de fast food, permitindo que os 
 - Acompanhamento em tempo real do pedido (Recebido → Em preparação → Pronto → Finalizado); 
 - Notificações para retirada do pedido. 
 
-## Os requisitos de infraestrutura:
-
-### Collection das APIs 
-http://localhost:5000/swagger/index.html 
-// TODO - Alterar o exemplo de aplicação de cada umad as apis
-
-
-
--------------------
+### Os requisitos de infraestrutura:
 
 Sistema completo de gestão de pedidos para lanchonetes que permite:
 
@@ -120,6 +112,14 @@ Projeto segue os princípios da **Clean Architecture** e **Hexagonal Architectur
 
 ## 📋 Pré-requisitos
 
+Antes de começar, tenha os seguintes softwares instalados na sua máquina:
+
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) (com Kubernetes habilitado)
+- [Minikube](https://minikube.sigs.k8s.io/docs/)
+- [Terraform](https://developer.hashicorp.com/terraform)
+- [kubectl](https://kubernetes.io/docs/tasks/tools/)
+
+
 ### Para execução via Docker (Recomendado)
 - **Docker Desktop** instalado e rodando
 - **Git** para clonar o repositório
@@ -175,10 +175,34 @@ cd src\FastFood.Api
 dotnet ef database update
 ```
 
-**3. Executar a aplicação:**
+**3. Inicie o Minikube:**
 ```cmd
-dotnet run --project src\FastFood.Api\FastFood.Api.csproj
+minikube start --driver=docker
 ```
+
+**4. Habilite o metrics-server (necessário para o HPA):**
+```cmd
+minikube addons enable metrics-server
+```
+
+**5. Construa a imagem local da API:**
+```cmd
+& minikube -p minikube docker-env | Invoke-Expression 
+```
+
+**6. Acesse a pasta de infraestrutura e aplique o Terraform:**
+```cmd
+cd infra/terraform
+terraform init
+terraform apply
+```
+Confirme com yes quando solicitado.
+
+**8. Acessando a aplicação:**
+```cmd
+minikube service fastfood-api-service
+```
+
 
 ### 🌐 Acessar a aplicação
 
@@ -478,4 +502,4 @@ Este projeto está sob licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais
 
 ---
 
-**Desenvolvido para o Tech Challenge - Fase 1** 🚀
+**Desenvolvido para o Tech Challenge - Fase 2** 🚀
