@@ -190,7 +190,7 @@ minikube addons enable metrics-server
 & minikube -p minikube docker-env | Invoke-Expression 
 ```
 
-**6. cesse a pasta de infraestrutura e aplique o Terraform:**
+**6. Acesse a pasta de infraestrutura e aplique o Terraform:**
 ```cmd
 cd infra/terraform
 terraform init
@@ -202,7 +202,6 @@ Confirme com yes quando solicitado.
 ```cmd
 minikube service fastfood-api-service
 ```
-Confirme com yes quando solicitado.
 
 
 ### 🌐 Acessar a aplicação
