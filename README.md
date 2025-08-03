@@ -1,4 +1,4 @@
-# 🍔 FastFood API - Tech Challenge Fase 1
+# 🍔 FastFood API - Tech Challenge Fase 2
 
 Sistema de gerenciamento de pedidos para lanchonete com arquitetura Clean Architecture/Hexagonal Architecture, desenvolvido em .NET 8.
 
