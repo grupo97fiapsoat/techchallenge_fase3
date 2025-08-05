@@ -65,6 +65,8 @@ Sistema completo de gestão de pedidos para lanchonetes que permite:
 - **Acompanhamento**: Status em tempo real dos pedidos
 
 <img width="626" height="1067" alt="image" src="https://github.com/user-attachments/assets/e80575ca-a52e-4353-8804-120081c852df" />
+<img width="622" height="976" alt="image" src="https://github.com/user-attachments/assets/89b4514e-5aa4-4541-af27-c89533f000cb" />
+
 
 
 ## 🛠 Tecnologias
