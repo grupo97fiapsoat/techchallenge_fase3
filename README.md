@@ -6,7 +6,8 @@ Este projeto faz parte de um desafio de pós-graduação e contém a infraestrut
 
 ## 📚 Documentação do Projeto
 
-- **Vídeo da Arquitetura**: [Assistir no YouTube](https://www.youtube.com/watch?v=DjWIczeDQyg)
+- **Vídeo da Arquitetura fase 2**: [Assistir no YouTube](https://youtu.be/iyEvPuPYTIo?si=-o-MTcebgcSGjVzt)
+- **Vídeo da Arquitetura fase 1**: [Assistir no YouTube](https://www.youtube.com/watch?v=DjWIczeDQyg)
 - **Miro Board**: [Acessar Documentação Completa](https://miro.com/app/board/uXjVIFgMg1M=/)
 - **Dicionário de Termos**: [Acessar Dicionário de Termos](Dicionario Projeto/Dicionário.pdf) 
 
