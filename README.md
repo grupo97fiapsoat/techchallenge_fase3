@@ -64,6 +64,9 @@ Sistema completo de gestão de pedidos para lanchonetes que permite:
 - **Pedidos Anônimos**: Suporte para clientes não cadastrados
 - **Acompanhamento**: Status em tempo real dos pedidos
 
+<img width="626" height="1067" alt="image" src="https://github.com/user-attachments/assets/e80575ca-a52e-4353-8804-120081c852df" />
+
+
 ## 🛠 Tecnologias
 
 ### Backend
