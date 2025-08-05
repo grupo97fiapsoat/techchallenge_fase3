@@ -25,7 +25,8 @@ A documentação inclui:
   - [✅ Solução Proposta](#✅-solução-proposta)
   - [🧱 Requisitos de Infraestrutura](#🧱-requisitos-de-infraestrutura)
   - [🧭 Fluxo do Sistema](#🧭-fluxo-do-sistema)
-  - [👤 Fluxo de ADM](#🧭-Fluxo-de-ADM)
+  - [👤 Fluxo de ADM](#👤-fluxo-de-adm)
+  - [🧱 Diagrama da Infraestrutura](#🧱-diagrama-da-infraestrutura)
 - [Tecnologias](#tecnologias)
 - [Arquitetura](#arquitetura)
 - [Pré-requisitos](#pré-requisitos)
@@ -72,12 +73,18 @@ Sistema completo de gestão de pedidos para lanchonetes que permite:
 
 ## 🧭 Fluxo do Sistema
 Este diagrama representa o fluxo completo do cliente, desde a identificação até o pagamento e acompanhamento do pedido:
+
 <img width="626" height="1067" alt="image" src="https://github.com/user-attachments/assets/e80575ca-a52e-4353-8804-120081c852df" />
 
 ## 👤 Fluxo de ADM
 Este diagrama representa o fluxo administrativo, para consulta de clientes e cadstro de novos itens:
+
 <img width="622" height="976" alt="image" src="https://github.com/user-attachments/assets/89b4514e-5aa4-4541-af27-c89533f000cb" />
 
+## 🧱 Diagrama da Infraestrutura
+Este diagrama representa a infraestrutura do projeto:
+
+<img width="699" height="589" alt="image" src="https://github.com/user-attachments/assets/b813b312-6b99-4b70-86fd-aeaa3d9ce48f" />
 
 
 ## 🛠 Tecnologias
