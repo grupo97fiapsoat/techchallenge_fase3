@@ -161,7 +161,51 @@ Antes de começar, tenha os seguintes softwares instalados na sua máquina:
 
 ## 🚀 Instalação e Execução
 
-### 📦 Opção 1: Execução Automática (Docker)
+### 🔧 Opção 1: Execução com Kubernetes + Terraform (Minikube)
+
+**1. Inicie o Minikube com o driver Docker:**
+```cmd
+minikube start --driver=docker
+```
+
+**2. Habilite o metrics-server (necessário para o HPA):**
+```cmd
+minikube addons enable metrics-server
+```
+
+**3. Permita que o Docker do Minikube seja usado no terminal:**
+```cmd
+& minikube -p minikube docker-env | Invoke-Expression 
+```
+```bash
+eval $(minikube -p minikube docker-env)
+```
+
+**4. Construa a imagem da API dentro do Docker do Minikube:**
+```cmd
+docker build -t techchallenge_fase1-api:latest -f src/FastFood.Api/Dockerfile .
+```
+
+
+**4. Acesse a pasta de infraestrutura (infra/terraform) e aplique o Terraform:**
+```cmd
+cd infra/terraform
+terraform init
+terraform apply
+```
+Confirme com yes quando solicitado.
+
+**5. Acessando a aplicação:**
+```cmd
+minikube service fastfood-api-service
+```
+
+
+### 🌐 Acessar a aplicação 
+Isso abrirá automaticamente o navegador com o endereço do serviço.
+A URL normalmente é algo como: http://127.0.0.1:<porta>/swagger/index.html
+
+### 📦 Opção 2: Execução Local com Docker Compose (Ambiente de Desenvolvimento)
 
 **Windows (Recomendado):**
 ```cmd
@@ -186,61 +230,15 @@ chmod +x migrate.sh init-db.sh scripts/*.sh
 ./scripts/init-database.sh
 docker-compose up -d
 ```
-
-### 🔧 Opção 2: Execução Manual
-
-**1. Configurar banco de dados:**
-```cmd
-# Inicie apenas o SQL Server
-docker-compose up -d db
-
-# Aguarde o banco ficar pronto (30 segundos)
-timeout /t 30
-```
-
-**2. Executar migrations:**
-```cmd
-cd src\FastFood.Api
-dotnet ef database update
-```
-
-**3. Inicie o Minikube:**
-```cmd
-minikube start --driver=docker
-```
-
-**4. Habilite o metrics-server (necessário para o HPA):**
-```cmd
-minikube addons enable metrics-server
-```
-
-**5. Construa a imagem local da API:**
-```cmd
-& minikube -p minikube docker-env | Invoke-Expression 
-```
-
-**6. Acesse a pasta de infraestrutura e aplique o Terraform:**
-```cmd
-cd infra/terraform
-terraform init
-terraform apply
-```
-Confirme com yes quando solicitado.
-
-**8. Acessando a aplicação:**
-```cmd
-minikube service fastfood-api-service
-```
-
-
-### 🌐 Acessar a aplicação
-
+### 🌐 Acessar a aplicação 
 Após a execução bem-sucedida:
-
 - **API Base**: http://localhost:5000
 - **API HTTPS**: https://localhost:5001  
 - **Swagger**: https://localhost:5001/swagger
 - **Health Check**: http://localhost:5000/health
+
+
+
 
 ## ✨ Funcionalidades
 
