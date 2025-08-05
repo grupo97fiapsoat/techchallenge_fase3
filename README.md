@@ -113,7 +113,7 @@ Este diagrama representa a infraestrutura do projeto:
 
 ## 🏗 Arquitetura
 
-Projeto segue os princípios da **Clean Architecture** e **Hexagonal Architecture**, separando as camadas de apresentação, aplicação, domínio e infraestrutura. A estrutura do projeto é organizada da seguinte forma:
+Projeto segue os princípios da **Clean Architecture**, separando as camadas de aplicação, domínio e infraestrutura. A estrutura do projeto é organizada da seguinte forma:
 
 ```
 📁 src/
