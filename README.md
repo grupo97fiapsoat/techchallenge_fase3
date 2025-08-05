@@ -103,6 +103,9 @@ Este diagrama representa a infraestrutura do projeto:
 - **Docker & Docker Compose** - Containerização
 - **Health Checks** - Monitoramento de saúde
 - **Migrations** - Versionamento do banco de dados
+- Minikube – Cluster Kubernetes local para testes
+- Kubernetes (k8s) – Orquestração de containers
+- Terraform – Provisionamento de infraestrutura como código (IaC)
 
 ### Integrações
 - **MercadoPago API** - Processamento de pagamentos
