@@ -4,6 +4,8 @@ Sistema de gerenciamento de pedidos para lanchonete com arquitetura Clean Archit
 
 Este projeto faz parte de um desafio de pós-graduação e contém a infraestrutura necessária para subir uma aplicação .NET API com SQL Server em um cluster Kubernetes local (via Minikube), utilizando Terraform.
 
+📁 Os arquivos de configuração do Kubernetes (hpa, service, secrets, deployment, main, etc.) estão localizados na pasta infra, sendo responsáveis por orquestrar os recursos necessários para o funcionamento da aplicação.
+
 ## 📚 Documentação do Projeto
 
 - **Vídeo da Arquitetura fase 2**: [Assistir no YouTube](https://youtu.be/iyEvPuPYTIo?si=-o-MTcebgcSGjVzt)
