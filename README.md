@@ -64,7 +64,12 @@ Sistema completo de gestão de pedidos para lanchonetes que permite:
 - **Pedidos Anônimos**: Suporte para clientes não cadastrados
 - **Acompanhamento**: Status em tempo real dos pedidos
 
+## 🧭 Fluxos do Sistema
+A seguir, estão os diagramas de fluxo de dados e interações do sistema, representando o funcionamento do sistema tanto para o cliente quanto para o administrador.
 <img width="626" height="1067" alt="image" src="https://github.com/user-attachments/assets/e80575ca-a52e-4353-8804-120081c852df" />
+
+## 👤 Fluxo do Cliente
+Este diagrama representa o fluxo completo do cliente, desde a identificação até o pagamento e acompanhamento do pedido:
 <img width="622" height="976" alt="image" src="https://github.com/user-attachments/assets/89b4514e-5aa4-4541-af27-c89533f000cb" />
 
 
