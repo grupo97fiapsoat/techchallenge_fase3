@@ -9,8 +9,8 @@ Este projeto faz parte de um desafio de pós-graduação e contém a infraestrut
 ## 📚 Documentação do Projeto
 
 - **Vídeo da Arquitetura fase 2**: [Assistir no YouTube](https://youtu.be/z8k7jxeFkEU?si=dbMU-sliQFxxxsJl)
-- **Miro Board**: [Acessar Documentação Completa](https://miro.com/app/board/uXjVIFgMg1M=/)
-- **Dicionário de Termos**: [Acessar Dicionário de Termos](Dicionario Projeto/Dicionário.pdf) 
+- **Miro Board DDD Primeira Fase**: [Miro](https://miro.com/app/board/uXjVIFgMg1M=/)
+- **Dicionário de Termos Primeira Fase**: [Acessar Dicionário de Termos](Dicionario Projeto/Dicionário.pdf) 
 
 A documentação inclui:
 - Event Storming dos fluxos de negócio
