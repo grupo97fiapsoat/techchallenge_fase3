@@ -286,11 +286,58 @@ Após a execução bem-sucedida:
 
 ### 🔒 Autenticação e Autorização
 
-**JWT Authentication:**
-- Login com credenciais
+### Fase 3 - Autenticação Externa + Function CPF
+
+**JWT Authentication com IdP Externo:**
+- **Produção**: Aceita JWT de IdP externo (Cognito/Google/Azure AD)
+- **Desenvolvimento**: Sistema local de autenticação (DEV ONLY)
 - Token com expiração configurável
 - Middleware de autorização
 - Endpoints públicos e protegidos
+- Política `AdminOnly` para roles administrativas
+
+**Nova Function Serverless:**
+- **IdentifyByCPF**: AWS Lambda Function para consultar cliente por CPF
+- Consome a mesma infraestrutura da API (DbContext, repositórios)
+- Endpoint: `GET /identify?cpf=12345678900`
+- Respostas: 200 (cliente encontrado), 400 (CPF inválido), 404 (não encontrado)
+
+### Configuração de Desenvolvimento
+
+**Variáveis de Ambiente:**
+```bash
+# Windows
+set Auth__Authority=http://localhost/dev-issuer
+set Auth__Audience=dev-client-id
+
+# Linux/Mac
+export Auth__Authority=http://localhost/dev-issuer
+export Auth__Audience=dev-client-id
+```
+
+**Como rodar a API:**
+```bash
+dotnet run --project src/FastFood.Api
+```
+
+**Como rodar a Function:**
+```bash
+# AWS Lambda local
+dotnet lambda local-run --function-handler FastFood.CpfFunction::FastFood.CpfFunction.Function::IdentifyByCpf
+
+# Ou teste direto
+cd src/FastFood.CpfFunction
+dotnet run
+```
+
+**Exemplos de uso:**
+```bash
+# API com token de IdP externo
+curl -H "Authorization: Bearer SEU_TOKEN_IDP" https://localhost:5001/api/v1/customers
+
+# Function para identificar cliente
+curl "http://localhost:3000/identify?cpf=12345678900"
+```
 
 ## 📚 Documentação da API
 

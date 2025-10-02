@@ -4,41 +4,53 @@ using FastFood.Application.DTOs;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Hosting;
 
 namespace FastFood.Api.Controllers;
 
 /// <summary>
 /// Controlador para autenticação e registro de usuários
 /// 
-/// **Finalidade:** Gerencia o sistema de autenticação JWT da aplicação.
+/// **ATENÇÃO: Este controlador é APENAS para desenvolvimento local!**
+/// Em produção, a autenticação deve ser feita via IdP externo (Cognito/Google/etc).
+/// 
+/// **Finalidade:** Gerencia o sistema de autenticação JWT local para desenvolvimento.
 /// 
 /// **Endpoints disponíveis:**
-/// - **Login**: Autentica um usuário e retorna um token JWT
-/// - **Registro**: Registra um novo usuário no sistema
+/// - **Login**: Autentica um usuário e retorna um token JWT (DEV ONLY)
+/// - **Registro**: Registra um novo usuário no sistema (DEV ONLY)
 /// 
-/// **Fluxo típico:**
+/// **Fluxo típico (DEV):**
 /// 1. Registre-se usando o endpoint `/register` 
 /// 
-/// 2. Faça login usando o endpoint `/login`
+/// 2. Faça login usando o endpoint `/login` 
 /// 
 /// 3. Use o token retornado no header `Authorization: Bearer {token}` para acessar endpoints protegidos
+/// 
+/// **Em produção:** Use tokens JWT de IdP externo diretamente.
 /// </summary>
+#if !DEBUG
+[ApiExplorerSettings(IgnoreApi = true)]
+#endif
 [ApiController]
 [Route("api/v1/auth")]
 public class AuthController : ControllerBase
 {
     private readonly IMediator _mediator;
     private readonly ILogger<AuthController> _logger;
+    private readonly IWebHostEnvironment _environment;
 
     /// <summary>
     /// Inicializa uma nova instância do controlador de autenticação
     /// </summary>
     /// <param name="mediator">Mediador para comandos e consultas</param>
     /// <param name="logger">Logger</param>
-    public AuthController(IMediator mediator, ILogger<AuthController> logger)
+    /// <param name="environment">Ambiente de hospedagem</param>
+    public AuthController(IMediator mediator, ILogger<AuthController> logger, IWebHostEnvironment environment)
     {
         _mediator = mediator;
         _logger = logger;
+        _environment = environment;
     } 
     /// <param name="request">Dados de login (username e password)</param>
     /// <returns>Token JWT e informações do usuário autenticado</returns>
@@ -52,6 +64,9 @@ public class AuthController : ControllerBase
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> Login([FromBody] LoginDto request)
     {
+        if (!_environment.IsDevelopment())
+            return NotFound();
+
         _logger.LogInformation("Tentativa de login para usuário: {Username}", request.Username);
 
         var command = new LoginCommand
@@ -82,6 +97,9 @@ public class AuthController : ControllerBase
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Register([FromBody] RegisterUserDto request)
     {
+        if (!_environment.IsDevelopment())
+            return NotFound();
+
         _logger.LogInformation("Tentativa de registro para usuário: {Username}", request.Username);
 
         var command = new RegisterUserCommand

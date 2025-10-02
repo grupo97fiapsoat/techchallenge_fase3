@@ -15,38 +15,81 @@ var commandLineArgs = Environment.GetCommandLineArgs();
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configurar o fuso horário padrão para o Brasil (UTC-3)
-TimeZoneInfo brazilTimeZone = TimeZoneInfo.FindSystemTimeZoneById("E. South America Standard Time");
+// Configurar o fuso horário padrão para o Brasil (UTC-3) com fallback cross-platform
+TimeZoneInfo brazilTimeZone;
+try
+{
+    // Windows
+    brazilTimeZone = TimeZoneInfo.FindSystemTimeZoneById("E. South America Standard Time");
+}
+catch
+{
+    // Linux / containers
+    brazilTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Sao_Paulo");
+}
+AppDomain.CurrentDomain.SetData("TimeZone", brazilTimeZone);
 
 // Configurar a cultura padrão para pt-BR
 var cultureInfo = new CultureInfo("pt-BR");
 CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
 CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
 
-// Configurar o fuso horário padrão para a aplicação
-AppDomain.CurrentDomain.SetData("TimeZone", brazilTimeZone);
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 // Add services to the container.
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApplication();
 
-// Configurar autenticação JWT
+// Configurar autenticação JWT para IdP externo (Cognito/Google/etc)
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
+        var authority = builder.Configuration["Auth:Authority"];
+        var audience  = builder.Configuration["Auth:Audience"];
+        if (string.IsNullOrWhiteSpace(authority) || string.IsNullOrWhiteSpace(audience))
+            throw new InvalidOperationException("Auth:Authority e Auth:Audience devem ser configurados");
+
+        options.Authority = authority;
+        options.Audience  = audience;
+
+        // Em DEV podemos aceitar HTTP no issuer local; em PROD exige HTTPS
+        if (builder.Environment.IsDevelopment())
+        {
+            options.RequireHttpsMetadata = false;
+        }
+
         options.TokenValidationParameters = new TokenValidationParameters
         {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
+            ValidateIssuer           = true,
+            ValidateAudience         = true,
+            ValidateLifetime         = true,
             ValidateIssuerSigningKey = true,
-            ValidIssuer = builder.Configuration["Jwt:Issuer"],
-            ValidAudience = builder.Configuration["Jwt:Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
-                builder.Configuration["Jwt:Secret"] ?? throw new InvalidOperationException("JWT Secret não configurado")))
+            ClockSkew                = TimeSpan.FromMinutes(5),
+            ValidIssuers   = new[] { authority },
+            ValidAudiences = new[] { audience }
         };
     });
+
+// Configurar políticas de autorização
+builder.Services.AddAuthorization(options =>
+{
+    // Política para administradores (roles do token)
+    options.AddPolicy("AdminOnly", policy =>
+    {
+        policy.RequireAuthenticatedUser();
+        policy.RequireAssertion(context =>
+        {
+            // Verificar roles do token (cognito:groups, roles, etc.)
+            var roles = context.User.FindAll("cognito:groups")
+                .Concat(context.User.FindAll("roles"))
+                .Concat(context.User.FindAll("role"))
+                .Select(c => c.Value);
+            
+            return roles.Any(role => role.Equals("admin", StringComparison.OrdinalIgnoreCase) ||
+                                   role.Equals("administrator", StringComparison.OrdinalIgnoreCase));
+        });
+    });
+});
 
 // Add health checks
 builder.Services.AddHealthChecks();
@@ -124,6 +167,18 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 
+// Bloquear rotas do auth "caseiro" fora de DEV
+if (!app.Environment.IsDevelopment())
+{
+    app.MapWhen(ctx => ctx.Request.Path.StartsWithSegments("/api/v1/auth"), branch =>
+    {
+        branch.Run(async c =>
+        {
+            c.Response.StatusCode = StatusCodes.Status404NotFound;
+            await Task.CompletedTask;
+        });
+    });
+}
 
 app.Use(async (context, next) =>
 {

@@ -48,8 +48,12 @@ public static class DependencyInjection
         // Descomente a linha abaixo para usar notificações por SMS em vez de email
         // services.AddScoped<INotificationService, SmsNotificationService>();
         
-        // Registrar serviço de autenticação
-        services.AddScoped<IAuthService, AuthService>();
+        // Registrar serviço de autenticação APENAS em DEV
+        var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+        if (string.Equals(env, "Development", StringComparison.OrdinalIgnoreCase))
+        {
+            services.AddScoped<IAuthService, AuthService>(); // DEV ONLY
+        }
 
         return services;
     }

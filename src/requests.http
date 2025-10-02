@@ -1,0 +1,165 @@
+### FastFood API - Requests de Teste
+### 
+### IMPORTANTE: Para usar em produção, substitua os tokens pelos tokens reais do seu IdP (Cognito/Google/etc)
+### Para desenvolvimento local, use os tokens gerados pelo AuthController
+
+### ============================================
+### CONFIGURAÇÃO DE AMBIENTE
+### ============================================
+
+### Variáveis de ambiente para desenvolvimento:
+### Windows: set Auth__Authority=http://localhost/dev-issuer
+### Windows: set Auth__Audience=dev-client-id
+### Linux/Mac: export Auth__Authority=http://localhost/dev-issuer
+### Linux/Mac: export Auth__Audience=dev-client-id
+
+### ============================================
+### AUTENTICAÇÃO LOCAL (DEV ONLY)
+### ============================================
+
+### 1. Registrar usuário (DEV ONLY)
+POST {{host}}/api/v1/auth/register
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "email": "admin@fastfood.com",
+  "password": "Admin123!",
+  "confirmPassword": "Admin123!"
+}
+
+### 2. Login (DEV ONLY)
+POST {{host}}/api/v1/auth/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "Admin123!"
+}
+
+### ============================================
+### ENDPOINTS PROTEGIDOS COM JWT
+### ============================================
+
+### Substitua {{token}} pelo token retornado no login ou pelo token do IdP externo
+
+### 3. Listar clientes (protegido)
+GET {{host}}/api/v1/customers
+Authorization: Bearer {{token}}
+
+### 4. Buscar cliente por CPF (público)
+GET {{host}}/api/v1/customers/cpf/12345678900
+
+### 5. Criar cliente (protegido)
+POST {{host}}/api/v1/customers
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "João Silva",
+  "email": "joao@email.com",
+  "cpf": "12345678900"
+}
+
+### 6. Listar produtos (protegido)
+GET {{host}}/api/v1/products
+Authorization: Bearer {{token}}
+
+### 7. Criar produto (protegido)
+POST {{host}}/api/v1/products
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Hambúrguer Clássico",
+  "description": "Hambúrguer com carne, alface, tomate e queijo",
+  "price": 15.90,
+  "category": "Lanches"
+}
+
+### 8. Listar pedidos (protegido)
+GET {{host}}/api/v1/orders
+Authorization: Bearer {{token}}
+
+### 9. Criar pedido (protegido)
+POST {{host}}/api/v1/orders
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "customerId": "{{customerId}}",
+  "items": [
+    {
+      "productId": "{{productId}}",
+      "quantity": 2
+    }
+  ]
+}
+
+### ============================================
+### LAMBDA FUNCTION - IDENTIFY BY CPF
+### ============================================
+
+### 10. Identificar cliente por CPF (Function)
+GET {{functionHost}}/identify?cpf=12345678900
+
+### 11. Identificar cliente por CPF formatado (Function)
+GET {{functionHost}}/identify?cpf=123.456.789-00
+
+### 12. Teste com CPF inválido (Function)
+GET {{functionHost}}/identify?cpf=123
+
+### 13. Teste sem CPF (Function)
+GET {{functionHost}}/identify
+
+### ============================================
+### HEALTH CHECKS
+### ============================================
+
+### 14. Health check da API
+GET {{host}}/health
+
+### ============================================
+### VARIÁVEIS DE AMBIENTE
+### ============================================
+
+### Configure estas variáveis no seu ambiente ou substitua diretamente nos requests:
+
+@host = https://localhost:5001
+@functionHost = http://localhost:3000
+@token = SEU_TOKEN_AQUI
+@customerId = GUID_DO_CLIENTE
+@productId = GUID_DO_PRODUTO
+
+### ============================================
+### EXEMPLOS DE TOKENS DE IDP EXTERNO
+### ============================================
+
+### Para usar com Cognito (exemplo):
+### Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9...
+
+### Para usar com Google (exemplo):
+### Authorization: Bearer ya29.a0AfH6SMC...
+
+### Para usar com Azure AD (exemplo):
+### Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIs...
+
+### ============================================
+### COMANDOS CURL PARA TESTE RÁPIDO
+### ============================================
+
+### Teste da API com curl:
+### curl -H "Authorization: Bearer SEU_TOKEN" https://localhost:5001/api/v1/customers
+
+### Teste da Function com curl:
+### curl "http://localhost:3000/identify?cpf=12345678900"
+
+### ============================================
+### NOTAS IMPORTANTES
+### ============================================
+
+### 1. Em produção, NÃO use o AuthController - use tokens de IdP externo
+### 2. Configure as variáveis de ambiente Auth__Authority e Auth__Audience
+### 3. A Function usa a mesma infraestrutura da API (DbContext, repositórios)
+### 4. Para rodar a Function localmente, use: dotnet lambda local-run
+### 5. Para rodar a API localmente, use: dotnet run --project src/FastFood.Api

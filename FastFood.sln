@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FastFood.Domain", "src\Fast
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FastFood.Infrastructure", "src\FastFood.Infrastructure\FastFood.Infrastructure.csproj", "{BB4FECFA-744F-49D5-BD37-9E26470C3F47}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FastFood.CpfFunction", "src\FastFood.CpfFunction\FastFood.CpfFunction.csproj", "{ABE0AED4-052E-CFEB-F7CD-A18CB1C8F005}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -71,6 +73,18 @@ Global
 		{BB4FECFA-744F-49D5-BD37-9E26470C3F47}.Release|x64.Build.0 = Release|Any CPU
 		{BB4FECFA-744F-49D5-BD37-9E26470C3F47}.Release|x86.ActiveCfg = Release|Any CPU
 		{BB4FECFA-744F-49D5-BD37-9E26470C3F47}.Release|x86.Build.0 = Release|Any CPU
+		{ABE0AED4-052E-CFEB-F7CD-A18CB1C8F005}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ABE0AED4-052E-CFEB-F7CD-A18CB1C8F005}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ABE0AED4-052E-CFEB-F7CD-A18CB1C8F005}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{ABE0AED4-052E-CFEB-F7CD-A18CB1C8F005}.Debug|x64.Build.0 = Debug|Any CPU
+		{ABE0AED4-052E-CFEB-F7CD-A18CB1C8F005}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{ABE0AED4-052E-CFEB-F7CD-A18CB1C8F005}.Debug|x86.Build.0 = Debug|Any CPU
+		{ABE0AED4-052E-CFEB-F7CD-A18CB1C8F005}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ABE0AED4-052E-CFEB-F7CD-A18CB1C8F005}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ABE0AED4-052E-CFEB-F7CD-A18CB1C8F005}.Release|x64.ActiveCfg = Release|Any CPU
+		{ABE0AED4-052E-CFEB-F7CD-A18CB1C8F005}.Release|x64.Build.0 = Release|Any CPU
+		{ABE0AED4-052E-CFEB-F7CD-A18CB1C8F005}.Release|x86.ActiveCfg = Release|Any CPU
+		{ABE0AED4-052E-CFEB-F7CD-A18CB1C8F005}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -80,5 +94,6 @@ Global
 		{635236F7-B329-472C-B756-C8214F4CB424} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
 		{8F075017-1E18-4022-AFC7-7074C86D999E} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
 		{BB4FECFA-744F-49D5-BD37-9E26470C3F47} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
+		{ABE0AED4-052E-CFEB-F7CD-A18CB1C8F005} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
 	EndGlobalSection
 EndGlobal

@@ -148,12 +148,22 @@
         </member>
         <member name="T:FastFood.Infrastructure.Services.AuthService">
             <summary>
-            Implementação do serviço de autenticação.
+            ⚠️ USO EXCLUSIVO EM DESENVOLVIMENTO ⚠️
+            
+            Este serviço é APENAS para desenvolvimento local!
+            Em produção, a autenticação deve ser feita via IdP externo (Cognito/Google/Azure AD).
+            
+            O pipeline de autenticação da API usa Authority/Audience para validação via JWKS
+            e NÃO depende deste serviço quando Auth:Authority/Audience estiverem configurados.
+            
+            Este serviço gera tokens JWT locais usando chave simétrica (Jwt:Secret)
+            e deve ser usado APENAS para testes e desenvolvimento.
             </summary>
         </member>
         <member name="M:FastFood.Infrastructure.Services.AuthService.#ctor(Microsoft.Extensions.Configuration.IConfiguration)">
             <summary>
             Inicializa uma nova instância do serviço de autenticação.
+            ⚠️ DEV ONLY - Em produção use IdP externo
             </summary>
             <param name="configuration">Configuração da aplicação</param>
         </member>
@@ -175,6 +185,7 @@
         <member name="M:FastFood.Infrastructure.Services.AuthService.GenerateJwtToken(FastFood.Domain.Users.Entities.User)">
             <summary>
             Gera um token JWT para o usuário.
+            ⚠️ DEV ONLY - Em produção use IdP externo
             </summary>
             <param name="user">Usuário para o qual gerar o token</param>
             <returns>Token JWT</returns>
@@ -182,6 +193,7 @@
         <member name="M:FastFood.Infrastructure.Services.AuthService.ValidateToken(System.String)">
             <summary>
             Valida um token JWT.
+            ⚠️ DEV ONLY - Em produção use IdP externo
             </summary>
             <param name="token">Token JWT a ser validado</param>
             <returns>true se o token é válido; false caso contrário</returns>
