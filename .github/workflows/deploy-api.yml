@@ -1,0 +1,53 @@
+name: Deploy FastFood API
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '**.cs'
+      - '**.csproj'
+      - 'Dockerfile'
+      - '.github/workflows/deploy-api.yml'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+      contents: read
+
+    env:
+      ECR_REGISTRY: 939111385333.dkr.ecr.sa-east-1.amazonaws.com
+      ECR_REPOSITORY: fastfood-api
+      IMAGE_TAG: ${{ github.sha }}
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Configurar credenciais AWS via OIDC
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          aws-region: sa-east-1
+
+      - name: Login no Amazon ECR
+        run: aws ecr get-login-password | docker login --username AWS --password-stdin $ECR_REGISTRY
+
+      - name: Build da imagem Docker
+        run: docker build -t $ECR_REPOSITORY:$IMAGE_TAG .
+
+      - name: Tag e push para o ECR
+        run: |
+          docker tag $ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+      - name: Configurar kubectl
+        run: |
+          aws eks update-kubeconfig --name meu-eks --region sa-east-1
+
+      - name: Atualizar imagem no Deployment
+        run: |
+          kubectl set image deployment/fastfood-api fastfood-api=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
