@@ -153,11 +153,11 @@ if (commandLineArgs.Contains("--check-db"))
 }
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
+//if (app.Environment.IsDevelopment())
+//{
     app.UseSwagger();
     app.UseSwaggerUI();
-}
+//}
 
 // app.UseMiddleware<ExceptionHandlerMiddleware>(); // Temporarily disabled to test filter
 
