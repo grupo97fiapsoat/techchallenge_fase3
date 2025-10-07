@@ -10,7 +10,7 @@ Este projeto faz parte de um desafio de pós-graduação e contém a infraestrut
 
 - **Vídeo da Arquitetura fase 3**: [Assistir no YouTube](https://youtu.be/z8k7jxeFkEU?si=dbMU-sliQFxxxsJl)
 - **Miro Board DDD Primeira Fase**: [Miro](https://miro.com/app/board/uXjVIFgMg1M=/)
-- **Justificativa Escolha do banco e Diagrama**:[Ir para](#🧱-diagrama-banco-de-dados)
+- **Justificativa Escolha do banco e Diagrama**:[Ir para](#-diagrama-banco-de-dados)
 - **Dicionário de Termos Primeira Fase**: [Acessar Dicionário de Termos](Dicionario Projeto/Dicionário.pdf) 
 
 A documentação inclui:
@@ -25,14 +25,14 @@ A documentação inclui:
 ## 📋 Índice
 
 - [Sobre o Projeto](#sobre-o-projeto)
-  - [📌 Requisitos do Negócio](#📌-requisitos-do-negócio)
-  - [🧩 Problema](#🧩-problema)
-  - [✅ Solução Proposta](#✅-solução-proposta)
-  - [🧱 Requisitos de Infraestrutura](#🧱-requisitos-de-infraestrutura)
-  - [🧭 Fluxo do Sistema](#🧭-fluxo-do-sistema)
-  - [👤 Fluxo de ADM](#👤-fluxo-de-adm)
-  - [🧱 Diagrama da Infraestrutura](#🧱-diagrama-da-infraestrutura)
-  - [🧱Diagrama do banco de Dados](#🧱-diagrama-banco-de-dados)
+  - [📌 Requisitos do Negócio](#-requisitos-do-negócio)
+  - [🧩 Problema](#-problema)
+  - [✅ Solução Proposta](#-solução-proposta)
+  - [🧱 Requisitos de Infraestrutura](#-requisitos-de-infraestrutura)
+  - [🧭 Fluxo do Sistema](#-fluxo-do-sistema)
+  - [👤 Fluxo de ADM](#-fluxo-de-adm)
+  - [🧱 Diagrama da Infraestrutura](#-diagrama-da-infraestrutura)
+  - [🧱Diagrama do banco de Dados](#-diagrama-banco-de-dados)
 - [Tecnologias](#tecnologias)
 - [Arquitetura](#arquitetura)
 - [Pré-requisitos](#pré-requisitos)
