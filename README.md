@@ -10,7 +10,7 @@ Este projeto faz parte de um desafio de pós-graduação e contém a infraestrut
 
 - **Vídeo da Arquitetura fase 3**: [Assistir no YouTube](https://youtu.be/z8k7jxeFkEU?si=dbMU-sliQFxxxsJl)
 - **Miro Board DDD Primeira Fase**: [Miro](https://miro.com/app/board/uXjVIFgMg1M=/)
-- **Justificativa Escolha do banco e Diagrama**:[Acessar](docs.google.com/document/d/1V90gmyMOvgJA1vUvBO6OQ46t6wQE8A2D9qA9eLgr23E/edit?tab=t.0#heading=h.8zpr7e2t3rwv)
+- **Justificativa Escolha do banco e Diagrama**:[Ir para](#🧱-diagrama-banco-de-dados)
 - **Dicionário de Termos Primeira Fase**: [Acessar Dicionário de Termos](Dicionario Projeto/Dicionário.pdf) 
 
 A documentação inclui:
@@ -18,6 +18,7 @@ A documentação inclui:
 - Diagramas de Domínio (DDD)
 - Arquitetura da Solução
 - Detalhes da Implementação
+- Justificativa escolha do Banco de dados *FASE 3*
 - Diagrama de Branco
 
 
@@ -31,6 +32,7 @@ A documentação inclui:
   - [🧭 Fluxo do Sistema](#🧭-fluxo-do-sistema)
   - [👤 Fluxo de ADM](#👤-fluxo-de-adm)
   - [🧱 Diagrama da Infraestrutura](#🧱-diagrama-da-infraestrutura)
+  - [🧱Diagrama do banco de Dados](#🧱-diagrama-banco-de-dados)
 - [Tecnologias](#tecnologias)
 - [Arquitetura](#arquitetura)
 - [Pré-requisitos](#pré-requisitos)
@@ -90,6 +92,18 @@ Este diagrama representa a infraestrutura do projeto:
 
 <img width="699" height="589" alt="image" src="https://github.com/user-attachments/assets/b813b312-6b99-4b70-86fd-aeaa3d9ce48f" />
 
+## 🧱 Diagrama Bando de Dados
+Este diagrama representa o banco de Dados:
+
+<img width="699" height="589" alt="image" src="https://github.com/user-attachments/assets/b813b312-6b99-4b70-86fd-aeaa3d9ce48f" />
+
+### 🗃️ Justificativa da Escolha do SQL Server
+
+Optamos pelo SQL Server como banco de dados relacional do sistema por sua integração nativa com o .NET, o que simplifica o desenvolvimento e aumenta a produtividade com o Entity Framework Core e drivers oficiais da Microsoft.
+Além de atender bem às necessidades atuais do sistema — como cadastros de clientes, produtos e pedidos —, o SQL Server garante consistência transacional e uma estrutura sólida para evolução futura.
+Pensando em escalabilidade, ele suporta recursos essenciais para módulos futuros, como controle de estoque, registros financeiros e relatórios analíticos.
+Na nuvem, pode ser utilizado via Amazon RDS for SQL Server ou Azure SQL Database, oferecendo backup automatizado, alta disponibilidade, escalabilidade e criptografia.
+Por fim, o SQL Server se destaca pela segurança e conformidade, com suporte a TDE, Always Encrypted e mascaramento dinâmico de dados, essenciais para proteger informações sensíveis como CPF.
 
 ## 🛠 Tecnologias
 
@@ -261,8 +275,6 @@ Após a execução bem-sucedida:
 - **API HTTPS**: https://localhost:5001  
 - **Swagger**: https://localhost:5001/swagger
 - **Health Check**: http://localhost:5000/health
-
-
 
 
 ## ✨ Funcionalidades
