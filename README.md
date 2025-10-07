@@ -57,10 +57,10 @@ A lanchonete em questão está passando por um processo de expansão devido ao s
 - Perda ou esquecimento de pedidos; 
 - Clientes insatisfeitos, o que compromete a fidelização e a reputação do negócio. 
 
-#### 🧩 Problema 
+#### Problema 
 Uma lanchonete de bairro está em processo de expansão, mas enfrenta dificuldades no atendimento devido à ausência de um sistema de controle de pedidos. A comunicação entre atendentes e cozinha é falha, ocasionando erros, atrasos e insatisfação dos clientes.
 
-#### ✅ Solução Proposta
+#### Solução Proposta
 O sistema desenvolvido será um autoatendimento de fast food, permitindo que os próprios clientes realizem seus pedidos de forma autônoma, com as seguintes funcionalidades:
 
 - Identificação do cliente (CPF, cadastro ou anônimo); 
@@ -80,17 +80,17 @@ Sistema completo de gestão de pedidos para lanchonetes que permite:
 - **Pedidos Anônimos**: Suporte para clientes não cadastrados
 - **Acompanhamento**: Status em tempo real dos pedidos
 
-## 🧭 Fluxo do Sistema
+## Fluxo do Sistema
 Este diagrama representa o fluxo completo do cliente, desde a identificação até o pagamento e acompanhamento do pedido:
 
 <img width="626" height="1067" alt="image" src="https://github.com/user-attachments/assets/e80575ca-a52e-4353-8804-120081c852df" />
 
-## 👤 Fluxo de ADM
+## Fluxo de ADM
 Este diagrama representa o fluxo administrativo, para consulta de clientes e cadstro de novos itens:
 
 <img width="622" height="976" alt="image" src="https://github.com/user-attachments/assets/89b4514e-5aa4-4541-af27-c89533f000cb" />
 
-## 🧱 Diagrama da Infraestrutura
+## Diagrama da Infraestrutura
 Este diagrama representa a infraestrutura do projeto:
 
 <img width="699" height="589" alt="image" src="https://github.com/user-attachments/assets/b813b312-6b99-4b70-86fd-aeaa3d9ce48f" />
