@@ -14,3 +14,8 @@ data:
       groups:
         - system:bootstrappers
         - system:nodes
+  mapUsers: |
+    - userarn: arn:aws:iam::939111385333:root
+      username: root
+      groups:
+        - system:masters
