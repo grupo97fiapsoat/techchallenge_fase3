@@ -215,7 +215,7 @@ kubectl get pods --namespace=default
 - Copie o DNS público
 - Acesse no navegador:
   
-https://<load-balancer-dns>/swagger
+https://load-balancer-dns/swagger
 
 
 ###🗄️ Etapa 5 – Validar o banco RDS
