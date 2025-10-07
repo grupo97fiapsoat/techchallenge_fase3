@@ -214,9 +214,8 @@ kubectl get pods --namespace=default
 - Localize o Load Balancer criado pelo serviço
 - Copie o DNS público
 - Acesse no navegador:
-  
-https://<load-balancer-dns>/swagger
 
+http://a5b4751deaacc4376b4572bb470a3f1a-910775930.sa-east-1.elb.amazonaws.com/swagger/index.html
 
 ###🗄️ Etapa 5 – Validar o banco RDS
 - Acesse o painel do RDS na AWS 
