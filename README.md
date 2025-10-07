@@ -1,4 +1,4 @@
-# 🍔 FastFood API - Tech Challenge Fase 2
+# 🍔 FastFood API - Tech Challenge Fase 3
 
 Sistema de gerenciamento de pedidos para lanchonete com arquitetura Clean Architecture/Hexagonal Architecture, desenvolvido em .NET 8.
 
@@ -8,7 +8,7 @@ Este projeto faz parte de um desafio de pós-graduação e contém a infraestrut
 
 ## 📚 Documentação do Projeto
 
-- **Vídeo da Arquitetura fase 2**: [Assistir no YouTube](https://youtu.be/z8k7jxeFkEU?si=dbMU-sliQFxxxsJl)
+- **Vídeo da Arquitetura fase 3**: [Assistir no YouTube](https://youtu.be/z8k7jxeFkEU?si=dbMU-sliQFxxxsJl)
 - **Miro Board DDD Primeira Fase**: [Miro](https://miro.com/app/board/uXjVIFgMg1M=/)
 - **Dicionário de Termos Primeira Fase**: [Acessar Dicionário de Termos](Dicionario Projeto/Dicionário.pdf) 
 
@@ -17,6 +17,7 @@ A documentação inclui:
 - Diagramas de Domínio (DDD)
 - Arquitetura da Solução
 - Detalhes da Implementação
+- Diagrama de Branco
 
 
 ## 📋 Índice
@@ -143,7 +144,7 @@ Projeto segue os princípios da **Clean Architecture**, separando as camadas de 
 Antes de começar, tenha os seguintes softwares instalados na sua máquina:
 
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/) (com Kubernetes habilitado)
-- [Minikube](https://minikube.sigs.k8s.io/docs/)
+- Conta na AWS com permissões para EKS, RDS, Lambda e API Gateway
 - [Terraform](https://developer.hashicorp.com/terraform)
 - [kubectl](https://kubernetes.io/docs/tasks/tools/)
 
@@ -158,46 +159,60 @@ Antes de começar, tenha os seguintes softwares instalados na sua máquina:
 - **SQL Server** (pode ser via Docker)
 - **Visual Studio 2022** ou **VS Code**
 
-## 🚀 Instalação e Execução
+## 🚀 Execução e Demonstração – Fase 3 (Cloud)
 
-### 🔧 Opção 1: Execução com Kubernetes + Terraform (Minikube)
+### 📁 Etapa 1 – Clonar o projeto
 
-**1. Inicie o Minikube com o driver Docker:**
-```cmd
-minikube start --driver=docker
-```
-
-**2. Habilite o metrics-server (necessário para o HPA):**
-```cmd
-minikube addons enable metrics-server
-```
-
-**3. Permita que o Docker do Minikube seja usado no terminal:**
-```cmd
-& minikube -p minikube docker-env | Invoke-Expression 
-```
 ```bash
-eval $(minikube -p minikube docker-env)
-```
-
-**4. Construa a imagem da API dentro do Docker do Minikube:**
-```cmd
-docker build -t techchallenge_fase1-api:latest -f src/FastFood.Api/Dockerfile .
+git clone https://github.com/seu-usuario/grupo97fiapsoat
+cd fastfood-api
 ```
 
 
-**4. Acesse a pasta de infraestrutura (infra/terraform) e aplique o Terraform:**
-```cmd
-cd infra/terraform
-terraform init
-terraform apply
-```
-Confirme com yes quando solicitado.
+### 🌐 Etapa 2 – Acessar a API no EKS
 
-**5. Acessando a aplicação:**
-```cmd
-minikube service fastfood-api-service
+#### 1. Acessar o painel do EKS na AWS
+
+- Vá para [https://console.aws.amazon.com/eks](https://console.aws.amazon.com/eks)
+- Selecione a região correta (ex: us-east-1 ou sa-east-1)
+- Clique no nome do cluster criado (ex: `meu-eks`)
+
+#### 2. Verificar se o cluster está ativo
+
+- No painel do cluster, verifique se o status está como `ACTIVE`
+- Confirme que os nós estão disponíveis na aba **Compute → Node Groups**
+
+#### 3. Verificar os pods rodando via terminal
+
+Certifique-se de que o `kubectl` está configurado para o cluster:
+
+```bash
+aws eks --region sa-east-1 update-kubeconfig --name meu-eks
 ```
+
+#### 4. Verifique os pods:
+```bash
+kubectl get pods --namespace=default
+#Você deve ver algo como:
+#NAME                                  READY   STATUS    RESTARTS   AGE
+#fastfood-api-deployment-xxxxx         1/1     Running   0          5m
+```
+### 🌐 Etapa 3 – Acessar o endpoint público da API
+- Vá para EC2 → Load Balancers
+- Localize o Load Balancer criado pelo serviço
+- Copie o DNS público
+- Acesse no navegador:
+  
+https://<load-balancer-dns>/swagger
+
+
+###🗄️ Etapa 4 – Validar o banco RDS
+- Acesse o painel do RDS na AWS 
+- Confirme que a instância está com status "available" 
+Mostre:
+ - Endpoint do banco 
+ - Engine (PostgreSQL) 
+ - Configurações básicas 
 
 
 ### 🌐 Acessar a aplicação 
