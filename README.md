@@ -95,7 +95,8 @@ Este diagrama representa a infraestrutura do projeto:
 ## 🧱 Diagrama Bando de Dados
 Este diagrama representa o banco de Dados:
 
-<img width="699" height="589" alt="image" src="https://github.com/user-attachments/assets/b813b312-6b99-4b70-86fd-aeaa3d9ce48f" />
+<img width="1370" height="751" src="https://github.com/user-attachments/assets/fd6a4d97-0f15-40e6-b2b0-dd094d670a3b" />
+
 
 ### 🗃️ Justificativa da Escolha do SQL Server
 
