@@ -3,7 +3,7 @@ name: Deploy FastFood API
 on:
   push:
     branches:
-      - techchallenge_fase3
+      - main
     paths:
       - '**.cs'
       - '**.csproj'
