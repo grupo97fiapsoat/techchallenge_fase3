@@ -10,7 +10,7 @@ Este projeto faz parte de um desafio de pós-graduação e contém a infraestrut
 
 - **Vídeo da Arquitetura fase 3**: [Assistir no YouTube](https://youtu.be/DBmvyEkDIuo?si=M_rZDcciEpsHAhjT)
 - **Miro Board DDD Primeira Fase**: [Miro](https://miro.com/app/board/uXjVIFgMg1M=/)
-- **Justificativa Escolha do banco e Diagrama Terceira Fase**:[Ir para](#-diagrama-banco-de-dados)
+- **Justificativa Escolha do banco e Diagrama Terceira Fase**: [Ir para](#-diagrama-banco-de-dados)
 - **Acessar Outros Diretórios do Projeto #Fase 3#**:
       - [FastFood-Lambda](https://github.com/grupo97fiapsoat/fastfood-lambda)
       - [FastFood-Banco-RDS](https://github.com/grupo97fiapsoat/infra-rds)
