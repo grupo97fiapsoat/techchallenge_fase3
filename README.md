@@ -168,7 +168,6 @@ git clone https://github.com/seu-usuario/grupo97fiapsoat
 cd fastfood-api
 ```
 
-
 ### 🌐 Etapa 2 – Acessar a API no EKS
 
 #### 1. Acessar o painel do EKS na AWS
@@ -189,6 +188,7 @@ Certifique-se de que o `kubectl` está configurado para o cluster:
 ```bash
 aws eks --region sa-east-1 update-kubeconfig --name meu-eks
 ```
+para consuktar o nome do cluster: aws eks list-clusters --region sa-east-1
 
 #### 4. Verifique os pods:
 ```bash
