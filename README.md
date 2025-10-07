@@ -10,6 +10,7 @@ Este projeto faz parte de um desafio de pós-graduação e contém a infraestrut
 
 - **Vídeo da Arquitetura fase 3**: [Assistir no YouTube](https://youtu.be/z8k7jxeFkEU?si=dbMU-sliQFxxxsJl)
 - **Miro Board DDD Primeira Fase**: [Miro](https://miro.com/app/board/uXjVIFgMg1M=/)
+- **Justificativa Escolha do banco e Diagrama**:[Acessar](docs.google.com/document/d/1V90gmyMOvgJA1vUvBO6OQ46t6wQE8A2D9qA9eLgr23E/edit?tab=t.0#heading=h.8zpr7e2t3rwv)
 - **Dicionário de Termos Primeira Fase**: [Acessar Dicionário de Termos](Dicionario Projeto/Dicionário.pdf) 
 
 A documentação inclui:
