@@ -147,6 +147,7 @@ Antes de começar, tenha os seguintes softwares instalados na sua máquina:
 - Conta na AWS com permissões para EKS, RDS, Lambda e API Gateway
 - [Terraform](https://developer.hashicorp.com/terraform)
 - [kubectl](https://kubernetes.io/docs/tasks/tools/)
+- [AWS CLI para Windows](https://docs.aws.amazon.com/pt_br/cli/latest/userguide/getting-started-install.html)
 
 
 ### Para execução via Docker (Recomendado)
@@ -168,7 +169,17 @@ git clone https://github.com/seu-usuario/grupo97fiapsoat
 cd fastfood-api
 ```
 
-### 🌐 Etapa 2 – Acessar a API no EKS
+### ✅ Etapa 2 – Configurar as credenciais da AWS
+```bash
+aws configure
+```
+E preencher:
+AWS Access Key ID [None]: <sua-access-key>
+AWS Secret Access Key [None]: <sua-secret-key>
+Default region name [None]: sa-east-1
+Default output format [None]: json
+
+### 🌐 Etapa 3 – Acessar a API no EKS
 
 #### 1. Acessar o painel do EKS na AWS
 
@@ -197,7 +208,7 @@ kubectl get pods --namespace=default
 #NAME                                  READY   STATUS    RESTARTS   AGE
 #fastfood-api-deployment-xxxxx         1/1     Running   0          5m
 ```
-### 🌐 Etapa 3 – Acessar o endpoint público da API
+### 🌐 Etapa 4 – Acessar o endpoint público da API
 - Vá para EC2 → Load Balancers
 - Localize o Load Balancer criado pelo serviço
 - Copie o DNS público
@@ -206,7 +217,7 @@ kubectl get pods --namespace=default
 https://<load-balancer-dns>/swagger
 
 
-###🗄️ Etapa 4 – Validar o banco RDS
+###🗄️ Etapa 5 – Validar o banco RDS
 - Acesse o painel do RDS na AWS 
 - Confirme que a instância está com status "available" 
 Mostre:
